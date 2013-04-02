@@ -10,7 +10,7 @@ pymba is a Python wrapper for the Allied Vision Technologies (AVT) Vimba C API. 
 	from pymba.VimbaException import VimbaException
 	
 	# start Vimba
-	vimba = Vimba.Vimba()
+	vimba = Vimba()
 	vimba.startup()
 	
 	# show Vimba version
