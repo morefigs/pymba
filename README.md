@@ -4,10 +4,13 @@ pymba is a Python wrapper for the Allied Vision Technologies (AVT) Vimba C API. 
 
 ## Usage
 
+### Typical usage
+
+The following code gives a good example of basic pymba usage. For clarity exceptions are not dealt with.
+
 	from pymba.Vimba import Vimba
 	from pymba.VimbaFrame import VimbaFrame
 	from pymba.VimbaCamera import VimbaCamera
-	from pymba.VimbaException import VimbaException
 	
 	# start Vimba
 	vimba = Vimba()
@@ -76,3 +79,17 @@ pymba is a Python wrapper for the Allied Vision Technologies (AVT) Vimba C API. 
 	
 	# shutdown Vimba	
 	vimba.shutdown()
+	
+
+### Handling Vimba exceptions
+
+Handling exceptions can be done as shown below.
+
+	from pymba.Vimba import Vimba
+	from pymba.VimbaException import VimbaException
+
+	try:
+		vimba = Vimba()
+		vimba.startup()
+	except VimbaException as e:
+		print e.message
