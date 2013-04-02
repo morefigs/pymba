@@ -8,9 +8,9 @@ pymba is a Python wrapper for the Allied Vision Technologies (AVT) Vimba C API. 
 
 The following code gives a good example of basic pymba usage. For clarity exceptions are not dealt with.
 
-	from pymba.Vimba import Vimba
-	from pymba.VimbaFrame import VimbaFrame
-	from pymba.VimbaCamera import VimbaCamera
+	from Vimba import Vimba
+	from Vimba import VimbaCamera
+	from Vimba import VimbaFrame
 	
 	# start Vimba
 	vimba = Vimba()
