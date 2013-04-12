@@ -1,6 +1,6 @@
 # pymba
 
-pymba is a Python wrapper for the Allied Vision Technologies (AVT) Vimba C API. It wraps (and requires) the VimbaC.dll file included in the AVT Vimba installation.  
+pymba is a Python wrapper for the Allied Vision Technologies (AVT) Vimba C API. It wraps (and requires) the VimbaC.dll file included in the AVT Vimba installation. It currently supports most of the functionality provided by VimbaC.dll.
 
 ## Usage
 
