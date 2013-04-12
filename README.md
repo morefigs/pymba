@@ -20,7 +20,7 @@ Install the Vimba SDK from AVT, and specifically install at least:
 
 > > Driver Installer
 
-Copy VimbaC.dll from the AVT installation directory to the pymba folder.
+Copy the 32-bit VimbaC.dll from the AVT installation directory to the pymba folder.
 
 Run the AVTDriverInstaller tool and install the AVT Vimba SDK drivers.
 
