@@ -4,7 +4,7 @@ pymba is a Python wrapper for the Allied Vision Technologies (AVT) Vimba C API. 
 
 ## Installation
 
-Install the Vimba SDK from AVT, and specifically install at least:
+Install the Vimba SDK from AVT to the default directory, and specifically install at least:
 
 > AVT 1394 Transport Layer
 
