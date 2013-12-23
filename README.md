@@ -123,7 +123,7 @@ Handling exceptions can be done as shown below.
 
 ## Known issues
 
-* Not all SDK functions are wrapped (most are). For full list see vimbadll.py.
+* Not all API functions are wrapped (most are). For full list see vimbadll.py.
 * Colour cameras have not been tested. B&W 1394 cameras have been tested under Windows with Vimba version 1.2.1.
 * The VimbaC.dll file location has been hardcoded in vimbadll.py. It should be easy to change if needed.
 
