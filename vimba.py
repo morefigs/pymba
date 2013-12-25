@@ -1,0 +1,136 @@
+# -*- coding: utf-8 -*-
+import vimbastructure as structs
+from vimbadll import VimbaDLL
+from vimbaexception import VimbaException
+from vimbacamera import VimbaCamera
+from ctypes import *
+
+class Vimba(object):
+	"""
+	An Allied Vision Technology Vimba API.
+	This API provides access to AVT cameras.
+	"""
+	
+	# todo - assign camera info and feature info as own object proeprties
+	
+	def __init__(self):
+		
+		# list of VimbaCameraInfo objects
+		# can't be called before startup() so populate later
+		self._cameraInfos = None
+		
+		# dict of {camera ID : VimbaCamera object} as we don't want to forget them
+		self._cameras = {}
+		
+	def _getCameraInfos(self):
+		"""
+		Gets camera info of all attached cameras.
+		
+		:returns: list -- camera info for available cameras.
+		"""
+		if self._cameraInfos is None:
+			# args
+			dummyCameraInfo = structs.VimbaCameraInfo()	 
+			numFound = c_uint32(-1)
+			
+			# call once just to get the number of cameras
+			# Vimba DLL will return an error code
+			errorCode = VimbaDLL.camerasList(byref(dummyCameraInfo),
+											 0,
+											 byref(numFound),
+											 sizeof(dummyCameraInfo))
+			if errorCode != 0:
+				print errorCode
+				raise VimbaException(errorCode)
+			
+			numCameras = numFound.value
+			
+			# args
+			cameraInfoArray = (structs.VimbaCameraInfo * numCameras)()
+		
+			# call again to get the features
+			# Vimba DLL will return an error code
+			errorCode = VimbaDLL.camerasList(cameraInfoArray,
+											 numCameras,
+											 byref(numFound),
+											 sizeof(dummyCameraInfo))
+			if errorCode != 0:
+				raise VimbaException(errorCode)
+			self._cameraInfos = list(camInfo for camInfo in cameraInfoArray)
+		return self._cameraInfos
+	
+	def getCameraIds(self):
+		"""
+		Gets IDs of all available cameras.
+		
+		:returns: list -- camera IDs for available cameras.
+		"""
+		return list(camInfo.cameraIdString for camInfo in self._getCameraInfos())
+	
+	def getCameraInfo(self, cameraId):
+		"""
+		Gets camera info object of specified camera.
+		
+		:param cameraId: the ID of the camera object to get.
+		
+		:returns: VimbaCameraInfo object -- the camera info object specified.
+		"""
+		# don't do this live as we already have this info
+		# return info object if it exists
+		for camInfo in self._getCameraInfos():
+			if camInfo.cameraIdString == cameraId:
+				return camInfo
+		# otherwise raise error
+		raise VimbaException(-50)
+		
+	def getCamera(self, cameraId):
+		"""
+		Gets camera objects based on camera ID string. Will not recreate
+		camera object if it already exists.
+		
+		:param cameraId: the ID of the camera.
+		
+		:returns: VimbaCamera object -- the camera object specified.		
+		"""
+		# check ID is valid
+		if cameraId in self.getCameraIds():
+			# create it if it doesn't exist
+			if cameraId not in self._cameras:
+				self._cameras[cameraId] = VimbaCamera(cameraId)
+			return self._cameras[cameraId]
+		raise VimbaException(-50)
+
+	def getVersion(self):
+		"""
+		Retrieve the version number of VimbaC.
+		
+		:returns: string - Vimba API version info.
+		"""
+		# args
+		versionInfo = structs.VimbaVersion()
+		
+		# Vimba DLL will return an error code
+		errorCode = VimbaDLL.versionQuery(versionInfo,
+										  sizeof(versionInfo))
+		if errorCode != 0:
+			raise VimbaException(errorCode)
+		
+		versionStr = '.'.join([str(versionInfo.major),
+							   str(versionInfo.minor),
+							   str(versionInfo.patch)])
+		return versionStr
+		
+	def startup(self):
+		"""
+		Initialize the VimbaC API.
+		"""
+		# Vimba DLL will return an error code
+		errorCode = VimbaDLL.startup()
+		if errorCode != 0:
+			raise VimbaException(errorCode)
+		
+	def shutdown(self):
+		"""
+		Perform a shutdown on the API.
+		"""
+		VimbaDLL.shutdown()
