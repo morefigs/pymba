@@ -3,7 +3,7 @@ import exceptions
 
 class VimbaException(Exception):
 	"""
-	An exception for the AVT Vimba API.	It contains a message
+	An exception for the AVT Vimba API. It contains a message
 	property which is a string indicating what went	wrong.
 	
 	:param errorCode: Error code to be used to look up error message.
