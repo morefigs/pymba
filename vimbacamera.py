@@ -6,7 +6,7 @@ from vimbaframe import VimbaFrame
 from vimbadll import VimbaDLL
 from ctypes import *
 
-# camera features are automatically set as attributes of camera.
+# camera features are automatically readable as object attributes.
 class VimbaCamera(VimbaObject):
 	"""
 	A Vimba camera object. This class provides the minimal access
@@ -25,7 +25,7 @@ class VimbaCamera(VimbaObject):
 		
 		# set ID
 		self._cameraIdString = cameraIdString
-
+		
 		# set own info
 		self._info = self._getInfo()
 		

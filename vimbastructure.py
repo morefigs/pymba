@@ -1,13 +1,27 @@
 # -*- coding: utf-8 -*-
 from ctypes import *
 
+	
 class VimbaVersion(Structure):
 	_fields_ = [('major', c_uint32),
 				('minor', c_uint32),
 				('patch', c_uint32)]
 
 
-# populated by calling VimbaDLL.cameraInfoQuery()
+class VimbaInterfaceInfo(Structure):
+	_fields_ = [('interfaceIdString', c_char_p),	# Unique identifier for each interface
+				('interfaceType', c_uint32),		# Interface type, see VmbInterfaceType
+				('interfaceName', c_char_p),		# Interface name, given by the transport layer
+				('serialString', c_char_p),			# Serial number
+				('permittedAccess', c_uint32)]		# Used access mode, see VmbAccessModeType
+	
+	def getFieldNames(self):
+		"""
+		Get field names.
+		"""
+		return [field[0] for field in self._fields_]
+
+
 class VimbaCameraInfo(Structure):
 	_fields_ = [('cameraIdString', c_char_p),		# Unique identifier for each camera
 				('cameraName', c_char_p),			# Name of the camera
@@ -23,7 +37,6 @@ class VimbaCameraInfo(Structure):
 		return [field[0] for field in self._fields_]
 	
 
-# populated by calling VimbaDLL.featureInfoQuery()
 class VimbaFeatureInfo(Structure):
 
 	_fields_ = [('name', c_char_p),

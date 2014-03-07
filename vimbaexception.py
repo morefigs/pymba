@@ -44,10 +44,11 @@ class VimbaException(Exception):
 					-51:	'Not enough memory to assign frame buffer.',
 					-52:	'Invalid input.',
 					-53:	'Could not find the specified feature.',
+					-54:	'Could not find the specified interface.',
 					
 					# Miscellaneous errors					
 					-1000:	'Oops, unknown internal error code!',
-					-1001:	'Oops, this VimbaFeature function is not yet implemented!'}
+					-1001:	'Oops, this VimbaFeature function is not yet implemented in pymba!'}
 	
 	def __init__(self, errorCode):
 		# if error code does not match expected codes then assign invalid code

@@ -72,9 +72,9 @@ class VimbaDLL(object):
 	# -- VmbCaptureFrameWait()
 	# -- VmbCaptureQueueFlush()
 	#
-	# VmbInterfacesList()
-	# VmbInterfaceOpen()
-	# VmbInterfaceClose()
+	# -- VmbInterfacesList()
+	# -- VmbInterfaceOpen()
+	# -- VmbInterfaceClose()
 	#
 	# VmbAncillaryDataOpen()
 	# VmbAncillaryDataClose()
@@ -287,6 +287,25 @@ class VimbaDLL(object):
 	captureQueueFlush = _vimbaDLL.VmbCaptureQueueFlush
 	captureQueueFlush.restype = c_int32
 	captureQueueFlush.argtypes = (c_void_p,)						# camera handle
+	
+	# list interfaces
+	interfacesList = _vimbaDLL.VmbInterfacesList
+	interfacesList.restype = c_int32
+	interfacesList.argtypes = (POINTER(structs.VimbaInterfaceInfo),		# pointer to interface info structure
+							   c_uint32,								# length of list
+							   POINTER(c_uint32),						# pointer to number of interfaces
+							   c_uint32)	
+	
+	# open interface
+	interfaceOpen = _vimbaDLL.VmbInterfaceOpen
+	interfaceOpen.restype = c_int32
+	interfaceOpen.argtypes = (c_char_p,								# unique id
+							  c_void_p)								# handle
+	
+	# close interface
+	interfaceClose = _vimbaDLL.VmbInterfaceClose
+	interfaceClose.restype = c_int32
+	interfaceClose.argtypes = (c_void_p,)							# handle
 	
 	# read from register
 	registersRead = _vimbaDLL.VmbRegistersRead

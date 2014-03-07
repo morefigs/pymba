@@ -20,10 +20,10 @@ class VimbaObject(object):
 		self._handle = c_void_p()
 	
 		# list of VimbaFeatureInfo objects
-		# can't set yet as object (camera) won't be
-		# opened yet, therefore no event for camera opening
+		# can't set yet as the object (e.g. a camera) won't be
+		# opened yet, therefore no event for object opening
 		# so will have it populate by user interaction
-		# and blame them if the camera is not opened then
+		# and blame them if the object is not opened then
 		self._featureInfos = None
 
 	# override getattr for undefined attributes

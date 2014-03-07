@@ -77,7 +77,7 @@ class VimbaFeature(object):
 		"""
 		# args for Vimba call
 		featureInfo = structs.VimbaFeatureInfo()
-
+		
 		# Vimba DLL will return an error code
 		errorCode = VimbaDLL.featureInfoQuery(self._handle,
 											  self._name,
