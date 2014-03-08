@@ -24,14 +24,17 @@ If Vimba and pymba are installed correctly, then the following code should give 
 ### Interacting with cameras
 
 Discover, open, manipulate, and capture frames from a camera.
-
-	from vimba import *
-	import time
-
+    
+    from vimba import *
+    import time
+    
     # start Vimba
     vimba = Vimba()
     vimba.startup()
-
+    
+    # get system object
+    system = vimba.getSystem()
+    
     # list available cameras (after enabling discovery for GigE cameras)
     if system.GeVTLIsPresent:
         system.runFeatureCommand("GeVDiscoveryAllOnce")
@@ -91,7 +94,7 @@ Discover, open, manipulate, and capture frames from a camera.
     
     # close camera
     camera0.closeCamera()
-
+    
     # shutdown Vimba
     vimba.shutdown()
 	
