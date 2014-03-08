@@ -4,14 +4,7 @@ pymba is a Python wrapper for the Allied Vision Technologies (AVT) Vimba C API. 
 
 ## Installation
 
-Install the Vimba SDK from AVT to the default directory, and install at least:
-
-	- AVT 1394 Transport Layer
-	 └ Core components
-	- AVT Vimba SDK
-	 └ Core components
-	 └ C API runtime components
-	 └ Driver Installer
+Install the Vimba SDK from AVT to the default directory.
 
 Run the AVTDriverInstaller tool and install the AVT Vimba SDK drivers.
 
@@ -26,7 +19,7 @@ If Vimba and pymba are installed correctly, then the following code should give 
 	from vimba import *
 	
 	vimba = Vimba()
-	vimba.getVersion()
+	print vimba.getVersion()
 	
 ### Basic usage
 
@@ -41,7 +34,7 @@ The following code gives an example of basic usage. For clarity exceptions are n
 	#### show Vimba version
 	print vimba.getVersion()
 	
-	#### list available camera IDs
+	#### list available Firewire camera IDs
 	camIds = vimba.getCameraIds()
 	for cam in camIds:
 		print cam
@@ -124,6 +117,7 @@ Handling exceptions can be done as shown below.
 ## Known issues
 
 * Not all API functions are wrapped (most are). For full list see vimbadll.py.
-* Colour cameras have not been tested. B&W 1394 cameras have been tested under Windows with Vimba version 1.2.1.
+* Only 32-bit VimbaC.dll (version 1.2.1) under Windows has been tested.
+* Colour cameras and GigE cameras have not been tested.
 * The VimbaC.dll file location has been hardcoded in vimbadll.py. It should be easy to change if needed.
 
