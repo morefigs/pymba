@@ -32,9 +32,6 @@ Discover, open, manipulate, and capture frames from a camera.
     vimba = Vimba()
     vimba.startup()
 
-    # show Vimba version
-    print 'Version:', vimba.getVersion()
-    
     # list available cameras (after enabling discovery for GigE cameras)
     if system.GeVTLIsPresent:
         system.runFeatureCommand("GeVDiscoveryAllOnce")
