@@ -98,7 +98,7 @@ Discover, open, manipulate, and capture frames from a camera.
     # shutdown Vimba
     vimba.shutdown()
 	
-### Interacting with the Vimba system.
+### Interacting with the Vimba system
     
 Get a reference to the Vimba system object and list available system features.
     
@@ -114,7 +114,7 @@ Get a reference to the Vimba system object and list available system features.
 	# shutdown Vimba
     vimba.shutdown()
 
-### Interacting with transport layer interfaces.
+### Interacting with transport layer interfaces
     
 Get a reference to an interface object and list available interface features.
     
