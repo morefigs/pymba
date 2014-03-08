@@ -21,88 +21,123 @@ If Vimba and pymba are installed correctly, then the following code should give 
 	vimba = Vimba()
 	print vimba.getVersion()
 	
-### Basic usage
+### Interacting with cameras
 
-The following code gives an example of basic usage. For clarity exceptions are not dealt with here.
+Discover, open, manipulate, and capture frames from a camera.
 
 	from vimba import *
-	
-	#### start Vimba
-	vimba = Vimba()
-	vimba.startup()
-	
-	#### show Vimba version
-	print vimba.getVersion()
-	
-	#### list available Firewire camera IDs
-	camIds = vimba.getCameraIds()
-	for cam in camIds:
-		print cam
-	
-	#### create and open a camera
-	cam0 = vimba.getCamera(camIds[0])
-	cam0.openCamera()
-	
-	#### list features of a camera
-	featNames = cam0.getFeatureNames()
-	for fn in featNames:
-		print fn
-	
-	#### read info of a camera feature
-	featInfo = cam0.getFeatureInfo('AcquisitionMode')
-	for field in featInfo.getFieldNames():
-		print field, '--', getattr(featInfo, field)
-	
-	#### get the value of a feature
-	print cam0.AcquisitionMode
-	
-	#### set the value of a feature
-	cam0.AcquisitionMode = 'SingleFrame'
-	
-	#### create new frames for the camera
-	frame0 = cam0.getFrame()	# creates a frame
-	frame1 = cam0.getFrame()	# creates a second frame
-	
-	#### announce frame
-	frame0.announceFrame()
-	
-	#### capture a camera image
-	cam0.startCapture()
-	frame0.queueFrameCapture()
-	cam0.runFeatureCommand('AcquisitionStart')
-	cam0.runFeatureCommand('AcquisitionStop')
-	frame0.waitFrameCapture()
-	
-	#### get image data...
-	imgData = frame0.getBufferByteData()
-	
-	#### ...or use NumPy for fast image display (for use with OpenCV, etc)
-	import numpy as np
-	moreUsefulImgData = np.ndarray(buffer = cam0.frame0.getBufferByteData(),
-								   dtype = np.uint8,
-								   shape = (cam0.frame0.height,
-											cam0.frame0.width,
-											1))
-	
-	#### clean up after capture
-	cam0.endCapture()
-	cam0.revokeAllFrames()
-	
-	#### close camera
-	cam0.closeCamera()
-	
-	#### shutdown Vimba	
-	vimba.shutdown()
-	
-	
-	
+	import time
 
+    # start Vimba
+    vimba = Vimba()
+    vimba.startup()
 
+    # show Vimba version
+    print 'Version:', vimba.getVersion()
+    
+    # list available cameras (after enabling discovery for GigE cameras)
+    if system.GeVTLIsPresent:
+        system.runFeatureCommand("GeVDiscoveryAllOnce")
+        time.sleep(0.2)
+    cameraIds = vimba.getCameraIds()
+    for cameraId in cameraIds:
+        print 'Camera ID:', cameraId
+    
+    # get and open a camera
+    camera0 = vimba.getCamera(cameraIds[0])
+    camera0.openCamera()
+    
+    # list camera features
+    cameraFeatureNames = camera0.getFeatureNames()
+    for name in cameraFeatureNames:
+        print 'Camera feature:', name
+    
+    # read info of a camera feature
+    featureInfo = camera0.getFeatureInfo('AcquisitionMode')
+    for field in featInfo.getFieldNames():
+        print field, '--', getattr(featInfo, field)
+    
+    # get the value of a feature
+    print camera0.AcquisitionMode
+    
+    # set the value of a feature
+    camera0.AcquisitionMode = 'SingleFrame'
+    
+    # create new frames for the camera
+    frame0 = camera0.getFrame()    # creates a frame
+    frame1 = camera0.getFrame()    # creates a second frame
+    
+    # announce frame
+    frame0.announceFrame()
+    
+    # capture a camera image
+    camera0.startCapture()
+    frame0.queueFrameCapture()
+    camera0.runFeatureCommand('AcquisitionStart')
+    camera0.runFeatureCommand('AcquisitionStop')
+    frame0.waitFrameCapture()
+    
+    # get image data...
+    imgData = frame0.getBufferByteData()
+    
+    # ...or use NumPy for fast image display (for use with OpenCV, etc)
+    import numpy as np
+    moreUsefulImgData = np.ndarray(buffer = camera0.frame0.getBufferByteData(),
+                                   dtype = np.uint8,
+                                   shape = (camera0.frame0.height,
+                                            camera0.frame0.width,
+                                            1))
+    
+    # clean up after capture
+    camera0.endCapture()
+    camera0.revokeAllFrames()
+    
+    # close camera
+    camera0.closeCamera()
+
+    # shutdown Vimba
+    vimba.shutdown()
 	
+### Interacting with the Vimba system.
+    
+Get a reference to the Vimba system object and list available system features.
+    
+    from vimba import *
+    
+    # get system object
+    system = vimba.getSystem()
+    
+    # list system features
+    for featureName in system.getFeatureNames():
+        print 'System feature:', featureName
+        
+	# shutdown Vimba
+    vimba.shutdown()
+
+### Interacting with transport layer interfaces.
+    
+Get a reference to an interface object and list available interface features.
+    
+    from vimba import *
+    
+    # get list of available interfaces
+    interfaceIds = vimba.getInterfaceIds()
+    for interfaceId in interfaceIds:
+        print 'Interface ID:', interfaceId
+    
+    # get interface object and open it
+    interface0 = vimba.getInterface(interfaceIds[0])
+    interface0.openInterface()
+    
+    # list interface features
+    interfaceFeatureNames = interface0.getFeatureNames()
+    for name in interfaceFeatureNames:
+        print 'Interface feature:', name
+    
+    # close interface
+    interface0.closeInterface()
 
 ### Handling Vimba exceptions
-
-Handling exceptions can be done as shown below.
 
 	from vimba import *
 
@@ -111,8 +146,6 @@ Handling exceptions can be done as shown below.
 		vimba.startup()
 	except VimbaException as e:
 		print e.message
-
-
 
 ## Known issues
 
