@@ -52,11 +52,6 @@ Discover, open, manipulate, and capture frames from a camera.
     for name in cameraFeatureNames:
         print 'Camera feature:', name
     
-    # read info of a camera feature
-    featureInfo = camera0.getFeatureInfo('AcquisitionMode')
-    for field in featInfo.getFieldNames():
-        print field, '--', getattr(featInfo, field)
-    
     # get the value of a feature
     print camera0.AcquisitionMode
     
@@ -82,10 +77,10 @@ Discover, open, manipulate, and capture frames from a camera.
     
     # ...or use NumPy for fast image display (for use with OpenCV, etc)
     import numpy as np
-    moreUsefulImgData = np.ndarray(buffer = camera0.frame0.getBufferByteData(),
+    moreUsefulImgData = np.ndarray(buffer = frame0.getBufferByteData(),
                                    dtype = np.uint8,
-                                   shape = (camera0.frame0.height,
-                                            camera0.frame0.width,
+                                   shape = (frame0.height,
+                                            frame0.width,
                                             1))
     
     # clean up after capture
