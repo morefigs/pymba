@@ -1,9 +1,25 @@
 # -*- coding: utf-8 -*-
 import vimbastructure as structs
 from vimbaexception import VimbaException
-from ctypes import *
-from ctypes.util import find_msvcrt
+from sys import platform
 import os
+from ctypes import *
+
+if platform == "win32":
+	from ctypes.util import find_msvcrt
+	_cruntime = cdll.LoadLibrary(find_msvcrt())
+	vimbaC_path = r'C:\Program Files\Allied Vision Technologies\AVTVimba_1.2\VimbaC\Bin\Win32\VimbaC.dll'
+	dll_loader = windll
+else:
+	_cruntime = CDLL("libc.so.6")
+	dll_loader = cdll
+	assert os.environ.get("GENICAM_GENTL64_PATH"), "you need your GENICAM_GENTL64_PATH environment set.  Make sure you have Vimba installed, and you have loaded the /etc/profile.d/ scripts"
+	vimba_dir = "/".join(os.environ.get("GENICAM_GENTL64_PATH").split("/")[1:-3])
+	vimbaC_path = "/" + vimba_dir + "/VimbaC/DynamicLib/x86_64bit/libVimbaC.so"
+
+with open(vimbaC_path) as thefile:
+	pass #NJO i think this is kind of like an os.exists ?
+
 
 class VimbaDLL(object):
 	"""
@@ -85,10 +101,8 @@ class VimbaDLL(object):
 	# -- VmbRegistersWrite()
 	
 	# Vimba C API DLL
-	vimbaC_path = r'C:\Program Files\Allied Vision Technologies\AVTVimba_1.2\VimbaC\Bin\Win32\VimbaC.dll'
-	with open(vimbaC_path) as thefile:
-		pass
-	_vimbaDLL = windll.LoadLibrary(vimbaC_path)
+
+	_vimbaDLL = dll_loader.LoadLibrary(vimbaC_path)
 	
 	# version query
 	versionQuery = _vimbaDLL.VmbVersionQuery
@@ -333,7 +347,7 @@ class VimbaC_MemoryBlock(object):
 	"""
 	
 	# C runtime DLL
-	_crtDLL = cdll.LoadLibrary(find_msvcrt())
+	_crtDLL = _cruntime
 	
 	@property
 	def block(self):
