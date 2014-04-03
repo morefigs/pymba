@@ -1,4 +1,4 @@
-from vimba import *
+from pyvimba.vimba import *
 import numpy as np
 import cv2
 import time
