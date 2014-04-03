@@ -7,9 +7,6 @@ def test_systemfeature():
     vimba = Vimba()
     system = vimba.getSystem()
     
-    # get system object
-    system = vimba.getSystem()
-    
     # list system features
     for featureName in system.getFeatureNames():
         print 'System feature:', featureName
