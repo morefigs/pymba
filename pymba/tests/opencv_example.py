@@ -31,11 +31,11 @@ camera0.openCamera()
 cameraFeatureNames = camera0.getFeatureNames()
 for name in cameraFeatureNames:
     try:
-    	print 'Camera feature:%s=%s' % (name, camera0.__getattr__(name))
-	pass
+        print 'Camera feature:%s=%s' % (name, camera0.__getattr__(name))
+        pass
     except VimbaException:
-	print "%s Not yet implemented" % name
-	pass
+        print "%s Not yet implemented" % name
+        pass
 
 # read info of a camera feature
 #featureInfo = camera0.getFeatureInfo('AcquisitionMode')
@@ -61,8 +61,8 @@ print camera0.AcquisitionMode
 
 # create new frames for the camera
 
-frame0 = camera0.getFrame()    # creates a frame
-frame1 = camera0.getFrame()    # creates a second frame
+frame0 = camera0.getFrame()  # creates a frame
+frame1 = camera0.getFrame()  # creates a second frame
 
 # announce frame
 frame0.announceFrame()
@@ -80,12 +80,12 @@ while count < 10:
 
     # get image data...
     imgData = frame0.getBufferByteData()
-    
-    moreUsefulImgData = np.ndarray(buffer = frame0.getBufferByteData(),
-                                   dtype = np.uint8,
-                                   shape = (frame0.height,
-                                            frame0.width,
-                                            1))
+
+    moreUsefulImgData = np.ndarray(buffer=frame0.getBufferByteData(),
+                                   dtype=np.uint8,
+                                   shape=(frame0.height,
+                                          frame0.width,
+                                          1))
     rgb = cv2.cvtColor(moreUsefulImgData, cv2.COLOR_BAYER_RG2RGB)
     cv2.imwrite('foo{}.png'.format(count), rgb)
     print "image {} saved".format(count)

@@ -2,6 +2,7 @@
 
 from pymba import *
 
+
 def test_systemfeature():
     # get system object
     vimba = Vimba()
@@ -12,8 +13,8 @@ def test_systemfeature():
     # list system features
     for featureName in system.getFeatureNames():
         print 'System feature:', featureName
-	fInfo = system.getFeatureInfo(featureName)
-	for field in fInfo.getFieldNames():
+        fInfo = system.getFeatureInfo(featureName)
+        for field in fInfo.getFieldNames():
             print "\t", featureName, ":", field, getattr(fInfo, field)
 
     # shutdown Vimba
