@@ -1,4 +1,4 @@
-from pyvimba.vimba import *
+from pymba import *
 import numpy as np
 import cv2
 import time
@@ -14,8 +14,11 @@ system = vimba.getSystem()
 
 # list available cameras (after enabling discovery for GigE cameras)
 if system.GeVTLIsPresent:
+    print("GeVTLIsPresent")
     system.runFeatureCommand("GeVDiscoveryAllOnce")
     time.sleep(0.2)
+else:
+    print ("No GeVTL")
 cameraIds = vimba.getCameraIds()
 for cameraId in cameraIds:
     print 'Camera ID:', cameraId
@@ -27,7 +30,12 @@ camera0.openCamera()
 # list camera features
 cameraFeatureNames = camera0.getFeatureNames()
 for name in cameraFeatureNames:
-    print 'Camera feature:', name
+    try:
+    	print 'Camera feature:%s=%s' % (name, camera0.__getattr__(name))
+	pass
+    except VimbaException:
+	print "%s Not yet implemented" % name
+	pass
 
 # read info of a camera feature
 #featureInfo = camera0.getFeatureInfo('AcquisitionMode')
@@ -35,12 +43,24 @@ for name in cameraFeatureNames:
 #    print field, '--', getattr(featInfo, field)
 
 # get the value of a feature
+print "AcquisitionMode is"
 print camera0.AcquisitionMode
+print camera0.ExposureMode
 
 # set the value of a feature
-camera0.AcquisitionMode = 'SingleFrame'
+print "Setting acquisition mode"
+
+#camera0.AcquisitionMode = 'Continuous'
+camera0.__setattr__("AcquisitionModeCCC", 'SingleFrame')
+try:
+    camera0.AcquisitionModeJJJ = 'JJJ'
+    print "Got in here"
+except Exception:
+    print "Failed to set JJJ"
+print camera0.AcquisitionMode
 
 # create new frames for the camera
+
 frame0 = camera0.getFrame()    # creates a frame
 frame1 = camera0.getFrame()    # creates a second frame
 
@@ -51,11 +71,13 @@ frame0.announceFrame()
 count = 0
 while count < 10:
     camera0.startCapture()
-    frame0.queueFrameCapture()
     camera0.runFeatureCommand('AcquisitionStart')
-    camera0.runFeatureCommand('AcquisitionStop')
+
+    frame0.queueFrameCapture()
     frame0.waitFrameCapture()
-    
+
+    camera0.runFeatureCommand('AcquisitionStop')
+
     # get image data...
     imgData = frame0.getBufferByteData()
     

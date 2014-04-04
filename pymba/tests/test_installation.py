@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from pyvimba.vimba import *
+from pymba import Vimba
 
 def test_installation():
     vimba = Vimba()

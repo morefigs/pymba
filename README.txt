@@ -1,8 +1,8 @@
 =======
-pyvimba
+pymba
 =======
 
-pyvimba is a Python wrapper for the Allied Vision Technologies (AVT) Vimba C API. It wraps the VimbaC.dll file included in the AVT Vimba installation to provide a simple Python interface for AVT cameras. It currently supports most of the functionality provided by VimbaC.dll.
+pymba is a Python wrapper for the Allied Vision Technologies (AVT) Vimba C API. It wraps the VimbaC.dll file included in the AVT Vimba installation to provide a simple Python interface for AVT cameras. It currently supports most of the functionality provided by VimbaC.dll.
 
 Installation
 ============
@@ -11,7 +11,7 @@ Installation
 
 * Run the AVTDriverInstaller tool and install the AVT Vimba SDK drivers.
 
-* Install pyvimba.
+* Install pymba.
 
 Usage
 =====
@@ -19,7 +19,7 @@ Usage
 Testing installation
 --------------------
 
-If Vimba and pyvimba are installed correctly, then the following code should give the installed Vimba version. No camera is needed.
+If Vimba SDK and pymba are installed correctly, then the following code should give the installed Vimba version. No camera is needed.
 
 	from vimba import *
 	

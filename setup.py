@@ -1,10 +1,10 @@
 from setuptools import setup, find_packages
 import os, sys, glob, fnmatch
 
-setup(name="pyvimba",
+setup(name="pymba",
   version=0.1,
-  description="pyvimba is a Python wrapper for the Allied Vision Technologies (AVT) Vimba C API.",
-  long_description="""pyvimba is a Python wrapper for the Allied Vision Technologies (AVT) Vimba C API. It wraps the VimbaC.dll file included in the AVT Vimba installation to provide a simple Python interface for AVT cameras. It currently supports most of the functionality provided by VimbaC.dll.""",
+  description="pymba is a Python wrapper for the Allied Vision Technologies (AVT) Vimba C API.",
+  long_description="""pymba is a Python wrapper for the Allied Vision Technologies (AVT) Vimba C API. It wraps the VimbaC.dll file included in the AVT Vimba installation to provide a simple Python interface for AVT cameras. It currently supports most of the functionality provided by VimbaC.dll.""",
   classifiers=[
     'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',
@@ -22,7 +22,7 @@ setup(name="pyvimba",
   author_email='support@sightmachine.com',
   url='http://simplecv.org',
   license='BSD',
-  packages = ['pyvimba', 'pyvimba.tests'],
+  packages = ['pymba', 'pymba.tests'],
   zip_safe = False,
   requires=['cv2','cv', 'numpy', 'scipy', 'pygame', 'pil', 'svgwrite'],
 

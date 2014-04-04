@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from pyvimba.vimba import *
+from pymba import *
 import time
 
 def test_cameras():
