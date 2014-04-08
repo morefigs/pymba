@@ -1,27 +1,33 @@
-# pymba
+=======
+pymba
+=======
 
 pymba is a Python wrapper for the Allied Vision Technologies (AVT) Vimba C API. It wraps the VimbaC.dll file included in the AVT Vimba installation to provide a simple Python interface for AVT cameras. It currently supports most of the functionality provided by VimbaC.dll.
 
-## Installation
+Installation
+============
 
-Install the Vimba SDK from AVT to the default directory.
+* Install the Vimba SDK from AVT to the default directory.
 
-Run the AVTDriverInstaller tool and install the AVT Vimba SDK drivers.
+* Run the AVTDriverInstaller tool and install the AVT Vimba SDK drivers.
 
-Install pymba.
+* Install pymba.
 
-## Usage
+Usage
+=====
 
-### Testing installation 
+Testing installation
+--------------------
 
-If Vimba and pymba are installed correctly, then the following code should give the installed Vimba version. No camera is needed.
+If Vimba SDK and pymba are installed correctly, then the following code should give the installed Vimba version. No camera is needed.
 
 	from vimba import *
 	
 	vimba = Vimba()
 	print vimba.getVersion()
 	
-### Interacting with cameras
+Interacting with cameras
+------------------------
 
 Discover, open, manipulate, and capture frames from a camera.
     
@@ -93,7 +99,8 @@ Discover, open, manipulate, and capture frames from a camera.
     # shutdown Vimba
     vimba.shutdown()
 	
-### Interacting with the Vimba system
+Interacting with the Vimba system
+---------------------------------
     
 Get a reference to the Vimba system object and list available system features.
     
@@ -109,7 +116,8 @@ Get a reference to the Vimba system object and list available system features.
 	# shutdown Vimba
     vimba.shutdown()
 
-### Interacting with transport layer interfaces
+Interacting with transport layer interfaces
+-------------------------------------------
     
 Get a reference to an interface object and list available interface features.
     
@@ -132,7 +140,8 @@ Get a reference to an interface object and list available interface features.
     # close interface
     interface0.closeInterface()
 
-### Handling Vimba exceptions
+Handling Vimba exceptions
+-------------------------
 
 	from vimba import *
 
@@ -142,7 +151,8 @@ Get a reference to an interface object and list available interface features.
 	except VimbaException as e:
 		print e.message
 
-## Known issues
+Known issues
+============
 
 * Not all API functions are wrapped (most are). For full list see vimbadll.py.
 * Only 32-bit VimbaC.dll (version 1.2.1) under Windows has been tested.
