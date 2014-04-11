@@ -21,7 +21,6 @@ class VimbaFrame(object):
         # frame structure
         self._frame = structs.VimbaFrame()
         
-    
     def announceFrame(self):
         """
         Announce frames to the API that may be queued for frame capturing later.
@@ -43,24 +42,22 @@ class VimbaFrame(object):
         self._frame.bufferSize = sizeOfFrame
         
         errorCode = VimbaDLL.frameAnnounce(self._handle,
-										   byref(self._frame),
-										   sizeof(self._frame))
-             
+                                           byref(self._frame),
+                                           sizeof(self._frame))
+        
         if errorCode != 0:
             raise VimbaException(errorCode)
             
-    
     def revokeFrame(self):
         """
         Revoke a frame from the API.
         """
         errorCode = VimbaDLL.frameRevoke(self._handle,
-										 byref(self._frame))
+                                         byref(self._frame))
            
         if errorCode != 0:
             raise VimbaException(errorCode)
             
-
     def queueFrameCapture(self):
         """
         Queue frames that may be ﬁlled during frame capturing.
@@ -69,12 +66,11 @@ class VimbaFrame(object):
         Call after announceFrame and startCapture
         """
         errorCode = VimbaDLL.captureFrameQueue(self._handle,
-											   byref(self._frame),
-											   None)	# callback not implemented, callback example in pico?
+                                               byref(self._frame),
+                                               None)	# callback not implemented, callback example in pico?
         if errorCode != 0:
             raise VimbaException(errorCode)
-    
-    
+       
     def waitFrameCapture(self, timeout = 2000):
         """
         Wait for a queued frame to be ﬁlled (or dequeued).  Returns Errorcode
@@ -86,8 +82,8 @@ class VimbaFrame(object):
         Call after an acquisition command
         """
         errorCode = VimbaDLL.captureFrameWait(self._handle,
-											  byref(self._frame),
-											  timeout)
+                                              byref(self._frame),
+                                              timeout)
          
         # errorCode to be processed by the end user for this function.
         # Prevents system for breaking for example on a hardware trigger
@@ -113,9 +109,3 @@ class VimbaFrame(object):
         array = (c_ubyte * self.height * self.width).from_address(addressof(data.contents))
         
         return array
-  
-  
-  
-  
-  
-  
