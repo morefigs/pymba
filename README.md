@@ -99,14 +99,17 @@ Get a reference to the Vimba system object and list available system features.
     
     from vimba import *
     
+    vimba = Vimba()
+    vimba.startup()
+    
     # get system object
     system = vimba.getSystem()
-    
+
     # list system features
     for featureName in system.getFeatureNames():
         print 'System feature:', featureName
         
-	# shutdown Vimba
+    # shutdown Vimba
     vimba.shutdown()
 
 ### Interacting with transport layer interfaces
@@ -114,6 +117,9 @@ Get a reference to the Vimba system object and list available system features.
 Get a reference to an interface object and list available interface features.
     
     from vimba import *
+    
+    vimba = Vimba()
+    vimba.startup()
     
     # get list of available interfaces
     interfaceIds = vimba.getInterfaceIds()
