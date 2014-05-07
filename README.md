@@ -16,16 +16,16 @@ Install pymba.
 
 If Vimba and pymba are installed correctly, then the following code should give the installed Vimba version. No camera is needed.
 
-	from vimba import *
+    from pymba import *
 	
-	vimba = Vimba()
-	print vimba.getVersion()
+    vimba = Vimba()
+    print vimba.getVersion()
 	
 ### Interacting with cameras
 
 Discover, open, manipulate, and capture frames from a camera.
     
-    from vimba import *
+    from pymba import *
     import time
     
     # start Vimba
@@ -97,7 +97,7 @@ Discover, open, manipulate, and capture frames from a camera.
     
 Get a reference to the Vimba system object and list available system features.
     
-    from vimba import *
+    from pymba import *
     
     vimba = Vimba()
     vimba.startup()
@@ -116,7 +116,7 @@ Get a reference to the Vimba system object and list available system features.
     
 Get a reference to an interface object and list available interface features.
     
-    from vimba import *
+    from pymba import *
     
     vimba = Vimba()
     vimba.startup()
@@ -140,13 +140,15 @@ Get a reference to an interface object and list available interface features.
 
 ### Handling Vimba exceptions
 
-	from vimba import *
+    from pymba import *
 
-	try:
-		vimba = Vimba()
-		vimba.startup()
-	except VimbaException as e:
-		print e.message
+    vimba = Vimba()
+    try:
+        camera0 = vimba.getCamera(123)
+    except VimbaException as ve:
+        print ve.message
+    
+
 
 ## Known issues
 
