@@ -138,6 +138,10 @@ Get a reference to an interface object and list available interface features.
     # close interface
     interface0.closeInterface()
 
+    # shutdown Vimba
+    vimba.shutdown()
+
+
 ### Handling Vimba exceptions
 
     from pymba import *
@@ -153,7 +157,5 @@ Get a reference to an interface object and list available interface features.
 ## Known issues
 
 * Not all API functions are wrapped (most are). For full list see vimbadll.py.
-* Only 32-bit VimbaC.dll (version 1.2.1) under Windows has been tested.
-* Colour cameras and GigE cameras have not been tested.
-* The VimbaC.dll file location has been hardcoded in vimbadll.py. It should be easy to change if needed.
+* The path to VimbaC.dll has been hardcoded in vimbadll.py. It should be easy to change if needed.
 
