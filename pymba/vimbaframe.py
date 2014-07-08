@@ -5,6 +5,14 @@ from vimbadll import VimbaDLL
 from vimbadll import VimbaC_MemoryBlock
 from ctypes import *
 
+#map formats to bytes per pixel
+PIXEL_FORMATS = {
+    "Mono8": 1,
+    "Mono12": 2,
+    "Mono16": 2,
+}
+
+
 class VimbaFrame(object):
     """
     A Vimba frame.
@@ -12,15 +20,16 @@ class VimbaFrame(object):
     def __init__(self, camera):
         self._camera = camera
         self._handle = camera.handle
-        
+
         # get frame sizes
         self.payloadSize = self._camera.PayloadSize
         self.width = self._camera.Width
         self.height = self._camera.Height
-        
+        self.pixel_bytes = PIXEL_FORMATS[self._camera.PixelFormat]
+
         # frame structure
         self._frame = structs.VimbaFrame()
-        
+
     def announceFrame(self):
         """
         Announce frames to the API that may be queued for frame capturing later.
@@ -71,7 +80,7 @@ class VimbaFrame(object):
         if errorCode != 0:
             raise VimbaException(errorCode)
        
-    def waitFrameCapture(self, timeout = 2000):
+    def waitFrameCapture(self, timeout=2000):
         """
         Wait for a queued frame to be ﬁlled (or dequeued).  Returns Errorcode
         upon completion.
@@ -89,23 +98,23 @@ class VimbaFrame(object):
         # Prevents system for breaking for example on a hardware trigger
         # timeout
         #if errorCode != 0:
-            #raise VimbaException(errorCode)	
+            #raise VimbaException(errorCode)
         return errorCode
             
     # custom method for simplified usage
     def getBufferByteData(self):
         """
         Retrieve buffer data in a useful format.
-        
+
         :returns: array -- buffer data.
         """
-        
+
         # cast frame buffer memory contents to a usable type
         data = cast(self._frame.buffer,
                     POINTER(c_ubyte * self.payloadSize))
-        
-        # make array of c_ubytes from buffer     
-        
-        array = (c_ubyte * self.height * self.width).from_address(addressof(data.contents))
-        
+
+        # make array of c_ubytes from buffer
+        array = (c_ubyte * (self.height*self.pixel_bytes) *
+                (self.width*self.pixel_bytes)).from_address(addressof(data.contents))
+
         return array
