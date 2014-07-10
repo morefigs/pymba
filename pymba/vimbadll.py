@@ -17,11 +17,19 @@ if sys_plat == "win32":
 else:
     _cruntime = CDLL("libc.so.6")
     dll_loader = cdll
-    assert os.environ.get(
-        "GENICAM_GENTL64_PATH"), "you need your GENICAM_GENTL64_PATH environment set.  Make sure you have Vimba installed, and you have loaded the /etc/profile.d/ scripts"
-    vimba_dir = "/".join(os.environ.get("GENICAM_GENTL64_PATH").split("/")
-                         [1:-3])
-    vimbaC_path = "/" + vimba_dir + "/VimbaC/DynamicLib/x86_64bit/libVimbaC.so"
+    if '64' in platform.architecture()[0]:
+        assert os.environ.get(
+            "GENICAM_GENTL64_PATH"), "you need your GENICAM_GENTL64_PATH environment set.  Make sure you have Vimba installed, and you have loaded the /etc/profile.d/ scripts"
+        vimba_dir = "/".join(os.environ.get("GENICAM_GENTL64_PATH").split("/")
+                             [1:-3])
+        vimbaC_path = "/" + vimba_dir + "/VimbaC/DynamicLib/x86_64bit/libVimbaC.so"
+    else:
+        assert os.environ.get(
+            "GENICAM_GENTL32_PATH"), "you need your GENICAM_GENTL32_PATH environment set.  Make sure you have Vimba installed, and you have loaded the /etc/profile.d/ scripts"
+        vimba_dir = "/".join(os.environ.get("GENICAM_GENTL32_PATH").split("/")
+                             [1:-3])
+        vimbaC_path = "/" + vimba_dir + "/VimbaC/DynamicLib/x86_32bit/libVimbaC.so"
+    
 
 with open(vimbaC_path) as thefile:
     pass  # NJO i think this is kind of like an os.exists ?
