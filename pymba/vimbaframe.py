@@ -67,7 +67,7 @@ class VimbaFrame(object):
         """
         errorCode = VimbaDLL.captureFrameQueue(self._handle,
                                                byref(self._frame),
-                                               None)	# callback not implemented, callback example in pico?
+                                               None)    # callback not implemented, callback example in pico?
         if errorCode != 0:
             raise VimbaException(errorCode)
        
@@ -89,7 +89,7 @@ class VimbaFrame(object):
         # Prevents system for breaking for example on a hardware trigger
         # timeout
         #if errorCode != 0:
-            #raise VimbaException(errorCode)	
+            #raise VimbaException(errorCode)    
         return errorCode
             
     # custom method for simplified usage
@@ -107,5 +107,21 @@ class VimbaFrame(object):
         # make array of c_ubytes from buffer     
         
         array = (c_ubyte * self.height * self.width).from_address(addressof(data.contents))
+        
+        return array
+      # expanded version of getBufferByteData to use 16-bit depth
+    def getBufferIntData(self):
+          """
+        Retrieve buffer data in a useful format cast to 16-bit data
+        
+        :returns: array -- buffer data.
+        """
+        
+        # cast frame buffer memory contents to a usable type
+        data = cast(self._frame.buffer,
+                    POINTER(c_ushort * self.payloadSize))
+        
+        # make array of c_ubytes from buffer
+        array = (c_ushort * self.height * self.width).from_address(addressof(data.contents))
         
         return array
