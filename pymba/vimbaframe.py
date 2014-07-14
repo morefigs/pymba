@@ -101,27 +101,27 @@ class VimbaFrame(object):
         """
         
         # cast frame buffer memory contents to a usable type
-        data = cast(self._frame.buffer,
-                    POINTER(c_ubyte * self.payloadSize))
+        data = cast(self._frame.buffer, POINTER(c_ubyte * self.payloadSize))
         
         # make array of c_ubytes from buffer     
         
         array = (c_ubyte * self.height * self.width).from_address(addressof(data.contents))
         
         return array
-      # expanded version of getBufferByteData to use 16-bit depth
+        
+    # custom method for buffer as int usage
     def getBufferIntData(self):
-          """
-        Retrieve buffer data in a useful format cast to 16-bit data
+        """
+        Retrieve buffer data in a useful format.
         
         :returns: array -- buffer data.
         """
         
         # cast frame buffer memory contents to a usable type
-        data = cast(self._frame.buffer,
-                    POINTER(c_ushort * self.payloadSize))
+        data = cast(self._frame.buffer, POINTER(c_ushort * self.payloadSize))
         
-        # make array of c_ubytes from buffer
+        # make array of c_ubytes from buffer     
+        
         array = (c_ushort * self.height * self.width).from_address(addressof(data.contents))
         
         return array
