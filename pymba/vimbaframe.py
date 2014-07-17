@@ -92,7 +92,7 @@ class VimbaFrame(object):
             #raise VimbaException(errorCode)    
         return errorCode
             
-    # custom method for simplified usage
+    # custom method for buffer access as unint8 data
     def getBufferByteData(self):
         """
         Retrieve buffer data in a useful format.
@@ -109,7 +109,7 @@ class VimbaFrame(object):
         
         return array
         
-    # custom method for buffer as int usage
+    # custom method for buffer access as uint16 data
     def getBufferIntData(self):
         """
         Retrieve buffer data in a useful format.
