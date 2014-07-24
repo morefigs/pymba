@@ -105,7 +105,7 @@ class VimbaFrame(object):
                     POINTER(c_ubyte * self.payloadSize))
         
         # make array of c_ubytes from buffer     
-        
         array = (c_ubyte * self.height * self.width).from_address(addressof(data.contents))
+        # ^ TODO for RGB try array = (c_ubyte * self.height * self.width * 3).from_address(addressof(data.contents))
         
         return array
