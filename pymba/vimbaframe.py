@@ -5,12 +5,14 @@ from vimbadll import VimbaDLL
 from vimbadll import VimbaC_MemoryBlock
 from ctypes import *
 
-#map formats to bytes per pixel.  TODO: packed formats? color?
+#map pixel formats to bytes per pixel.  TODO: packed mono formats?
 PIXEL_FORMATS = {
     "Mono8": 1,
     "Mono12": 2,
     "Mono14": 2,
     "Mono16": 2,
+    "RGB8Packed": 3,
+    "BGR8Packed": 3,
 }
 
 
