@@ -173,7 +173,7 @@ class Vimba(object):
 
         :param interfaceId: the ID of the interface.
 
-        :returns: VimbaInterface object -- the interface object specified.		
+        :returns: VimbaInterface object -- the interface object specified.
         """
         # check ID is valid
         if interfaceId in self.getInterfaceIds():
@@ -190,7 +190,7 @@ class Vimba(object):
 
         :param cameraId: the ID of the camera.
 
-        :returns: VimbaCamera object -- the camera object specified.		
+        :returns: VimbaCamera object -- the camera object specified.
         """
         # check ID is valid
         if cameraId in self.getCameraIds():

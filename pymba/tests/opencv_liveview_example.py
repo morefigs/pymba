@@ -37,6 +37,9 @@ except:
     #not a gigE camera
     pass
 
+#set pixel format
+c0.PixelFormat="Mono8"
+
 frame = c0.getFrame()
 frame.announceFrame()
 
@@ -46,7 +49,6 @@ framecount = 0
 droppedframes = []
 
 while 1:
-    print framecount
     try:
         frame.queueFrameCapture()
         success = True
@@ -56,8 +58,9 @@ while 1:
     c0.runFeatureCommand("AcquisitionStart")
     c0.runFeatureCommand("AcquisitionStop")
     frame.waitFrameCapture(100)
+    frame_data = frame.getBufferByteData()
     if success:
-        img = np.ndarray(buffer=frame.getBufferByteData(),
+        img = np.ndarray(buffer=frame_data,
                          dtype=np.uint8,
                          shape=(frame.height,frame.width,1))
         cv2.imshow("test",img)
