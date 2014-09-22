@@ -25,5 +25,4 @@ setup(name="pymba",
       packages=['pymba', 'pymba.tests'],
       zip_safe=False,
       requires=['cv2', 'cv', 'numpy', 'scipy', 'pygame', 'pil', 'svgwrite'],
-
 )
