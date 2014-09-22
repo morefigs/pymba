@@ -5,23 +5,26 @@ from vimbadll import VimbaDLL
 from vimbadll import VimbaC_MemoryBlock
 from ctypes import *
 
-#map pixel formats to bytes per pixel.
+"""
+Map pixel formats to bytes per pixel.
+    The packed formats marked with "?" have not been tested.
+"""
 PIXEL_FORMATS = {
     "Mono8": 1,
     "Mono12": 2,
-    "Mono12Packed": 1.5,
+    "Mono12Packed": 1.5,  # ?
     "Mono14": 2,
     "Mono16": 2,
     "RGB8Packed": 3,
     "BGR8Packed": 3,
     "RGBA8Packed": 4,
     "BGRA8Packed": 4,
-    "YUV411Packed": 4/3.0,
+    "YUV411Packed": 4/3.0,  # ?
     "YUV422Packed": 2,
     "YUV444Packed": 3,
     "BayerRG8": 1,
     "BayerRG12": 2,
-    "BayerGR12Packed": 1.5,
+    "BayerGR12Packed": 1.5,  # ?
 }
 
 
