@@ -90,7 +90,7 @@ class Vimba(object):
                                              0,
                                              byref(numFound),
                                              sizeof(dummyCameraInfo))
-            if errorCode != 0:
+            if errorCode != 0 and errorCode != -9:
                 print errorCode
                 raise VimbaException(errorCode)
 
