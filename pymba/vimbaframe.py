@@ -82,16 +82,18 @@ class VimbaFrame(object):
         if errorCode != 0:
             raise VimbaException(errorCode)
 
-    def queueFrameCapture(self):
+    def queueFrameCapture(self, callback):
         """
         Queue frames that may be ﬁlled during frame capturing.
         Runs VmbCaptureFrameQueue
 
         Call after announceFrame and startCapture
+
+        Callback must take two arguments, a camera handle and frame pointer
         """
         errorCode = VimbaDLL.captureFrameQueue(self._handle,
                                                byref(self._frame),
-                                               None)  # callback not implemented, callback example in pico?
+                                               callback)  # callback not implemented, callback example in pico?
         if errorCode != 0:
             raise VimbaException(errorCode)
 
