@@ -88,6 +88,8 @@ class VimbaFrame(object):
         Runs VmbCaptureFrameQueue
 
         Call after announceFrame and startCapture
+
+        Callback must take two arguments, a camera handle and frame pointer
         """
         errorCode = VimbaDLL.captureFrameQueue(self._handle,
                                                byref(self._frame),
