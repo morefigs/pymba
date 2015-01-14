@@ -30,7 +30,7 @@ with open(vimbaC_path) as thefile:
 class VimbaDLL(object):
 
     """
-    ctypes directives to make the wrapper class work cleanly, 
+    ctypes directives to make the wrapper class work cleanly,
     talks to VimbaC.dll
     """
     # a full list of Vimba API methods
@@ -300,6 +300,13 @@ class VimbaDLL(object):
                               # pointer to frame
                               POINTER(structs.VimbaFrame),
                               c_uint32)                                # size of frame
+
+    # callback for frame queue
+    frameDoneCallback = _vimbaDLL.VMB_CALL
+    frameDoneCallback.restype = None
+    frameDoneCallback.argtypes = (c_void_p,
+                                  c_star_p,
+                                  c_void_p)
 
     # revoke a frame from the API
     frameRevoke = _vimbaDLL.VmbFrameRevoke
