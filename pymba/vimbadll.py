@@ -302,11 +302,8 @@ class VimbaDLL(object):
                               c_uint32)                                # size of frame
 
     # callback for frame queue
-    frameDoneCallback = _vimbaDLL.VMB_CALL
-    frameDoneCallback.restype = None
-    frameDoneCallback.argtypes = (c_void_p,
-                                  c_star_p,
-                                  c_void_p)
+    frameDoneCallback = CFUNCTYPE(c_void_p,                         # camera handle
+                                  POINTER(structs.VimbaFrame))      # pointer to frame
 
     # revoke a frame from the API
     frameRevoke = _vimbaDLL.VmbFrameRevoke
