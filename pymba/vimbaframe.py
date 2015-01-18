@@ -91,7 +91,7 @@ class VimbaFrame(object):
         """
         errorCode = VimbaDLL.captureFrameQueue(self._handle,
                                                byref(self._frame),
-                                               None)  # callback not implemented, callback example in pico?
+                                               None)  # callback not implemented
         if errorCode != 0:
             raise VimbaException(errorCode)
 
