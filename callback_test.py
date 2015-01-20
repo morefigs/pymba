@@ -1,5 +1,5 @@
 from pymba import *
-import time
+import time, Queue
 import numpy as np
 
 # start Vimba
@@ -20,54 +20,56 @@ camera0 = vimba.getCamera(cameraIds[0])
 camera0.openCamera()
 
 # set the value of a feature
-camera0.AcquisitionMode = 'SingleFrame'
+camera0.AcquisitionMode = 'Continuous'
+camera0.BinningHorizontal = camera0.BinningVertical = 4
+camera0.ExposureTimeAbs = 5000
+fr = camera0.AcquisitionFrameRateAbs = camera0.AcquisitionFrameRateLimit
+
+# get ready to capture
+T = 10.0
+camera0.startCapture()
+
+# define a callback
+frame_q = Queue.Queue()
+
+def mycb(frame):
+    img = np.ndarray(buffer=frame.getBufferByteData(),
+                     dtype=np.uint8,
+                     shape=(frame.height, frame.width))
+    frame_q.put(img)
+    frame.queueFrameCapture(mycb)
 
 # create new frames for the camera
-frame0 = camera0.getFrame()    # creates a frame
+frames = [camera0.getFrame() for _ in xrange(5)]
+for frame in frames:
+    frame.announceFrame()
+    frame.queueFrameCapture(frameCallback=mycb)
 
-# announce frame
-frame0.announceFrame()
+try:
+    print "starting"
+    camera0.runFeatureCommand('AcquisitionStart')
+    time.sleep(T)
+    camera0.runFeatureCommand('AcquisitionStop')
+    print "done"
+    time.sleep(0.5)
 
-from Queue import Queue
-out_frames = Queue()
+    # clean up after capture
+    camera0.endCapture()
+    camera0.revokeAllFrames()
 
-def mycb(frame_ptr):
-    frame = np.ndarray(buffer=frame0.getBufferByteData(),
-                       dtype=np.uint8,
-                       shape=(frame0.height, frame0.width))
-    out_frames.put(frame)
+except Exception as e:
+    raise e
 
-from pymba.vimbadll import VimbaDLL
-frame_callback = VimbaDLL.frameDoneCallback(mycb)
+finally:
+    # close camera
+    camera0.closeCamera()
 
-# capture a camera image
-camera0.startCapture()
-frame0.queueFrameCapture(callback=frame_callback)
-camera0.runFeatureCommand('AcquisitionStart')
-camera0.runFeatureCommand('AcquisitionStop')
-frame0.waitFrameCapture()
+    # shutdown Vimba
+    vimba.shutdown()
 
-# get image data...
-imgData = frame0.getBufferByteData()
-
-# ...or use NumPy for fast image display (for use with OpenCV, etc)
-import numpy as np
-moreUsefulImgData = np.ndarray(buffer = frame0.getBufferByteData(),
-                               dtype = np.uint8,
-                               shape = (frame0.height,
-                                        frame0.width,
-                                        1))
-
-# clean up after capture
-camera0.endCapture()
-camera0.revokeAllFrames()
-
-# close camera
-camera0.closeCamera()
-
-# shutdown Vimba
-vimba.shutdown()
+print "target frame rate: %2.2ffps" % fr
+print "achieved frame rate: %2.2ffps" % (frame_q.qsize() / T, )
 
 import matplotlib.pyplot as plt
-plt.imshow(out_frames.get(), cmap='hot')
+plt.imshow(frame_q.get())
 plt.show()

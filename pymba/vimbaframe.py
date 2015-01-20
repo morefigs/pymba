@@ -97,7 +97,7 @@ class VimbaFrame(object):
         self._frameCallback = frameCallback
 
         # define a callback wrapper here so it doesn't bind self
-        def frameCallbackWrapper(_handle, p_frame):
+        def frameCallbackWrapper(p_frame):
             # now we can call the user's callback with a bound self
             # we can ignore the frame pointer since we already know the callback
             # refers to this frame.
