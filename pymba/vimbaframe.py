@@ -90,17 +90,17 @@ class VimbaFrame(object):
         Call after announceFrame and startCapture
 
         Callback must accept argument of type frame. Remember to requeue the
-        frame by calling frame.queueFrameCapture(callback) at the end of your
-        callback function if you are capturing continuously.
+        frame by calling frame.queueFrameCapture(frameCallback) at the end of
+        your callback function.
         """
         # remember the given callback function
         self._frameCallback = frameCallback
 
         # define a callback wrapper here so it doesn't bind self
         def frameCallbackWrapper(p_frame):
-            # now we can call the user's callback with a bound self
-            # we can ignore the frame pointer since we already know the callback
-            # refers to this frame.
+            # call the user's callback with the self bound outside the wrapper
+            # ignore the frame pointer since we already know the callback
+            # refers to this frame
             self._frameCallback(self)
 
         if self._frameCallback is None:
