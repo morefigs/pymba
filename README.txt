@@ -21,7 +21,7 @@ Testing installation
 
 If Vimba SDK and pymba are installed correctly, then the following code should give the installed Vimba version. No camera is needed.
 
-	from vimba import *
+	from pymba import *
 	
 	with Vimba() as vimba:
 	    print vimba.getVersion()
@@ -31,7 +31,7 @@ Interacting with cameras
 
 Discover, open, manipulate, and capture frames from a camera.
     
-    from vimba import *
+    from pymba import *
     import time
     
     # start Vimba
@@ -98,7 +98,7 @@ Interacting with the Vimba system
     
 Get a reference to the Vimba system object and list available system features.
     
-    from vimba import *
+    from pymba import *
     
     with Vimba() as vimba:
         # get system object
@@ -114,7 +114,7 @@ Interacting with transport layer interfaces
     
 Get a reference to an interface object and list available interface features.
     
-    from vimba import *
+    from pymba import *
     
     with Vimba() as vimba:
         # get list of available interfaces
@@ -137,7 +137,7 @@ Get a reference to an interface object and list available interface features.
 Handling Vimba exceptions
 -------------------------
 
-	from vimba import *
+	from pymba import *
 
 	try:
 	    with Vimba() as vimba:
