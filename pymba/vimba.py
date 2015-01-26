@@ -35,6 +35,27 @@ class Vimba(object):
         # forget them
         self._interfaces = {}
 
+    def __enter__(self):
+        """
+        Define vimba context for safe execution.
+        
+        The vimba object should be used like this:
+            # start Vimba
+            with Vimba() as vimba:
+                system = vimba.getSystem()
+                # ...
+        """
+        self.startup()
+        return self
+
+    def __exit__(self, type, value, traceback):
+        """
+        Shutdown Vimba when the with context is left. This allows cleanup
+        when an error occurs in the main program. The system will not hang
+        on a kernel call after an exception.
+        """
+        self.shutdown()
+
     def _getInterfaceInfos(self):
         """
         Gets interface info of all available interfaces.
