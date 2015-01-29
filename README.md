@@ -14,13 +14,24 @@ Install pymba.
 
 ### Testing installation 
 
-If Vimba and pymba are installed correctly, then the following code should give the installed Vimba version. No camera is needed.
+If Vimba and pymba are installed correctly, then the following code examples should give the installed Vimba version. No camera is needed.
+
+Checking the version using a context manager:
 
     from pymba import *
     
     with Vimba() as vimba:
         print vimba.getVersion()
 	
+Or without using a context manager:
+
+    from pymba import *
+    
+    vimba = Vimba()
+    vimba.startup()
+    print vimba.getVersion()
+    vimba.shutdown()
+
 ### Interacting with cameras
 
 Discover, open, manipulate, and capture frames from a camera.
