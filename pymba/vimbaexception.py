@@ -58,3 +58,5 @@ class VimbaException(Exception):
             self._errorCode = errorCode
         else:
             self._errorCode = -1000
+
+        super(VimbaException, self).__init__(self.message)
