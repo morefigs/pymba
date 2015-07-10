@@ -22,6 +22,8 @@ PIXEL_FORMATS = {
     "YUV411Packed": 4/3.0,  # ?
     "YUV422Packed": 2,
     "YUV444Packed": 3,
+    "BayerRG8": 1,
+    "BayerRG12": 2,
     "BayerGR8": 1,
     "BayerGR12": 2,
     "BayerGR12Packed": 1.5,  # ?
