@@ -12,6 +12,8 @@ if sys_plat == "win32":
         """ Finds the highest versioned windows dll for the specified architecture. """
         base = r'C:\Program Files\Allied Vision Technologies\AVTVimba_1.%i\VimbaC\Bin\Win%i\VimbaC.dll'
         dlls = [base % (i, arch) for i in range(10) if os.path.isfile(base % (i, arch)) ]
+        if not dlls:
+            raise IOError("VimbaC.dll not found.")
         return dlls[-1]
 
     from ctypes.util import find_msvcrt
