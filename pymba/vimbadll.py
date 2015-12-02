@@ -7,12 +7,19 @@ import os
 from ctypes import *
 
 if sys_plat == "win32":
+
+    def find_win_dll(arch):
+        """ Finds the highest versioned windows dll for the specified architecture. """
+        base = r'C:\Program Files\Allied Vision Technologies\AVTVimba_1.%i\VimbaC\Bin\Win%i\VimbaC.dll'
+        dlls = [base % (i, arch) for i in range(10) if os.path.isfile(base % (i, arch)) ]
+        return dlls[-1]
+
     from ctypes.util import find_msvcrt
     _cruntime = cdll.LoadLibrary(find_msvcrt())
     if '64' in platform.architecture()[0]:
-        vimbaC_path = r'C:\Program Files\Allied Vision Technologies\AVTVimba_1.3\VimbaC\Bin\Win64\VimbaC.dll'
+        vimbaC_path = find_win_dll(64)
     else:
-        vimbaC_path = r'C:\Program Files\Allied Vision Technologies\AVTVimba_1.3\VimbaC\Bin\Win32\VimbaC.dll'
+        vimbaC_path = find_win_dll(32)
     dll_loader = windll
 else:
     _cruntime = CDLL("libc.so.6")
