@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import exceptions
 
 
 class VimbaException(Exception):
