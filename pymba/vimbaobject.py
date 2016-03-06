@@ -74,7 +74,7 @@ class VimbaObject(object):
             # Vimba DLL will return an error code
             errorCode = VimbaDLL.featuresList(self._handle,
                                               byref(dummyFeatureInfo),
-                                              0,
+                                              999,
                                               byref(numFound),
                                               sizeof(dummyFeatureInfo))
             if errorCode != 0:
