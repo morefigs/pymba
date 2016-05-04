@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
-import vimbastructure as structs
-from vimbaexception import VimbaException
+from __future__ import absolute_import
+
 from sys import platform as sys_plat
 import platform
 import os
 from ctypes import *
+
+import pymba.vimbastructure as structs
+from .vimbaexception import VimbaException
 
 if sys_plat == "win32":
 
@@ -25,24 +28,19 @@ if sys_plat == "win32":
             raise IOError("VimbaC.dll not found.")
         return dlls[-1]
 
-    from ctypes.util import find_msvcrt
-    _cruntime = cdll.LoadLibrary(find_msvcrt())
     if '64' in platform.architecture()[0]:
         vimbaC_path = find_win_dll(64)
     else:
         vimbaC_path = find_win_dll(32)
     dll_loader = windll
 else:
-    _cruntime = CDLL("libc.so.6")
+
     dll_loader = cdll
     assert os.environ.get(
         "GENICAM_GENTL64_PATH"), "you need your GENICAM_GENTL64_PATH environment set.  Make sure you have Vimba installed, and you have loaded the /etc/profile.d/ scripts"
     vimba_dir = "/".join(os.environ.get("GENICAM_GENTL64_PATH").split("/")
                          [1:-3])
     vimbaC_path = "/" + vimba_dir + "/VimbaC/DynamicLib/x86_64bit/libVimbaC.so"
-
-with open(vimbaC_path) as thefile:
-    pass  # NJO i think this is kind of like an os.exists ?
 
 
 class VimbaDLL(object):
@@ -420,29 +418,16 @@ class VimbaC_MemoryBlock(object):
     neatly with C memory allocations.
     """
 
-    # C runtime DLL
-    _crtDLL = _cruntime
-
     @property
     def block(self):
-        return self._block
+        return c_void_p(addressof(self._block))
 
     def __init__(self, blockSize):
-
-        # assign memory block
-        malloc = self._crtDLL.malloc
-        malloc.argtypes = (c_size_t,)
-        malloc.restype = c_void_p
-        self._block = malloc(blockSize)        # todo check for NULL on failure
+        self._block = create_string_buffer(blockSize)
 
         # this seems to be None if too much memory is requested
         if self._block is None:
             raise VimbaException(-51)
 
     def __del__(self):
-
-        # free memory block
-        free = self._crtDLL.free
-        free.argtypes = (c_void_p,)
-        free.restype = None
-        free(self._block)
+        del self._block

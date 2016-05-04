@@ -5,6 +5,7 @@ Created on Mon Jul 07 14:59:03 2014
 @author: derricw
 """
 
+from __future__ import absolute_import, print_function, division
 from pymba import *
 import numpy as np
 import cv2
@@ -21,15 +22,15 @@ with Vimba() as vimba:
     camera_ids = vimba.getCameraIds()
 
     for cam_id in camera_ids:
-        print "Camera found: ", cam_id
+        print("Camera found: ", cam_id)
         
     c0 = vimba.getCamera(camera_ids[0])
     c0.openCamera()
 
     try:
         #gigE camera
-        print c0.GevSCPSPacketSize
-        print c0.StreamBytesPerSecond
+        print(c0.GevSCPSPacketSize)
+        print(c0.StreamBytesPerSecond)
         c0.StreamBytesPerSecond = 100000000
     except:
         #not a gigE camera
@@ -67,8 +68,8 @@ with Vimba() as vimba:
         k = cv2.waitKey(1)
         if k == 0x1b:
             cv2.destroyAllWindows()
-            print "Frames displayed: %i"%framecount
-            print "Frames dropped: %s"%droppedframes
+            print("Frames displayed: %i"%framecount)
+            print("Frames dropped: %s"%droppedframes)
             break
 
 

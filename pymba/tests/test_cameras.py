@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+from __future__ import absolute_import, print_function, division
 from pymba import *
 import time
 
@@ -14,9 +14,10 @@ def test_cameras():
         if system.GeVTLIsPresent:
             system.runFeatureCommand("GeVDiscoveryAllOnce")
             time.sleep(0.2)
+
         cameraIds = vimba.getCameraIds()
         for cameraId in cameraIds:
-            print 'Camera ID:', cameraId
+            print('Camera ID:', cameraId)
 
         # get and open a camera
         camera0 = vimba.getCamera(cameraIds[0])
@@ -25,10 +26,10 @@ def test_cameras():
         # list camera features
         cameraFeatureNames = camera0.getFeatureNames()
         for name in cameraFeatureNames:
-            print 'Camera feature:', name
+            print('Camera feature:', name)
 
         # get the value of a feature
-        print camera0.AcquisitionMode
+        print(camera0.AcquisitionMode)
 
         # set the value of a feature
         camera0.AcquisitionMode = 'SingleFrame'
@@ -65,3 +66,7 @@ def test_cameras():
 
         # close camera
         camera0.closeCamera()
+
+
+if __name__ == '__main__':
+    test_cameras()

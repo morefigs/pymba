@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-import vimbastructure as structs
-from vimbaexception import VimbaException
-from vimbafeature import VimbaFeature
-from vimbadll import VimbaDLL
+from __future__ import absolute_import
+import pymba.vimbastructure as structs
+from .vimbaexception import VimbaException
+from .vimbafeature import VimbaFeature
+from .vimbadll import VimbaDLL
 from ctypes import *
 
 
@@ -106,7 +107,7 @@ class VimbaObject(object):
 
         :returns: list -- feature names for available features.
         """
-        return list(featInfo.name for featInfo in self._getFeatureInfos())
+        return list(featInfo.name.decode() for featInfo in self._getFeatureInfos())
 
     def getFeatureInfo(self, featureName):
         """
@@ -119,7 +120,7 @@ class VimbaObject(object):
         # don't do this live as we already have this info
         # return info object, if it exists
         for featInfo in self._getFeatureInfos():
-            if featInfo.name == featureName:
+            if featInfo.name.decode() == featureName:
                 return featInfo
         # otherwise raise error
         raise VimbaException(-53)
@@ -136,7 +137,7 @@ class VimbaObject(object):
         :returns: tuple -- range as (feature min value, feature max value).
         """
         # can't cache this, need to look it up live
-        return VimbaFeature(featureName, self._handle).range
+        return VimbaFeature(featureName.encode(), self._handle).range
 
     def runFeatureCommand(self, featureName):
         """
@@ -146,7 +147,7 @@ class VimbaObject(object):
         """
         # run a command
         errorCode = VimbaDLL.featureCommandRun(self._handle,
-                                               featureName)
+                                               featureName.encode())
         if errorCode != 0:
             raise VimbaException(errorCode)
 

@@ -1,3 +1,4 @@
+from __future__ import absolute_import, print_function, division
 from pymba import *
 import numpy as np
 import cv2
@@ -16,7 +17,7 @@ with Vimba() as vimba:
         time.sleep(0.2)
     cameraIds = vimba.getCameraIds()
     for cameraId in cameraIds:
-        print 'Camera ID:', cameraId
+        print('Camera ID:', cameraId)
 
     # get and open a camera
     camera0 = vimba.getCamera(cameraIds[0])
@@ -25,7 +26,7 @@ with Vimba() as vimba:
     # list camera features
     cameraFeatureNames = camera0.getFeatureNames()
     for name in cameraFeatureNames:
-        print 'Camera feature:', name
+        print('Camera feature:', name)
 
     # read info of a camera feature
     #featureInfo = camera0.getFeatureInfo('AcquisitionMode')
@@ -33,7 +34,7 @@ with Vimba() as vimba:
     #    print field, '--', getattr(featInfo, field)
 
     # get the value of a feature
-    print camera0.AcquisitionMode
+    print(camera0.AcquisitionMode)
 
     # set the value of a feature
     camera0.AcquisitionMode = 'SingleFrame'
@@ -64,7 +65,7 @@ with Vimba() as vimba:
                                                 1))
         rgb = cv2.cvtColor(moreUsefulImgData, cv2.COLOR_BAYER_RG2RGB)
         cv2.imwrite('foo{}.png'.format(count), rgb)
-        print "image {} saved".format(count)
+        print("image {} saved".format(count))
         count += 1
         camera0.endCapture()
     # clean up after capture

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-import vimbastructure as structs
-from vimbadll import VimbaDLL
-from vimbaexception import VimbaException
-from vimbasystem import VimbaSystem
-from vimbacamera import VimbaCamera
-from vimbainterface import VimbaInterface
+from __future__ import absolute_import
+import pymba.vimbastructure as structs
+from .vimbadll import VimbaDLL
+from .vimbaexception import VimbaException
+from .vimbasystem import VimbaSystem
+from .vimbacamera import VimbaCamera
+from .vimbainterface import VimbaInterface
 from ctypes import *
 
 
@@ -74,7 +75,6 @@ class Vimba(object):
                                                 byref(numFound),
                                                 sizeof(dummyInterfaceInfo))
             if errorCode != 0:
-                print errorCode
                 raise VimbaException(errorCode)
 
             numInterfaces = numFound.value
@@ -112,7 +112,6 @@ class Vimba(object):
                                              byref(numFound),
                                              sizeof(dummyCameraInfo))
             if errorCode != 0 and errorCode != -9:
-                print errorCode
                 raise VimbaException(errorCode)
 
             numCameras = numFound.value
@@ -153,7 +152,7 @@ class Vimba(object):
 
         :returns: list -- camera IDs for available cameras.
         """
-        return list(camInfo.cameraIdString for camInfo in self._getCameraInfos())
+        return list(camInfo.cameraIdString.decode() for camInfo in self._getCameraInfos())
 
     def getInterfaceInfo(self, interfaceId):
         """
