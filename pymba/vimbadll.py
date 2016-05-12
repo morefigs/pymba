@@ -45,10 +45,18 @@ with open(vimbaC_path) as thefile:
     pass  # NJO i think this is kind of like an os.exists ?
 
 
+# Callback Function Type
+if sys_plat == "win32":
+    CB_FUNCTYPE = WINFUNCTYPE
+else:
+    # Untested!
+    CB_FUNCTYPE = CFUNCTYPE
+
+
 class VimbaDLL(object):
 
     """
-    ctypes directives to make the wrapper class work cleanly, 
+    ctypes directives to make the wrapper class work cleanly,
     talks to VimbaC.dll
     """
     # a full list of Vimba API methods
@@ -320,8 +328,9 @@ class VimbaDLL(object):
                               c_uint32)                                # size of frame
 
     # callback for frame queue
-    frameDoneCallback = CFUNCTYPE(c_void_p,                         # camera handle
-                                  POINTER(structs.VimbaFrame))      # pointer to frame
+    frameDoneCallback = CB_FUNCTYPE(c_void_p,                     # Return Type
+                                    c_void_p,                     # Camera Hanlde
+                                    POINTER(structs.VimbaFrame))  # Pointer to frame
 
     # revoke a frame from the API
     frameRevoke = _vimbaDLL.VmbFrameRevoke
