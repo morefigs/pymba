@@ -24,7 +24,6 @@ class Vimba(object):
 
         # lists of VimbaCameraInfo and VimbaInterfaceInfo objects
         # can't be called before startup() so populate later
-        self._cameraInfos = None
         self._interfaceInfos = None
 
         # dict of {camera ID : VimbaCamera object} as we don't want to forget
@@ -38,7 +37,7 @@ class Vimba(object):
     def __enter__(self):
         """
         Define vimba context for safe execution.
-        
+
         The vimba object should be used like this:
             # start Vimba
             with Vimba() as vimba:
@@ -100,36 +99,33 @@ class Vimba(object):
 
         :returns: list -- camera info for available cameras.
         """
-        if self._cameraInfos is None:
-            # args
-            dummyCameraInfo = structs.VimbaCameraInfo()
-            numFound = c_uint32(-1)
+        # args
+        dummyCameraInfo = structs.VimbaCameraInfo()
+        numFound = c_uint32(-1)
 
-            # call once just to get the number of cameras
-            # Vimba DLL will return an error code
-            errorCode = VimbaDLL.camerasList(byref(dummyCameraInfo),
-                                             0,
-                                             byref(numFound),
-                                             sizeof(dummyCameraInfo))
-            if errorCode != 0 and errorCode != -9:
-                print errorCode
-                raise VimbaException(errorCode)
+        # call once just to get the number of cameras
+        # Vimba DLL will return an error code
+        errorCode = VimbaDLL.camerasList(byref(dummyCameraInfo),
+                                         0,
+                                         byref(numFound),
+                                         sizeof(dummyCameraInfo))
+        if errorCode != 0 and errorCode != -9:
+            raise VimbaException(errorCode)
 
-            numCameras = numFound.value
+        numCameras = numFound.value
 
-            # args
-            cameraInfoArray = (structs.VimbaCameraInfo * numCameras)()
+        # args
+        cameraInfoArray = (structs.VimbaCameraInfo * numCameras)()
 
-            # call again to get the features
-            # Vimba DLL will return an error code
-            errorCode = VimbaDLL.camerasList(cameraInfoArray,
-                                             numCameras,
-                                             byref(numFound),
-                                             sizeof(dummyCameraInfo))
-            if errorCode != 0:
-                raise VimbaException(errorCode)
-            self._cameraInfos = list(camInfo for camInfo in cameraInfoArray)
-        return self._cameraInfos
+        # call again to get the features
+        # Vimba DLL will return an error code
+        errorCode = VimbaDLL.camerasList(cameraInfoArray,
+                                         numCameras,
+                                         byref(numFound),
+                                         sizeof(dummyCameraInfo))
+        if errorCode != 0:
+            raise VimbaException(errorCode)
+        return list(camInfo for camInfo in cameraInfoArray)
 
     def getSystem(self):
         """
