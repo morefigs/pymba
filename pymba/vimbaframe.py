@@ -4,6 +4,7 @@ from vimbaexception import VimbaException
 from vimbadll import VimbaDLL
 from vimbadll import VimbaC_MemoryBlock
 from ctypes import *
+import numpy as np
 
 """
 Map pixel formats to bytes per pixel.
@@ -90,11 +91,11 @@ class VimbaFrame(object):
         Runs VmbCaptureFrameQueue
 
         Call after announceFrame and startCapture
-        
+
         Callback must accept argument of type frame. Remember to requeue the
         frame by calling frame.queueFrameCapture(frameCallback) at the end of
         your callback function.
-        """		         
+        """
         # remember the given callback function
         self._frameCallback = frameCallback
 
@@ -157,3 +158,9 @@ class VimbaFrame(object):
                                                                 data.contents))
 
         return array
+
+    def getImage(self):
+        cframe = self._frame
+        data = cast(cframe.buffer, POINTER(c_ubyte * cframe.imageSize))
+        return np.ndarray(buffer=data.contents, dtype=np.uint8, shape=(cframe.height, cframe.width))
+
