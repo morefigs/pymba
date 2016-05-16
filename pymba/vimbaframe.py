@@ -4,7 +4,11 @@ from vimbaexception import VimbaException
 from vimbadll import VimbaDLL
 from vimbadll import VimbaC_MemoryBlock
 from ctypes import *
-import numpy as np
+try:
+    import numpy as np
+except ImportError:
+    print('warning: numpy not found, some VimbaFrame methods will not be available')
+
 
 """
 Map pixel formats to bytes per pixel.
@@ -162,5 +166,8 @@ class VimbaFrame(object):
     def getImage(self):
         cframe = self._frame
         data = cast(cframe.buffer, POINTER(c_ubyte * cframe.imageSize))
-        return np.ndarray(buffer=data.contents, dtype=np.uint8, shape=(cframe.height, cframe.width))
-
+        try:
+            return np.ndarray(buffer=data.contents, dtype=np.uint8, shape=(cframe.height, cframe.width))
+        except NameError as e:
+            print('install numpy to use this method or use getBufferByteData instead')
+            raise e
