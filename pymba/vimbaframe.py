@@ -4,10 +4,11 @@ from vimbaexception import VimbaException
 from vimbadll import VimbaDLL
 from vimbadll import VimbaC_MemoryBlock
 from ctypes import *
+import warnings
 try:
     import numpy as np
 except ImportError:
-    print('warning: numpy not found, some VimbaFrame methods will not be available')
+    warnings.warn('numpy not found, some VimbaFrame methods will not be available')
 
 
 """
