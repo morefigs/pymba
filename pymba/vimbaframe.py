@@ -105,7 +105,7 @@ class VimbaFrame(object):
         self._frameCallback = frameCallback
 
         # define a callback wrapper here so it doesn't bind self
-        def frameCallbackWrapper(p_frame):
+        def frameCallbackWrapper(cam_handle, p_frame):
             # call the user's callback with the self bound outside the wrapper
             # ignore the frame pointer since we already know the callback
             # refers to this frame
@@ -115,8 +115,7 @@ class VimbaFrame(object):
             self._frameCallbackWrapper_C = None
         else:
             # keep a reference to prevent gc issues
-            self._frameCallbackWrapper_C = \
-                VimbaDLL.frameDoneCallback(frameCallbackWrapper)
+            self._frameCallbackWrapper_C = VimbaDLL.frameDoneCallback(frameCallbackWrapper)
 
         errorCode = VimbaDLL.captureFrameQueue(self._handle,
                                                byref(self._frame),
