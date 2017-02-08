@@ -68,7 +68,7 @@ class Vimba(object):
 
             # call once just to get the number of interfaces
             # Vimba DLL will return an error code
-            errorCode = VimbaDLL.interfacesList(byref(dummyInterfaceInfo),
+            errorCode = VimbaDLL.interfacesList(None,
                                                 0,
                                                 byref(numFound),
                                                 sizeof(dummyInterfaceInfo))
