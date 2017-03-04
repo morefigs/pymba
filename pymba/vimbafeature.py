@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-import vimbastructure as structs
-from vimbaexception import VimbaException
-from vimbadll import VimbaDLL
+from __future__ import absolute_import
+import pymba.vimbastructure as structs
+from .vimbaexception import VimbaException
+from .vimbadll import VimbaDLL
 from ctypes import *
 
 # class may extend a generic Vimba entity class one day...
@@ -15,7 +16,7 @@ class VimbaFeature(object):
 
     @property
     def name(self):
-        return self._name
+        return self._name.decode()
 
     @property
     def handle(self):
@@ -37,7 +38,7 @@ class VimbaFeature(object):
     def __init__(self, name, handle):
 
         # set name and handle
-        self._name = name
+        self._name = name.encode()
         self._handle = handle
 
         # set own info
@@ -178,7 +179,7 @@ class VimbaFeature(object):
         if errorCode != 0:
             raise VimbaException(errorCode)
 
-        return valueToGet.value
+        return valueToGet.value.decode()
 
     def _setEnumFeature(self, valueToSet):
         """
@@ -189,7 +190,7 @@ class VimbaFeature(object):
 
         errorCode = VimbaDLL.featureEnumSet(self._handle,
                                             self._name,
-                                            valueToSet)
+                                            valueToSet.encode())
         if errorCode != 0:
             raise VimbaException(errorCode)
 
@@ -212,8 +213,7 @@ class VimbaFeature(object):
                                               byref(sizeFilled))
         if errorCode != 0:
             raise VimbaException(errorCode)
-
-        return valueToGet.value
+        return valueToGet.value.decode()
 
     def _setStringFeature(self, valueToSet):
         """
@@ -224,7 +224,7 @@ class VimbaFeature(object):
 
         errorCode = VimbaDLL.featureStringSet(self._handle,
                                               self._name,
-                                              valueToSet)
+                                              valueToSet.encode())
         if errorCode != 0:
             raise VimbaException(errorCode)
 

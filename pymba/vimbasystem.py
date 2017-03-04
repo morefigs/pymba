@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from vimbaobject import VimbaObject
-from ctypes import *
+from __future__ import absolute_import
+from .vimbaobject import VimbaObject
+from ctypes import c_void_p
 
 # system features are automatically readable as attributes.
 

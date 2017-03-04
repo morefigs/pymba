@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-import vimbastructure as structs
-from vimbaexception import VimbaException
-from vimbadll import VimbaDLL
-from vimbadll import VimbaC_MemoryBlock
+from __future__ import absolute_import
+import pymba.vimbastructure as structs
+from .vimbaexception import VimbaException
+from .vimbadll import VimbaDLL
+from .vimbadll import VimbaC_MemoryBlock
 from ctypes import *
 import warnings
 try:

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-import vimbastructure as structs
-from vimbaobject import VimbaObject
-from vimbaexception import VimbaException
-from vimbaframe import VimbaFrame
-from vimbadll import VimbaDLL
+from __future__ import absolute_import
+import pymba.vimbastructure as structs
+from .vimbaobject import VimbaObject
+from .vimbaexception import VimbaException
+from .vimbaframe import VimbaFrame
+from .vimbadll import VimbaDLL
 from ctypes import *
 
 # camera features are automatically readable as object attributes.
@@ -18,7 +19,7 @@ class VimbaCamera(VimbaObject):
 
     @property
     def cameraIdString(self):
-        return self._cameraIdString
+        return self._cameraIdString.decode()
 
     # own handle is inherited as self._handle
     def __init__(self, cameraIdString):
@@ -27,7 +28,7 @@ class VimbaCamera(VimbaObject):
         super(VimbaCamera, self).__init__()
 
         # set ID
-        self._cameraIdString = cameraIdString
+        self._cameraIdString = cameraIdString.encode()
 
         # set own info
         self._info = self._getInfo()
