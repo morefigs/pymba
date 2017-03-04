@@ -64,7 +64,6 @@ class Vimba(object):
         """
         if self._interfaceInfos is None:
             # args
-            dummyInterfaceInfo = structs.VimbaInterfaceInfo()
             numFound = c_uint32(-1)
 
             # call once just to get the number of interfaces
@@ -72,7 +71,7 @@ class Vimba(object):
             errorCode = VimbaDLL.interfacesList(None,
                                                 0,
                                                 byref(numFound),
-                                                sizeof(dummyInterfaceInfo))
+                                                sizeof(structs.VimbaInterfaceInfo))
             if errorCode != 0:
                 raise VimbaException(errorCode)
 
@@ -86,7 +85,7 @@ class Vimba(object):
             errorCode = VimbaDLL.interfacesList(interfaceInfoArray,
                                                 numInterfaces,
                                                 byref(numFound),
-                                                sizeof(dummyInterfaceInfo))
+                                                sizeof(structs.VimbaInterfaceInfo))
             if errorCode != 0:
                 raise VimbaException(errorCode)
             self._interfaceInfos = list(
