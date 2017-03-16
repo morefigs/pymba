@@ -39,6 +39,9 @@ with Vimba() as vimba:
     # set the value of a feature
     camera0.AcquisitionMode = 'SingleFrame'
 
+    #set pixel format
+    camera0.PixelFormat="Mono8"    
+
     # create new frames for the camera
     frame0 = camera0.getFrame()    # creates a frame
     frame1 = camera0.getFrame()    # creates a second frame
