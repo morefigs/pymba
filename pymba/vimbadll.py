@@ -44,7 +44,7 @@ else:
                              [1:-3])
         vimbaC_path = "/" + vimba_dir + "/VimbaC/DynamicLib/x86_64bit/libVimbaC.so"
     elif 'x86_32' in os.uname()[4]:
-        print "Warning: x86_32 reached!"
+        print("Warning: x86_32 reached!")
         assert os.environ.get(
             "GENICAM_GENTL32_PATH"), "you need your GENICAM_GENTL32_PATH environment set.  Make sure you have Vimba installed, and you have loaded the /etc/profile.d/ scripts"
         vimba_dir = "/".join(os.environ.get("GENICAM_GENTL32_PATH").split("/")
