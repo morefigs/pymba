@@ -151,6 +151,18 @@ class VimbaObject(object):
         if errorCode != 0:
             raise VimbaException(errorCode)
 
+    def featureCommandIsDone(self, featureName):
+        isDone = c_bool()
+        errorCode = VimbaDLL.featureCommandIsDone(self._handle,
+                                                  featureName.encode(),
+                                                  byref(isDone))
+
+        if errorCode != 0:
+            raise VimbaException(errorCode)
+
+        return isDone.value
+
+
     def readRegister(self, address):
         # note that the underlying Vimba function allows reading of an array
         # of registers, but only one address/value at a time is implemented

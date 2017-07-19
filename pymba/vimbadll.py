@@ -340,6 +340,13 @@ class VimbaDLL(object):
     featureCommandRun.argtypes = (c_void_p,                            # handle for a module that exposes features
                                   c_char_p)                            # name of the command feature
 
+    # Check if a feature command is done
+    featureCommandIsDone = _vimbaDLL.VmbFeatureCommandIsDone
+    featureCommandIsDone.restype = c_int32
+    featureCommandIsDone.argtypes = (c_void_p,                          # handle
+                                     c_char_p,                          # name of the command feature
+                                     POINTER(c_bool))                   # pointer to a result bool
+
     # announce frames to the API that may be queued for frame capturing later
     frameAnnounce = _vimbaDLL.VmbFrameAnnounce
     frameAnnounce.restype = c_int32
