@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-import pymba.vimbastructure as structs
+from . import vimbastructure as structs
 from .vimbadll import VimbaDLL
 from .vimbaexception import VimbaException
 from .vimbasystem import VimbaSystem
