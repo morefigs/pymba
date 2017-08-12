@@ -6,7 +6,7 @@ import platform
 import os
 from ctypes import *
 
-import pymba.vimbastructure as structs
+from . import vimbastructure as structs
 from .vimbaexception import VimbaException
 
 if sys_plat == "win32":
