@@ -25,6 +25,11 @@ if sys_plat == "win32":
                     if os.path.isfile(candidate):
                         dlls.append(candidate)
         if not dlls:
+            if 'VIMBA_HOME' in os.environ:
+                candidate = os.environ ['VIMBA_HOME'] + '\VimbaC\Bin\Win%i\VimbaC.dll' % (arch)
+                if os.path.isfile(candidate):
+                    dlls.append(candidate)
+        if not dlls:
             raise IOError("VimbaC.dll not found.")
         return dlls[-1]
 
