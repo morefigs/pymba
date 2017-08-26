@@ -171,14 +171,19 @@ class Vimba(object):
         Gets camera info object of specified camera.
 
         :param cameraId: the ID of the camera object to get.
+                         This might not only be a cameraId as returned by getCameraIds() 
+                         but also e.g. a serial number. Check the Vimba documentation for 
+                         other possible values.
 
         :returns: VimbaCameraInfo object -- the camera info object specified.
         """
-        # don't do this live as we already have this info
-        # return info object if it exists
-        for camInfo in self._getCameraInfos():
-            if camInfo.cameraIdString == cameraId:
-                return camInfo
+        cameraInfo = structs.VimbaCameraInfo()
+        errorCode = VimbaDLL.cameraInfoQuery(cameraId.encode(),
+                                             cameraInfo,
+                                             sizeof(cameraInfo))
+        if errorCode == 0:
+            return cameraInfo
+
         # otherwise raise error
         raise VimbaException(-50)
 
@@ -204,7 +209,10 @@ class Vimba(object):
         Gets camera object based on camera ID string. Will not recreate
         camera object if it already exists.
 
-        :param cameraId: the ID of the camera.
+        :param cameraId: the ID of the camera object to get. 
+                         This might not only be a cameraId as returned by getCameraIds() 
+                         but also e.g. a serial number. Check the Vimba documentation for 
+                         other possible values.
 
         :returns: VimbaCamera object -- the camera object specified.
         """
@@ -214,7 +222,20 @@ class Vimba(object):
             if cameraId not in self._cameras:
                 self._cameras[cameraId] = VimbaCamera(cameraId)
             return self._cameras[cameraId]
-        raise VimbaException(-50)
+        else:
+            # the given string might not be a camera ID -> check for other IDs
+            cameraInfo = structs.VimbaCameraInfo()
+            errorCode = VimbaDLL.cameraInfoQuery(cameraId.encode(),
+                                                 cameraInfo,
+                                                 sizeof(cameraInfo))
+            if errorCode != 0:
+                raise VimbaException(-50)   # camera not found
+            
+            cameraIdString = cameraInfo.cameraIdString.decode()
+            if cameraIdString not in self._cameras:
+                self._cameras[cameraIdString] = VimbaCamera(cameraIdString)
+            return self._cameras[cameraIdString]
+            
 
     def getVersion(self):
         """
