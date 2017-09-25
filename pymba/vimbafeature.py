@@ -203,7 +203,7 @@ class VimbaFeature(object):
 
         # create args
         bufferSize = 256
-        valueToGet = create_string_buffer('\000' * bufferSize)
+        valueToGet = create_string_buffer(('\000' * bufferSize).encode())
         sizeFilled = c_uint32()
 
         errorCode = VimbaDLL.featureStringGet(self._handle,
