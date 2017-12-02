@@ -64,7 +64,7 @@ else:
     elif 'aarch64' in os.uname()[4]:
         assert os.environ.get(
             "GENICAM_GENTL64_PATH"), "you need your GENICAM_GENTL64_PATH environment set.  Make sure you have Vimba installed, and you have loaded the /etc/profile.d/ scripts"
-        tlPath = [p for p in os.environ.get("GENICAM_GENTL32_PATH").split(":") if p][0]
+        tlPath = [p for p in os.environ.get("GENICAM_GENTL64_PATH").split(":") if p][0]
         vimba_dir = "/".join(tlPath.split("/")[1:-3])
         vimbaC_path = "/" + vimba_dir + "/VimbaC/DynamicLib/arm_64bit/libVimbaC.so"
     else:
