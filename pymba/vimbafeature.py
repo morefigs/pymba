@@ -61,7 +61,7 @@ class VimbaFeature(object):
         self._rangeQueryTypeFuncs = {0: self._unknownRange,
                                      1: self._rangeQueryIntFeature,
                                      2: self._rangeQueryFloatFeature,
-                                     3: self._unknownRange,
+                                     3: self._rangeQueryEnumFeature,
                                      4: self._unknownRange,
                                      5: self._unknownRange,
                                      6: self._unknownRange,
@@ -305,22 +305,37 @@ class VimbaFeature(object):
 
         return (minToGet.value, maxToGet.value)
 
-    # def _rangeQueryEnumFeature(self):
-    #	"""
-    #	Get the range of an enum feature.
-    #
-    #	:returns: tuple -- min and max range.
-    #	"""
-    #
-    # create args
-    #	minToGet = c_uint32()
-    #	maxToGet = c_uint32()
-    #
-    #	errorCode = VimbaDLL.featureEnumRangeQuery(self._handle,
-    #											   self._name,
-    #											   byref(minToGet),
-    #											   byref(maxToGet))
-    #	if errorCode != 0:
-    #		raise VimbaException(errorCode)
-    #
-    #	return (minToGet.value, maxToGet.value)
+    def _rangeQueryEnumFeature(self):
+        """
+        Get the range of an enum feature.
+        :returns: list -- enum names for the given feature.
+        """
+        
+        # call once to get number of available enum names
+        # Vimba DLL will return an error code
+        numFound = c_uint32(-1)
+        errorCode = VimbaDLL.featureEnumRangeQuery(self._handle,
+                                                   self._name,
+                                                   None,
+                                                   0,
+                                                   byref(numFound))
+        if errorCode != 0:
+            raise VimbaException(errorCode)
+            
+        # number of names specified by Vimba
+        numEnumNames = numFound.value
+
+        # args
+        enumNamesArray = (c_char_p * numEnumNames)()
+
+        # call again to get the enum names
+        # Vimba DLL will return an error code
+        errorCode = VimbaDLL.featureEnumRangeQuery(self._handle,
+                                                   self._name,
+                                                   enumNamesArray,
+                                                   numEnumNames,
+                                                   byref(numFound))
+        if errorCode != 0:
+            raise VimbaException(errorCode)
+
+        return list(enumName.decode() for enumName in enumNamesArray)

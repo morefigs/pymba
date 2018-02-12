@@ -12,21 +12,26 @@ from .vimbaexception import VimbaException
 if sys_plat == "win32":
 
     def find_win_dll(arch):
-        """ Finds the highest versioned windows dll for the specified architecture. """
-        bases = [
-            r'C:\Program Files\Allied Vision Technologies\AVTVimba_%i.%i\VimbaC\Bin\Win%i\VimbaC.dll',
-            r'C:\Program Files\Allied Vision\Vimba_%i.%i\VimbaC\Bin\Win%i\VimbaC.dll'
-        ]
         dlls = []
-        for base in bases:
-            for major in range(3):
-                for minor in range(10):
-                    candidate = base % (major, minor, arch)
-                    if os.path.isfile(candidate):
-                        dlls.append(candidate)
+        candidate = r'.\VimbaC.dll'
+        if os.path.isfile(candidate):
+            # use local copy
+            dlls.append(candidate)
+        else:
+            """ Finds the highest versioned windows dll for the specified architecture. """
+            bases = [
+                r'C:\Program Files\Allied Vision Technologies\AVTVimba_%i.%i\VimbaC\Bin\Win%i\VimbaC.dll',
+                r'C:\Program Files\Allied Vision\Vimba_%i.%i\VimbaC\Bin\Win%i\VimbaC.dll'
+            ]
+            for base in bases:
+                for major in range(3):
+                    for minor in range(10):
+                        candidate = base % (major, minor, arch)
+                        if os.path.isfile(candidate):
+                            dlls.append(candidate)
         if not dlls:
             if 'VIMBA_HOME' in os.environ:
-                candidate = os.environ ['VIMBA_HOME'] + '\VimbaC\Bin\Win%i\VimbaC.dll' % (arch)
+                candidate = os.path.join(os.environ ['VIMBA_HOME'], r'VimbaC\Bin\Win%i\VimbaC.dll' % (arch))
                 if os.path.isfile(candidate):
                     dlls.append(candidate)
         if not dlls:
@@ -115,7 +120,7 @@ class VimbaDLL(object):
     #
     # -- VmbFeatureEnumGet()
     # -- VmbFeatureEnumSet()
-    # VmbFeatureEnumRangeQuery()
+    # -- VmbFeatureEnumRangeQuery()
     # VmbFeatureEnumIsAvailable()
     # VmbFeatureEnumAsInt()
     # VmbFeatureEnumAsString()
@@ -160,7 +165,6 @@ class VimbaDLL(object):
     # -- VmbRegistersWrite()
 
     # Vimba C API DLL
-
     _vimbaDLL = dll_loader.LoadLibrary(vimbaC_path)
 
     # version query
@@ -302,6 +306,19 @@ class VimbaDLL(object):
                                # name of the feature
                                c_char_p,
                                c_char_p)                            # value to set
+
+    # query the range of values of the feature
+    featureEnumRangeQuery = _vimbaDLL.VmbFeatureEnumRangeQuery
+    featureEnumRangeQuery.restype = c_int32
+    featureEnumRangeQuery.argtypes = (c_void_p,                    # handle
+                                      # name of the feature
+                                      c_char_p,
+                                      # pointer to enum names (array)
+                                      POINTER(c_char_p),
+                                      # array length
+                                      c_uint32,
+                                      # pointer to num enum names found
+                                      POINTER(c_uint32))
 
     # get the string value of a feature
     featureStringGet = _vimbaDLL.VmbFeatureStringGet
