@@ -115,7 +115,7 @@ class VimbaDLL(object):
     #
     # -- VmbFeatureEnumGet()
     # -- VmbFeatureEnumSet()
-    # VmbFeatureEnumRangeQuery()
+    # -- VmbFeatureEnumRangeQuery()
     # VmbFeatureEnumIsAvailable()
     # VmbFeatureEnumAsInt()
     # VmbFeatureEnumAsString()
@@ -160,7 +160,6 @@ class VimbaDLL(object):
     # -- VmbRegistersWrite()
 
     # Vimba C API DLL
-
     _vimbaDLL = dll_loader.LoadLibrary(vimbaC_path)
 
     # version query
@@ -302,6 +301,19 @@ class VimbaDLL(object):
                                # name of the feature
                                c_char_p,
                                c_char_p)                            # value to set
+
+    # query the range of values of the feature
+    featureEnumRangeQuery = _vimbaDLL.VmbFeatureEnumRangeQuery
+    featureEnumRangeQuery.restype = c_int32
+    featureEnumRangeQuery.argtypes = (c_void_p,                    # handle
+                                      # name of the feature
+                                      c_char_p,
+                                      # pointer to enum names (array)
+                                      POINTER(c_char_p),
+                                      # array length
+                                      c_uint32,
+                                      # pointer to num enum names found
+                                      POINTER(c_uint32))
 
     # get the string value of a feature
     featureStringGet = _vimbaDLL.VmbFeatureStringGet

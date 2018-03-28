@@ -134,7 +134,8 @@ class VimbaObject(object):
 
         :param featureName: name of the feature to query.
 
-        :returns: tuple -- range as (feature min value, feature max value).
+        :returns: tuple -- range as (feature min value, feature max value, for int or float features only).
+                  list -- names of possible enum values (for enum features only).
         """
         # can't cache this, need to look it up live
         return VimbaFeature(featureName.encode(), self._handle).range
