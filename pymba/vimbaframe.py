@@ -22,7 +22,6 @@ PIXEL_FORMATS = {
     "Mono12Packed": 1.5,  # ?
     "Mono14": 2,
     "Mono16": 2,
-    "RGB8": 3,
     "RGB8Packed": 3,
     "BGR8Packed": 3,
     "RGBA8Packed": 4,
