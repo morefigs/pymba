@@ -12,26 +12,21 @@ from .vimbaexception import VimbaException
 if sys_plat == "win32":
 
     def find_win_dll(arch):
+        """ Finds the highest versioned windows dll for the specified architecture. """
+        bases = [
+            r'C:\Program Files\Allied Vision Technologies\AVTVimba_%i.%i\VimbaC\Bin\Win%i\VimbaC.dll',
+            r'C:\Program Files\Allied Vision\Vimba_%i.%i\VimbaC\Bin\Win%i\VimbaC.dll'
+        ]
         dlls = []
-        candidate = r'.\VimbaC.dll'
-        if os.path.isfile(candidate):
-            # use local copy
-            dlls.append(candidate)
-        else:
-            """ Finds the highest versioned windows dll for the specified architecture. """
-            bases = [
-                r'C:\Program Files\Allied Vision Technologies\AVTVimba_%i.%i\VimbaC\Bin\Win%i\VimbaC.dll',
-                r'C:\Program Files\Allied Vision\Vimba_%i.%i\VimbaC\Bin\Win%i\VimbaC.dll'
-            ]
-            for base in bases:
-                for major in range(3):
-                    for minor in range(10):
-                        candidate = base % (major, minor, arch)
-                        if os.path.isfile(candidate):
+        for base in bases:
+            for major in range(3):
+                for minor in range(10):
+                    candidate = base % (major, minor, arch)
+                    if os.path.isfile(candidate):
                             dlls.append(candidate)
         if not dlls:
             if 'VIMBA_HOME' in os.environ:
-                candidate = os.path.join(os.environ ['VIMBA_HOME'], r'VimbaC\Bin\Win%i\VimbaC.dll' % (arch))
+                candidate = os.environ ['VIMBA_HOME'] + '\VimbaC\Bin\Win%i\VimbaC.dll' % (arch)
                 if os.path.isfile(candidate):
                     dlls.append(candidate)
         if not dlls:

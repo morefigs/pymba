@@ -138,7 +138,7 @@ class VimbaObject(object):
                   list -- names of possible enum values (for enum features only).
         """
         # can't cache this, need to look it up live
-        return VimbaFeature(featureName, self._handle).range
+        return VimbaFeature(featureName.encode(), self._handle).range
 
     def runFeatureCommand(self, featureName):
         """
