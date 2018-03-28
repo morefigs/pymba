@@ -61,13 +61,17 @@ class VimbaCamera(VimbaObject):
 
         return cameraInfo
 
-    def openCamera(self):
+    def openCamera(self, cameraAccessMode=1):
         """
-        Open the camera.
+        Open the camera with requested access mode
+        Available access modes:
+           0 : VmbAccessModeNone 	
+           1 : VmbAccessModeFull 	
+           2 : VmbAccessModeRead 	
+           3 : VmbAccessModeConfig 	
+           4 : VmbAccessModeLite 
         """
         # args for Vimba call
-        cameraAccessMode = 1  # full access (see VmbAccessModeType)
-
         errorCode = VimbaDLL.cameraOpen(self._cameraIdString,
                                         cameraAccessMode,
                                         byref(self._handle))
