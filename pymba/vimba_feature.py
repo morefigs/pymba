@@ -283,7 +283,7 @@ class VimbaFeature(object):
         if errorCode != 0:
             raise VimbaException(errorCode)
 
-        return (int(str(minToGet.value)), int(str(maxToGet.value)))
+        return int(str(minToGet.value)), int(str(maxToGet.value))
 
     def _rangeQueryFloatFeature(self):
         """

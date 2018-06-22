@@ -8,12 +8,10 @@ from ctypes import *
 
 
 class VimbaObject(object):
-
     """
     A Vimba object has a handle and features associated with it.
     Objects include System,	Camera, Interface and AncillaryData.
     """
-
     @property
     def handle(self):
         return self._handle
@@ -22,24 +20,19 @@ class VimbaObject(object):
         # create own handle
         self._handle = c_void_p()
 
-        # list of VimbaFeatureInfo objects
-        # can't set yet as the object (e.g. a camera) won't be
-        # opened yet, therefore no event for object opening
-        # so will have it populate by user interaction
-        # and blame them if the object is not opened then
+        # list of VimbaFeatureInfo objects can't set yet as the object (e.g. a camera) won't be opened yet, therefore
+        # no event for object opening so will have it populate by user interaction and blame them if the object is not
+        # opened then
         self._featureInfos = None
 
     # override getattr for undefined attributes
     def __getattr__(self, attr):
-
         # if a feature value requested (requires object (camera) open)
         if attr in self.getFeatureNames():
             return VimbaFeature(attr, self._handle).value
 
         # otherwise don't know about it
-        raise AttributeError(''.join(["'VimbaObject' has no attribute '",
-                                      attr,
-                                      "'"]))
+        raise AttributeError(''.join(["'VimbaObject' has no attribute '", attr, "'"]))
 
     # override setattr for undefined attributes
     def __setattr__(self, attr, val):
@@ -147,22 +140,25 @@ class VimbaObject(object):
         :param featureName: the name of the feature.
         """
         # run a command
-        errorCode = VimbaDLL.featureCommandRun(self._handle,
-                                               featureName.encode())
+        errorCode = VimbaDLL.featureCommandRun(
+            self._handle,
+            featureName.encode()
+        )
         if errorCode != 0:
             raise VimbaException(errorCode)
 
     def featureCommandIsDone(self, featureName):
         isDone = c_bool()
-        errorCode = VimbaDLL.featureCommandIsDone(self._handle,
-                                                  featureName.encode(),
-                                                  byref(isDone))
+        errorCode = VimbaDLL.featureCommandIsDone(
+            self._handle,
+            featureName.encode(),
+            byref(isDone)
+        )
 
         if errorCode != 0:
             raise VimbaException(errorCode)
 
         return isDone.value
-
 
     def readRegister(self, address):
         # note that the underlying Vimba function allows reading of an array

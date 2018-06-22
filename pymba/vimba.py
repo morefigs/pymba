@@ -247,9 +247,11 @@ class Vimba(object):
         versionInfo = structs.VimbaVersion()
 
         # Vimba DLL will return an error code
-        errorCode = VimbaDLL.versionQuery(versionInfo,
-                                          sizeof(versionInfo))
-        if errorCode != 0:
+        errorCode = VimbaDLL.versionQuery(
+            versionInfo,
+            sizeof(versionInfo)
+        )
+        if errorCode:
             raise VimbaException(errorCode)
 
         versionStr = '.'.join([str(versionInfo.major),
