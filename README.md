@@ -152,5 +152,4 @@ Get a reference to an interface object and list available interface features.
 ## Known issues
 
 * Not all API functions are wrapped (most are). For full list see vimbadll.py.
-* The path to VimbaC.dll has been hardcoded in vimbadll.py. It should be easy to change if needed.
 
