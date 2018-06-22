@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-from . import vimbastructure as structs
-from .vimbaexception import VimbaException
-from .vimbafeature import VimbaFeature
-from .vimbadll import VimbaDLL
+from . import vimba_structure as structs
+from .vimba_exception import VimbaException
+from .vimba_feature import VimbaFeature
+from .vimba_dll import VimbaDLL
 from ctypes import *
 
 

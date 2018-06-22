@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-from . import vimbastructure as structs
-from .vimbaobject import VimbaObject
-from .vimbaexception import VimbaException
-from .vimbadll import VimbaDLL
+from . import vimba_structure as structs
+from .vimba_object import VimbaObject
+from .vimba_exception import VimbaException
+from .vimba_dll import VimbaDLL
 from ctypes import *
 
 # interface features are automatically readable as object attributes.

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-from . import vimbastructure as structs
-from .vimbadll import VimbaDLL
-from .vimbaexception import VimbaException
-from .vimbasystem import VimbaSystem
-from .vimbacamera import VimbaCamera
-from .vimbainterface import VimbaInterface
+from . import vimba_structure as structs
+from .vimba_dll import VimbaDLL
+from .vimba_exception import VimbaException
+from .vimba_system import VimbaSystem
+from .vimba_camera import VimbaCamera
+from .vimba_interface import VimbaInterface
 from ctypes import *
 
 

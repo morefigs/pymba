@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-from . import vimbastructure as structs
-from .vimbaexception import VimbaException
-from .vimbadll import VimbaDLL
+from . import vimba_structure as structs
+from .vimba_exception import VimbaException
+from .vimba_dll import VimbaDLL
 from ctypes import *
 
 # class may extend a generic Vimba entity class one day...
