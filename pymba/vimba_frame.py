@@ -94,7 +94,7 @@ class VimbaFrame(object):
 
     def queueFrameCapture(self, frameCallback = None):
         """
-        Queue frames that may be ﬁlled during frame capturing.
+        Queue frames that may be filled during frame capturing.
         Runs VmbCaptureFrameQueue
 
         Call after announceFrame and startCapture
@@ -127,7 +127,7 @@ class VimbaFrame(object):
 
     def waitFrameCapture(self, timeout=2000):
         """
-        Wait for a queued frame to be ﬁlled (or dequeued).  Returns Errorcode
+        Wait for a queued frame to be filled (or dequeued).  Returns Errorcode
         upon completion.
         Runs VmbCaptureFrameWait
 
