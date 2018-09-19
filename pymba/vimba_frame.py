@@ -174,10 +174,8 @@ class VimbaFrame(object):
             print('install numpy to use this method or use getBufferByteData instead')
             raise e
 
-
     def getTimestamp(self):
         return self._frame.timestamp
-
 
     def getReceiveStatus(self):
         return self._frame.receiveStatus
