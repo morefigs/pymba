@@ -26,7 +26,7 @@ setup(name='pymba',
       author_email='morefigs@gmail.com',
       url='https://github.com/morefigs/pymba',
       license='MIT',
-      packages=['pymba', 'pymba.tests'],
+      packages=['pymba', 'tests'],
       zip_safe=False,
       requires=['numpy'],
       )
