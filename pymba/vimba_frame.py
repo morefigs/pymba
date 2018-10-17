@@ -159,8 +159,8 @@ class VimbaFrame(object):
                     POINTER(c_ubyte * self.payloadSize))
 
         # make array of c_ubytes from buffer
-        imagebytes = int(self.height*self.width*self.pixel_bytes)
-        array = (c_ubyte*imagebytes).from_address(addressof(data.contents))
+        imagebytes = int(self.height * self.width * self.pixel_bytes)
+        array = (c_ubyte * imagebytes).from_address(addressof(data.contents))
 
         return array
 
