@@ -89,7 +89,7 @@ class MemoryBlock:
 
         # this seems to be None if too much memory is requested
         if self._block is None:
-            raise VimbaException(-51)
+            raise VimbaException(VimbaException.ERR_FRAME_BUFFER_MEMORY)
 
     def __del__(self):
         del self._block
