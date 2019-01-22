@@ -1,18 +1,26 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from . import vimba_structure as structs
+from ctypes import byref, sizeof, c_uint32, c_double, c_char_p, c_bool, c_int64, create_string_buffer
+from typing import Tuple, List
+
 from .vimba_exception import VimbaException
-from .vimba_dll import VimbaDLL
-from ctypes import *
-
-# class may extend a generic Vimba entity class one day...
+from . import vimba_c
 
 
-class VimbaFeature(object):
-
+class VimbaFeature:
     """
     A feature of a Vimba object.
     """
+
+    (
+        _FEATURE_DATA_UNKNOWN,
+        _FEATURE_DATA_INT,
+        _FEATURE_DATA_FLOAT,
+        _FEATURE_DATA_ENUM,
+        _FEATURE_DATA_STRING,
+        _FEATURE_DATA_BOOL,
+        _FEATURE_DATA_COMMAND,
+        _FEATURE_DATA_RAW,
+        _FEATURE_DATA_NONE,
+    ) = range(9)
 
     @property
     def name(self):
@@ -25,317 +33,193 @@ class VimbaFeature(object):
     # lookup relevant function for feature type and pass to that function
     @property
     def value(self):
-        return self._getSetTypeFuncs[self._info.featureDataType][0]()
+        return self._feature_data_value_funcs[self._info.featureDataType][0]()
 
     @value.setter
     def value(self, val):
-        self._getSetTypeFuncs[self._info.featureDataType][1](val)
+        self._feature_data_value_funcs[self._info.featureDataType][1](val)
 
     @property
     def range(self):
-        return self._rangeQueryTypeFuncs[self._info.featureDataType]()
+        return self._feature_data_range_funcs[self._info.featureDataType]()
 
     def __init__(self, name, handle):
-
-        # set name and handle
         self._name = name.encode()
         self._handle = handle
 
-        # set own info
-        self._info = self._getInfo()
-
         # type functions dict for looking up correct get/set function to use
-        self._getSetTypeFuncs = {0: (self._notYetImplemented, self._notYetImplemented),		# todo
-                                 1: (self._getIntFeature, self._setIntFeature),
-                                 2: (self._getFloatFeature, self._setFloatFeature),
-                                 3: (self._getEnumFeature, self._setEnumFeature),
-                                 4: (self._getStringFeature, self._setStringFeature),
-                                 5: (self._getBoolFeature, self._setBoolFeature),
-                                 # todo
-                                 6: (self._notYetImplemented, self._notYetImplemented),
-                                 # todo
-                                 7: (self._notYetImplemented, self._notYetImplemented),
-                                 8: (self._notYetImplemented, self._notYetImplemented)}		# todo
+        self._feature_data_value_funcs = {
+            self._FEATURE_DATA_UNKNOWN: None,
+            self._FEATURE_DATA_INT: (self._get_int, self._set_int),
+            self._FEATURE_DATA_FLOAT: (self._get_float, self._set_float),
+            self._FEATURE_DATA_ENUM: (self._get_enum, self._set_enum),
+            self._FEATURE_DATA_STRING: (self._get_string, self._set_string),
+            self._FEATURE_DATA_BOOL: (self._get_bool, self._set_bool),
+            self._FEATURE_DATA_COMMAND: None,
+            self._FEATURE_DATA_RAW: None,
+            self._FEATURE_DATA_NONE: None,
+        }
 
         # type functions dict for looking up correct range function to use
-        self._rangeQueryTypeFuncs = {0: self._unknownRange,
-                                     1: self._rangeQueryIntFeature,
-                                     2: self._rangeQueryFloatFeature,
-                                     3: self._rangeQueryEnumFeature,
-                                     4: self._unknownRange,
-                                     5: self._unknownRange,
-                                     6: self._unknownRange,
-                                     7: self._unknownRange,
-                                     8: self._unknownRange}
+        self._feature_data_range_funcs = {
+            self._FEATURE_DATA_UNKNOWN: None,
+            self._FEATURE_DATA_INT: self._range_query_int,
+            self._FEATURE_DATA_FLOAT: self._range_query_float,
+            self._FEATURE_DATA_ENUM: self._range_query_enum,
+            self._FEATURE_DATA_STRING: None,
+            self._FEATURE_DATA_BOOL: None,
+            self._FEATURE_DATA_COMMAND: None,
+            self._FEATURE_DATA_RAW: None,
+            self._FEATURE_DATA_NONE: None,
+        }
 
-    def getInfo(self):
-        """
-        Get info of the feature.
+        # get info once
+        self._info = self._get_info()
 
-        :returns: VimbaFeatureInfo object -- feature information..
-        """
-        return self._info
+    def _get_info(self) -> vimba_c.VmbFeatureInfo:
+        feature_info = vimba_c.VmbFeatureInfo()
+        error = vimba_c.vmb_feature_info_query(self._handle,
+                                               self._name,
+                                               byref(feature_info),
+                                               sizeof(feature_info))
+        if error:
+            raise VimbaException(error)
 
-    def _getInfo(self):
-        """
-        Get info of the feature.
+        return feature_info
 
-        :returns: VimbaFeatureInfo object -- feature information..
-        """
-        # args for Vimba call
-        featureInfo = structs.VimbaFeatureInfo()
+    def _get_int(self) -> int:
+        value = c_int64()
+        error = vimba_c.vmb_feature_int_get(self._handle,
+                                            self._name,
+                                            byref(value))
+        if error:
+            raise VimbaException(error)
 
-        # Vimba DLL will return an error code
-        errorCode = VimbaDLL.featureInfoQuery(self._handle,
+        return value.value
+
+    def _set_int(self, value: int) -> None:
+        error = vimba_c.vmb_feature_int_set(self._handle,
+                                            self._name,
+                                            value)
+        if error:
+            raise VimbaException(error)
+
+    def _get_float(self) -> float:
+        value = c_double()
+        error = vimba_c.vmb_feature_float_get(self._handle,
                                               self._name,
-                                              byref(featureInfo),
-                                              sizeof(featureInfo))
-        if errorCode != 0:
-            raise VimbaException(errorCode)
+                                              byref(value))
+        if error:
+            raise VimbaException(error)
 
-        return featureInfo
+        return value.value
 
-    def _notYetImplemented(self, val=None):
-        """
-        Raises exception if feature value type is not yet defined.
-        """
-        raise VimbaException(-1001)
+    def _set_float(self, value: float) -> None:
+        error = vimba_c.vmb_feature_float_set(self._handle,
+                                              self._name,
+                                              value)
+        if error:
+            raise VimbaException(error)
 
-    def _getIntFeature(self):
-        """
-        Get the value of an integer feature.
-
-        :returns: int -- value of the specified feature.
-        """
-
-        # create args
-        valueToGet = c_int64()
-
-        errorCode = VimbaDLL.featureIntGet(self._handle,
-                                           self._name,
-                                           byref(valueToGet))
-        if errorCode != 0:
-            raise VimbaException(errorCode)
-
-        return valueToGet.value
-
-    def _setIntFeature(self, valueToSet):
-        """
-        Set the value of an integer feature.
-
-        :param valueToSet: the int value to set for the feature.
-        """
-
-        errorCode = VimbaDLL.featureIntSet(self._handle,
-                                           self._name,
-                                           valueToSet)
-        if errorCode != 0:
-            raise VimbaException(errorCode)
-
-    def _getFloatFeature(self):
-        """
-        Get the value of a ﬂoat feature.
-
-        :returns: float -- value of the specified feature.
-        """
-
-        # create args
-        valueToGet = c_double()
-
-        errorCode = VimbaDLL.featureFloatGet(self._handle,
+    def _get_enum(self) -> str:
+        value = c_char_p()
+        error = vimba_c.vmb_feature_enum_get(self._handle,
                                              self._name,
-                                             byref(valueToGet))
-        if errorCode != 0:
-            raise VimbaException(errorCode)
+                                             byref(value))
+        if error:
+            raise VimbaException(error)
 
-        return valueToGet.value
+        return value.value.decode()
 
-    def _setFloatFeature(self, valueToSet):
-        """
-        Set the value of a float feature.
-
-        :param valueToSet: the float value to set for the feature.
-        """
-
-        errorCode = VimbaDLL.featureFloatSet(self._handle,
+    def _set_enum(self, value: str):
+        error = vimba_c.vmb_feature_enum_set(self._handle,
                                              self._name,
-                                             valueToSet)
-        if errorCode != 0:
-            raise VimbaException(errorCode)
+                                             value.encode())
+        if error:
+            raise VimbaException(error)
 
-    def _getEnumFeature(self):
-        """
-        Get the value of an enum feature.
+    def _get_string(self) -> str:
+        buffer_size = 256
+        value = create_string_buffer('\x00' * buffer_size)
+        size_filled = c_uint32()
 
-        :returns: enum -- value of the specified feature.
-        """
+        error = vimba_c.vmb_feature_string_get(self._handle,
+                                               self._name,
+                                               value,
+                                               buffer_size,
+                                               byref(size_filled))
+        if error:
+            raise VimbaException(error)
+        return value.value.decode()
 
-        # create args
-        valueToGet = c_char_p()
+    def _set_string(self, value: str) -> None:
+        error = vimba_c.vmb_feature_string_set(self._handle,
+                                               self._name,
+                                               value.encode())
+        if error:
+            raise VimbaException(error)
 
-        errorCode = VimbaDLL.featureEnumGet(self._handle,
-                                            self._name,
-                                            byref(valueToGet))
-        if errorCode != 0:
-            raise VimbaException(errorCode)
+    def _get_bool(self) -> bool:
+        value = c_bool()
+        error = vimba_c.vmb_feature_bool_get(self._handle,
+                                             self._name,
+                                             byref(value))
+        if error:
+            raise VimbaException(error)
 
-        return valueToGet.value.decode()
+        return value.value
 
-    def _setEnumFeature(self, valueToSet):
-        """
-        Set the value of an enum feature.
+    def _set_bool(self, value: bool):
+        error = vimba_c.vmb_feature_bool_set(self._handle,
+                                             self._name,
+                                             value)
+        if error:
+            raise VimbaException(error)
 
-        :param valueToSet: the enum value to set for the feature.
-        """
-
-        errorCode = VimbaDLL.featureEnumSet(self._handle,
-                                            self._name,
-                                            valueToSet.encode())
-        if errorCode != 0:
-            raise VimbaException(errorCode)
-
-    def _getStringFeature(self):
-        """
-        Get the value of a string feature.
-
-        :returns: string -- value of the specified feature.
-        """
-
-        # create args
-        bufferSize = 256
-        valueToGet = create_string_buffer('\000' * bufferSize)
-        sizeFilled = c_uint32()
-
-        errorCode = VimbaDLL.featureStringGet(self._handle,
-                                              self._name,
-                                              valueToGet,
-                                              bufferSize,
-                                              byref(sizeFilled))
-        if errorCode != 0:
-            raise VimbaException(errorCode)
-        return valueToGet.value.decode()
-
-    def _setStringFeature(self, valueToSet):
-        """
-        Set the value of a string feature.
-
-        :param valueToSet: the string value to set for the feature.
-        """
-
-        errorCode = VimbaDLL.featureStringSet(self._handle,
-                                              self._name,
-                                              valueToSet.encode())
-        if errorCode != 0:
-            raise VimbaException(errorCode)
-
-    def _getBoolFeature(self):
-        """
-        Get the value of a bool feature.
-
-        :returns: bool -- value of the specified feature.
-        """
-
-        # create args
-        valueToGet = c_bool()
-
-        errorCode = VimbaDLL.featureBoolGet(self._handle,
-                                            self._name,
-                                            byref(valueToGet))
-        if errorCode != 0:
-            raise VimbaException(errorCode)
-
-        return valueToGet.value
-
-    def _setBoolFeature(self, valueToSet):
-        """
-        Set the value of a bool feature.
-
-        :param valueToSet: the bool value to set for the feature.
-        """
-
-        errorCode = VimbaDLL.featureBoolSet(self._handle,
-                                            self._name,
-                                            valueToSet)
-        if errorCode != 0:
-            raise VimbaException(errorCode)
-
-    def _unknownRange(self):
-        """
-        Returns empty for ranges that have not been implemented.
-        """
-        return ''
-
-    def _rangeQueryIntFeature(self):
-        """
-        Get the range of an int feature.
-
-        :returns: tuple -- min and max range.
-        """
-
-        # create args
-        minToGet = c_int64()
-        maxToGet = c_int64()
-
-        errorCode = VimbaDLL.featureIntRangeQuery(self._handle,
-                                                  self._name,
-                                                  byref(minToGet),
-                                                  byref(maxToGet))
-        if errorCode != 0:
-            raise VimbaException(errorCode)
-
-        return int(str(minToGet.value)), int(str(maxToGet.value))
-
-    def _rangeQueryFloatFeature(self):
-        """
-        Get the range of a float feature.
-
-        :returns: tuple -- min and max range.
-        """
-
-        # create args
-        minToGet = c_double()
-        maxToGet = c_double()
-
-        errorCode = VimbaDLL.featureFloatRangeQuery(self._handle,
+    def _range_query_int(self) -> Tuple[int, int]:
+        range_min = c_int64()
+        range_max = c_int64()
+        error = vimba_c.vmb_feature_int_range_query(self._handle,
                                                     self._name,
-                                                    byref(minToGet),
-                                                    byref(maxToGet))
-        if errorCode != 0:
-            raise VimbaException(errorCode)
+                                                    byref(range_min),
+                                                    byref(range_max))
+        if error:
+            raise VimbaException(error)
 
-        return (minToGet.value, maxToGet.value)
+        return int(range_min.value), int(range_max.value)
 
-    def _rangeQueryEnumFeature(self):
-        """
-        Get the range of an enum feature.
-        :returns: list -- enum names for the given feature.
-        """
-        
+    def _range_query_float(self) -> Tuple[float, float]:
+        range_min = c_double()
+        range_max = c_double()
+        error = vimba_c.vmb_feature_float_range_query(self._handle,
+                                                      self._name,
+                                                      byref(range_min),
+                                                      byref(range_max))
+        if error:
+            raise VimbaException(error)
+
+        return range_min.value, range_max.value
+
+    def _range_query_enum(self) -> List[str]:
         # call once to get number of available enum names
-        # Vimba DLL will return an error code
-        numFound = c_uint32(-1)
-        errorCode = VimbaDLL.featureEnumRangeQuery(self._handle,
-                                                   self._name,
-                                                   None,
-                                                   0,
-                                                   byref(numFound))
-        if errorCode != 0:
-            raise VimbaException(errorCode)
-            
-        # number of names specified by Vimba
-        numEnumNames = numFound.value
+        num_found = c_uint32(-1)
+        error = vimba_c.vmb_feature_enum_range_query(self._handle,
+                                                     self._name,
+                                                     None,
+                                                     0,
+                                                     byref(num_found))
+        if error:
+            raise VimbaException(error)
 
-        # args
-        enumNamesArray = (c_char_p * numEnumNames)()
+        # call again to get the actual enum names
+        num_enum_names = num_found.value
+        enum_names = (c_char_p * num_enum_names)()
+        error = vimba_c.vmb_feature_enum_range_query(self._handle,
+                                                     self._name,
+                                                     enum_names,
+                                                     num_enum_names,
+                                                     byref(num_found))
+        if error:
+            raise VimbaException(error)
 
-        # call again to get the enum names
-        # Vimba DLL will return an error code
-        errorCode = VimbaDLL.featureEnumRangeQuery(self._handle,
-                                                   self._name,
-                                                   enumNamesArray,
-                                                   numEnumNames,
-                                                   byref(numFound))
-        if errorCode != 0:
-            raise VimbaException(errorCode)
-
-        return list(enumName.decode() for enumName in enumNamesArray)
+        return list(enum_name.decode() for enum_name in enum_names)
