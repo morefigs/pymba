@@ -1,47 +1,37 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from . import vimba_structure as structs
+from ctypes import byref
+
 from .vimba_object import VimbaObject
 from .vimba_exception import VimbaException
-from .vimba_dll import VimbaDLL
-from ctypes import *
-
-# interface features are automatically readable as object attributes.
+from . import vimba_c
 
 
 class VimbaInterface(VimbaObject):
-
     """
     A Vimba interface object. This class provides the minimal access
     to Vimba functions required to control the interface.
     """
 
+    def __init__(self, id_string: str):
+        self._id_string = id_string
+        super().__init__()
+
     @property
-    def interfaceIdString(self):
-        return self._interfaceIdString
+    def id_string(self):
+        return self._id_string
 
-    # own handle is inherited as self._handle
-    def __init__(self, interfaceIdString):
-
-        # call super constructor
-        super(VimbaInterface, self).__init__()
-
-        # set ID
-        self._interfaceIdString = interfaceIdString
-
-    def openInterface(self):
+    def open(self):
         """
         Open the interface.
         """
-        errorCode = VimbaDLL.interfaceOpen(self._interfaceIdString,
+        error = vimba_c.vmb_interface_open(self._id_string,
                                            byref(self._handle))
-        if errorCode != 0:
-            raise VimbaException(errorCode)
+        if error:
+            raise VimbaException(error)
 
-    def closeInterface(self):
+    def close(self):
         """
         Close the interface.
         """
-        errorCode = VimbaDLL.interfaceClose(self._handle)
-        if errorCode != 0:
-            raise VimbaException(errorCode)
+        error = vimba_c.vmb_interface_close(self._handle)
+        if error:
+            raise VimbaException(error)
