@@ -12,12 +12,12 @@ class VimbaInterface(VimbaObject):
     """
 
     def __init__(self, id_string: str):
-        self._id_string = id_string
+        self._id_string = id_string.encode()
         super().__init__()
 
     @property
     def id_string(self):
-        return self._id_string
+        return self._id_string.decode()
 
     def open(self):
         """
