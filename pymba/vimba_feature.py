@@ -77,15 +77,15 @@ class VimbaFeature:
         self._info = self._get_info()
 
     def _get_info(self) -> vimba_c.VmbFeatureInfo:
-        feature_info = vimba_c.VmbFeatureInfo()
+        vmb_feature_info = vimba_c.VmbFeatureInfo()
         error = vimba_c.vmb_feature_info_query(self._handle,
                                                self._name,
-                                               byref(feature_info),
-                                               sizeof(feature_info))
+                                               byref(vmb_feature_info),
+                                               sizeof(vmb_feature_info))
         if error:
             raise VimbaException(error)
 
-        return feature_info
+        return vmb_feature_info
 
     def _get_int(self) -> int:
         value = c_int64()
