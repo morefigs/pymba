@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
 from __future__ import absolute_import
 from . import vimba_structure as structs
 from .vimba_exception import VimbaException
-from .vimba_dll import VimbaDLL
-from .vimba_dll import VimbaC_MemoryBlock
+from .vimba_c import VimbaDLL
+from .vimba_c import VimbaC_MemoryBlock
 from ctypes import *
 import warnings
 try:
@@ -12,14 +11,12 @@ except ImportError:
     warnings.warn('numpy not found, some VimbaFrame methods will not be available')
 
 
-"""
-Map pixel formats to bytes per pixel.
-    The packed formats marked with "?" have not been tested.
-"""
+# Map pixel formats to bytes per pixel.
 PIXEL_FORMATS = {
     "Mono8": 1,
     "Mono12": 2,
-    "Mono12Packed": 1.5,  # ?
+    # untested
+    "Mono12Packed": 1.5,
     "Mono14": 2,
     "Mono16": 2,
     "RGB8": 3,
@@ -27,14 +24,16 @@ PIXEL_FORMATS = {
     "BGR8Packed": 3,
     "RGBA8Packed": 4,
     "BGRA8Packed": 4,
-    "YUV411Packed": 4/3.0,  # ?
+    # untested
+    "YUV411Packed": 4 / 3.0,
     "YUV422Packed": 2,
     "YUV444Packed": 3,
     "BayerRG8": 1,
     "BayerRG12": 2,
     "BayerGR8": 1,
     "BayerGR12": 2,
-    "BayerGR12Packed": 1.5,  # ?
+    # untested
+    "BayerGR12Packed": 1.5,
 }
 
 
@@ -68,29 +67,29 @@ class VimbaFrame(object):
         sizeOfFrame = self.payloadSize
 
         # keep this reference to keep block alive for life of frame
-        self._cMem = VimbaC_MemoryBlock(sizeOfFrame)
+        self._c_mem = VimbaC_MemoryBlock(sizeOfFrame)
         # set buffer to have length of expected payload size
-        self._frame.buffer = self._cMem.block
+        self._frame.buffer = self._c_mem.block
 
         # set buffer size to expected payload size
         self._frame.bufferSize = sizeOfFrame
 
-        errorCode = VimbaDLL.frameAnnounce(self._handle,
+        error = VimbaDLL.frameAnnounce(self._handle,
                                            byref(self._frame),
                                            sizeof(self._frame))
 
-        if errorCode != 0:
-            raise VimbaException(errorCode)
+        if error:
+            raise VimbaException(error)
 
     def revokeFrame(self):
         """
         Revoke a frame from the API.
         """
-        errorCode = VimbaDLL.frameRevoke(self._handle,
+        error = VimbaDLL.frameRevoke(self._handle,
                                          byref(self._frame))
 
-        if errorCode != 0:
-            raise VimbaException(errorCode)
+        if error:
+            raise VimbaException(error)
 
     def queueFrameCapture(self, frameCallback = None):
         """
@@ -119,15 +118,15 @@ class VimbaFrame(object):
             # keep a reference to prevent gc issues
             self._frameCallbackWrapper_C = VimbaDLL.frameDoneCallback(frameCallbackWrapper)
 
-        errorCode = VimbaDLL.captureFrameQueue(self._handle,
+        error = VimbaDLL.captureFrameQueue(self._handle,
                                                byref(self._frame),
                                                self._frameCallbackWrapper_C)
-        if errorCode != 0:
-            raise VimbaException(errorCode)
+        if error:
+            raise VimbaException(error)
 
     def waitFrameCapture(self, timeout=2000):
         """
-        Wait for a queued frame to be filled (or dequeued).  Returns Errorcode
+        Wait for a queued frame to be filled (or dequeued).  Returns error
         upon completion.
         Runs VmbCaptureFrameWait
 
@@ -135,16 +134,16 @@ class VimbaFrame(object):
 
         Call after an acquisition command
         """
-        errorCode = VimbaDLL.captureFrameWait(self._handle,
+        error = VimbaDLL.captureFrameWait(self._handle,
                                               byref(self._frame),
                                               timeout)
 
-        # errorCode to be processed by the end user for this function.
+        # error to be processed by the end user for this function.
         # Prevents system for breaking for example on a hardware trigger
         # timeout
-        #if errorCode != 0:
-            #raise VimbaException(errorCode)
-        return errorCode
+        #if error:
+            #raise VimbaException(error)
+        return error
 
     # custom method for simplified usage
     def getBufferByteData(self):
