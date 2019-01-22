@@ -1,129 +1,91 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from . import vimba_structure as structs
+from ctypes import byref, sizeof
+from typing import Optional
+
 from .vimba_object import VimbaObject
 from .vimba_exception import VimbaException
 from .vimba_frame import VimbaFrame
-from .vimba_dll import VimbaDLL
-from ctypes import *
-
-# camera features are automatically readable as object attributes.
+from . import vimba_c
 
 
 class VimbaCamera(VimbaObject):
+    """
+    A Vimba camera object.
+    """
 
-    """
-    A Vimba camera object. This class provides the minimal access
-    to Vimba functions required to control the camera.
-    """
+    def __init__(self, id_string: str):
+        self._id_string = id_string.encode()
+        super().__init__()
+        self._info = self._get_info()
 
     @property
-    def cameraIdString(self):
-        return self._cameraIdString.decode()
+    def id_string(self) -> str:
+        return self._id_string.decode()
 
-    # own handle is inherited as self._handle
-    def __init__(self, cameraIdString):
-
-        # call super constructor
-        super(VimbaCamera, self).__init__()
-
-        # set ID
-        self._cameraIdString = cameraIdString.encode()
-
-        # set own info
-        self._info = self._getInfo()
-
-    def getInfo(self):
+    def _get_info(self) -> vimba_c.VmbCameraInfo:
         """
-        Get info of the camera. Does not require
-        the camera to be opened.
-
-        :returns: VimbaCameraInfo object -- camera information.
+        Get info of the camera. Does not require the camera to be opened.
         """
-        return self._info
+        vmb_camera_info = vimba_c.VmbCameraInfo()
+        error = vimba_c.vmb_camera_info_query(self._id_string,
+                                              byref(vmb_camera_info),
+                                              sizeof(vmb_camera_info))
+        if error:
+            raise VimbaException(error)
 
-    def _getInfo(self):
+        return vmb_camera_info
+
+    def open(self, camera_access_mode: Optional[int] = VimbaObject.VMB_ACCESS_MODE_FULL):
         """
-        Get info of the camera. Does not require
-        the camera to be opened.
-
-        :returns: VimbaCameraInfo object -- camera information.
+        Open the camera with requested access mode.
         """
-        # args for Vimba call
-        cameraInfo = structs.VimbaCameraInfo()
-
-        # Vimba DLL will return an error code
-        errorCode = VimbaDLL.cameraInfoQuery(self._cameraIdString,
-                                             byref(cameraInfo),
-                                             sizeof(cameraInfo))
-        if errorCode != 0:
-            raise VimbaException(errorCode)
-
-        return cameraInfo
-
-    def openCamera(self, cameraAccessMode=1):
-        """
-        Open the camera with requested access mode
-        Available access modes:
-           0 : VmbAccessModeNone 	
-           1 : VmbAccessModeFull 	
-           2 : VmbAccessModeRead 	
-           3 : VmbAccessModeConfig 	
-           4 : VmbAccessModeLite 
-        """
-        # args for Vimba call
-        errorCode = VimbaDLL.cameraOpen(self._cameraIdString,
-                                        cameraAccessMode,
+        error = vimba_c.vmb_camera_open(self._id_string,
+                                        camera_access_mode,
                                         byref(self._handle))
-        if errorCode != 0:
-            raise VimbaException(errorCode)
+        if error:
+            raise VimbaException(error)
 
-    def closeCamera(self):
+    def close(self):
         """
         Close the camera.
         """
-        errorCode = VimbaDLL.cameraClose(self._handle)
-        if errorCode != 0:
-            raise VimbaException(errorCode)
+        error = vimba_c.vmb_camera_close(self._handle)
+        if error:
+            raise VimbaException(error)
 
-    def revokeAllFrames(self):
+    def revoke_all_frames(self):
         """
         Revoke all frames assigned to the camera.
         """
-        errorCode = VimbaDLL.frameRevokeAll(self._handle)
-        if errorCode != 0:
-            raise VimbaException(errorCode)
+        error = vimba_c.vmb_frame_revoke_all(self._handle)
+        if error:
+            raise VimbaException(error)
 
-    def startCapture(self):
+    def start_capture(self):
         """
         Prepare the API for incoming frames.
         """
-        errorCode = VimbaDLL.captureStart(self._handle)
-        if errorCode != 0:
-            raise VimbaException(errorCode)
+        error = vimba_c.vmb_capture_start(self._handle)
+        if error:
+            raise VimbaException(error)
 
-    def endCapture(self):
+    def end_capture(self):
         """
         Stop the API from being able to receive frames.
         """
-        errorCode = VimbaDLL.captureEnd(self._handle)
-        if errorCode != 0:
-            raise VimbaException(errorCode)
+        error = vimba_c.vmb_capture_end(self._handle)
+        if error:
+            raise VimbaException(error)
 
-    def flushCaptureQueue(self):
+    def flush_capture_queue(self):
         """
         Flush the capture queue.
         """
-        errorCode = VimbaDLL.captureQueueFlush(self._handle)
-        if errorCode != 0:
-            raise VimbaException(errorCode)
+        error = vimba_c.vmb_capture_queue_flush(self._handle)
+        if error:
+            raise VimbaException(error)
 
-    # method for easy frame creation
-    def getFrame(self):
+    def create_frame(self) -> VimbaFrame:
         """
-        Creates and returns a new frame object. Multiple frames
-        per camera can therefore be returned.
-
-        :returns: VimbaFrame object -- the new frame.
+        Creates and returns a new frame object. Multiple frames per camera can therefore be returned.
         """
         return VimbaFrame(self)
