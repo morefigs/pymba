@@ -37,6 +37,7 @@ def test_interface_camera_ids(vmb: Vimba):
     if vmb.system().GeVTLIsPresent:
         vmb.system().run_feature_command("GeVDiscoveryAllOnce")
 
+    # test id funcs return a list of strings (not bytes)
     for func in (vmb.interface_ids, vmb.camera_ids):
         ids = func()
         assert isinstance(ids, list)
