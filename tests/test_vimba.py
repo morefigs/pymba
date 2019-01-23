@@ -27,19 +27,26 @@ def test_startup_shutdown():
 
 @pytest.fixture
 def vmb() -> Vimba:
-    with Vimba() as v:
-        yield v
+    with Vimba() as vmb:
+        # for ethernet camera discovery
+        if vmb.system().GeVTLIsPresent:
+            vmb.system().run_feature_command("GeVDiscoveryAllOnce")
+        yield vmb
 
 
-# works best with camera(s) attached
 def test_interface_camera_ids(vmb: Vimba):
-    # for ethernet camera discovery
-    if vmb.system().GeVTLIsPresent:
-        vmb.system().run_feature_command("GeVDiscoveryAllOnce")
-
     # test id funcs return a list of strings (not bytes)
     for func in (vmb.interface_ids, vmb.camera_ids):
         ids = func()
         assert isinstance(ids, list)
+        assert ids
         for x in ids:
             assert isinstance(x, str)
+
+
+def test_interface(vmb: Vimba):
+    interface = vmb.interface(vmb.interface_ids()[0])
+
+
+def test_camera(vmb: Vimba):
+    camera = vmb.camera(vmb.camera_ids()[0])
