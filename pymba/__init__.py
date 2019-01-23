@@ -1,2 +1,1 @@
-from .vimba import Vimba
-from .vimba_exception import VimbaException
+from .vimba import Vimba, VimbaException
