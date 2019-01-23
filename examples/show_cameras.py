@@ -9,4 +9,4 @@ if __name__ == '__main__':
         if vmb.system.GeVTLIsPresent:
             vmb.system.run_feature_command("GeVDiscoveryAllOnce")
             sleep(0.2)
-        print(vmb.camera_ids)
+        print(vmb.get_camera_ids())
