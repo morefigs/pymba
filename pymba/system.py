@@ -1,7 +1,7 @@
 from .vimba_object import VimbaObject
 
 
-class VimbaSystem(VimbaObject):
+class System(VimbaObject):
     """
     A Vimba system object. This class provides the minimal access to Vimba functions required to control the system.
     """

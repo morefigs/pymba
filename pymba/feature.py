@@ -5,7 +5,7 @@ from .vimba_exception import VimbaException
 from . import vimba_c
 
 
-class VimbaFeature:
+class Feature:
     """
     A feature of a Vimba object.
     """

@@ -5,7 +5,7 @@ from .vimba_exception import VimbaException
 from . import vimba_c
 
 
-class VimbaInterface(VimbaObject):
+class Interface(VimbaObject):
     """
     A Vimba interface object. This class provides the minimal access
     to Vimba functions required to control the interface.

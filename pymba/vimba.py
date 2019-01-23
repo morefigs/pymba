@@ -2,9 +2,9 @@ from ctypes import byref, sizeof, c_uint32
 from typing import List
 
 from .vimba_exception import VimbaException
-from .vimba_system import VimbaSystem
-from .vimba_camera import VimbaCamera
-from .vimba_interface import VimbaInterface
+from .system import System
+from .camera import Camera
+from .interface import Interface
 from . import vimba_c
 
 
@@ -17,7 +17,7 @@ class Vimba(object):
 
     def __init__(self):
         # create own system singleton object
-        self._system = VimbaSystem()
+        self._system = System()
         self._vmb_interface_infos = None
         self._interfaces = {}
         self._cameras = {}
@@ -38,7 +38,7 @@ class Vimba(object):
         self.shutdown()
 
     @property
-    def system(self) -> VimbaSystem:
+    def system(self) -> System:
         """
         Get the system object.
         """
@@ -172,7 +172,7 @@ class Vimba(object):
             raise VimbaException(error)
         return vmb_camera_info
 
-    def get_interface(self, id_string) -> VimbaInterface:
+    def get_interface(self, id_string) -> Interface:
         """
         Gets interface object based on interface ID string. Will not recreate interface object if it already exists.
         :param id_string: the ID of the interface.
@@ -181,11 +181,11 @@ class Vimba(object):
         if id_string in self.get_interface_ids():
             # create it if it doesn't exist
             if id_string not in self._interfaces:
-                self._interfaces[id_string] = VimbaInterface(id_string)
+                self._interfaces[id_string] = Interface(id_string)
             return self._interfaces[id_string]
         raise VimbaException(VimbaException.ERR_INTERFACE_NOT_FOUND)
 
-    def get_camera(self, camera_id: str) -> VimbaCamera:
+    def get_camera(self, camera_id: str) -> Camera:
         """
         Gets camera object based on camera ID string. Will not recreate camera object if it already exists.
         :param camera_id: the ID of the camera object to get. This can be an ID or e.g. a serial number. Check the Vimba
@@ -195,7 +195,7 @@ class Vimba(object):
         if camera_id in self.get_camera_ids():
             # create it if it doesn't exist
             if camera_id not in self._cameras:
-                self._cameras[camera_id] = VimbaCamera(camera_id)
+                self._cameras[camera_id] = Camera(camera_id)
             return self._cameras[camera_id]
         else:
             # the given string might not be a camera ID -> check for other IDs
@@ -208,5 +208,5 @@ class Vimba(object):
             
             camera_id_string = vmb_camera_info.id_string.decode()
             if camera_id_string not in self._cameras:
-                self._cameras[camera_id_string] = VimbaCamera(camera_id_string)
+                self._cameras[camera_id_string] = Camera(camera_id_string)
             return self._cameras[camera_id_string]

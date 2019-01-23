@@ -2,7 +2,7 @@ from ctypes import byref, sizeof, c_void_p, c_uint32, c_uint64, c_bool
 from typing import Union, Tuple, List, Optional
 
 from .vimba_exception import VimbaException
-from .vimba_feature import VimbaFeature
+from .feature import Feature
 from . import vimba_c
 
 
@@ -35,7 +35,7 @@ class VimbaObject:
     def __getattr__(self, attr):
         # if a feature value requested (requires object (camera) open)
         if attr in self.get_feature_names():
-            return VimbaFeature(attr, self._handle).value
+            return Feature(attr, self._handle).value
 
         # otherwise don't know about it
         raise AttributeError(''.join(["'VimbaObject' has no attribute '", attr, "'"]))
@@ -51,7 +51,7 @@ class VimbaObject:
 
         # if it's an actual camera feature (requires camera open)
         elif attr in self.get_feature_names():
-            VimbaFeature(attr, self._handle).value = val
+            Feature(attr, self._handle).value = val
 
         # otherwise just set the attribute value as normal
         else:
@@ -125,7 +125,7 @@ class VimbaObject:
                   list -- names of possible enum values (for enum features only).
         """
         # shouldn't cache this
-        return VimbaFeature(feature_name, self._handle).range
+        return Feature(feature_name, self._handle).range
 
     def run_feature_command(self, feature_name: str) -> None:
         """

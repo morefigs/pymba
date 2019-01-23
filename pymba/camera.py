@@ -3,11 +3,11 @@ from typing import Optional
 
 from .vimba_object import VimbaObject
 from .vimba_exception import VimbaException
-from .vimba_frame import VimbaFrame
+from .frame import Frame
 from . import vimba_c
 
 
-class VimbaCamera(VimbaObject):
+class Camera(VimbaObject):
     """
     A Vimba camera object.
     """
@@ -84,8 +84,8 @@ class VimbaCamera(VimbaObject):
         if error:
             raise VimbaException(error)
 
-    def create_frame(self) -> VimbaFrame:
+    def create_frame(self) -> Frame:
         """
         Creates and returns a new frame object. Multiple frames per camera can therefore be returned.
         """
-        return VimbaFrame(self)
+        return Frame(self)

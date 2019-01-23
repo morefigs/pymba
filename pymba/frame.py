@@ -6,7 +6,7 @@ try:
 except ImportError:
     warnings.warn('could not import numpy, some Frame methods may not work.')
 
-from .vimba_camera import VimbaCamera
+from .camera import Camera
 from .vimba_exception import VimbaException
 from . import vimba_c
 
@@ -62,7 +62,7 @@ class Frame:
     A Vimba frame.
     """
 
-    def __init__(self, camera: VimbaCamera):
+    def __init__(self, camera: Camera):
         self._camera = camera
         self._handle = camera.handle
 

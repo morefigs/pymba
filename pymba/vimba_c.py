@@ -3,8 +3,6 @@ import platform
 import os
 from ctypes import *
 
-from .vimba_exception import VimbaException
-
 
 if sys_plat == "win32":
 
@@ -73,26 +71,6 @@ if sys_plat == "win32":
     CALLBACK_FUNCTYPE = WINFUNCTYPE
 else:
     CALLBACK_FUNCTYPE = CFUNCTYPE
-
-
-class MemoryBlock:
-    """
-    A memory block object for dealing neatly with C memory allocations.
-    """
-
-    @property
-    def block(self):
-        return c_void_p(addressof(self._block))
-
-    def __init__(self, block_size):
-        self._block = create_string_buffer(block_size)
-
-        # this seems to be None if too much memory is requested
-        if self._block is None:
-            raise VimbaException(VimbaException.ERR_FRAME_BUFFER_MEMORY)
-
-    def __del__(self):
-        del self._block
 
 
 class VmbVersionInfo(Structure):
