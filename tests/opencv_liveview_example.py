@@ -16,7 +16,7 @@ cv2.namedWindow("test")
 with Vimba() as vimba:
     system = vimba.getSystem()
 
-    system.runFeatureCommand("GeVDiscoveryAllOnce")
+    system.run_feature_command("GeVDiscoveryAllOnce")
     time.sleep(0.2)
 
     camera_ids = vimba.getCameraIds()
@@ -25,7 +25,7 @@ with Vimba() as vimba:
         print("Camera found: ", cam_id)
         
     c0 = vimba.getCamera(camera_ids[0])
-    c0.openCamera()
+    c0.open()
 
     try:
         #gigE camera
@@ -40,25 +40,25 @@ with Vimba() as vimba:
     c0.PixelFormat="Mono8"
     #c0.ExposureTimeAbs=60000
 
-    frame = c0.getFrame()
-    frame.announceFrame()
+    frame = c0.create_frame()
+    frame.announce()
 
-    c0.startCapture()
+    c0.start_capture()
 
     framecount = 0
     droppedframes = []
 
     while 1:
         try:
-            frame.queueFrameCapture()
+            frame.queue_capture()
             success = True
         except:
             droppedframes.append(framecount)
             success = False
-        c0.runFeatureCommand("AcquisitionStart")
-        c0.runFeatureCommand("AcquisitionStop")
-        frame.waitFrameCapture(1000)
-        frame_data = frame.getBufferByteData()
+        c0.run_feature_command("AcquisitionStart")
+        c0.run_feature_command("AcquisitionStop")
+        frame.wait_capture(1000)
+        frame_data = frame.get_buffer()
         if success:
             img = np.ndarray(buffer=frame_data,
                              dtype=np.uint8,
@@ -73,7 +73,7 @@ with Vimba() as vimba:
             break
 
 
-    c0.endCapture()
-    c0.revokeAllFrames()
+    c0.end_capture()
+    c0.revoke_all_frames()
 
-    c0.closeCamera()
+    c0.close()

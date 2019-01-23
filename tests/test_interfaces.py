@@ -14,15 +14,15 @@ def test_interfaces():
 
         # get interface object and open it
         interface0 = vimba.getInterface(interfaceIds[0])
-        interface0.openInterface()
+        interface0.open()
 
         # list interface features
-        interfaceFeatureNames = interface0.getFeatureNames()
+        interfaceFeatureNames = interface0.get_feature_names()
         for name in interfaceFeatureNames:
             print('Interface feature:', name)
 
         # close interface
-        interface0.closeInterface()
+        interface0.close()
 
 if __name__ == '__main__':
     test_interfaces()

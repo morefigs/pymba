@@ -9,9 +9,9 @@ def test_systemfeature():
         system = vimba.getSystem()
 
         # list system features
-        for featureName in system.getFeatureNames():
+        for featureName in system.get_feature_names():
             print('System feature:', featureName)
-            fInfo = system.getFeatureInfo(featureName)
+            fInfo = system.get_feature_info(featureName)
             for field in fInfo.getFieldNames():
                 print("\t", featureName, ":", field, getattr(fInfo, field))
 

@@ -12,7 +12,7 @@ def test_enumfeature():
         print ("get enum value (DiscoveryCameraEvent): '%s'" % (system.DiscoveryCameraEvent))
         
         # get enum range
-        range = system.getFeatureRange('DiscoveryCameraEvent')
+        range = system.get_feature_range('DiscoveryCameraEvent')
         print ("get enum value range (DiscoveryCameraEvent): '%s'" % (str(range)))
         
         # set enum value

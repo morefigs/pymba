@@ -12,7 +12,7 @@ def test_cameras():
 
         # list available cameras (after enabling discovery for GigE cameras)
         if system.GeVTLIsPresent:
-            system.runFeatureCommand("GeVDiscoveryAllOnce")
+            system.run_feature_command("GeVDiscoveryAllOnce")
             time.sleep(0.2)
 
         cameraIds = vimba.getCameraIds()
@@ -21,10 +21,10 @@ def test_cameras():
 
         # get and open a camera
         camera0 = vimba.getCamera(cameraIds[0])
-        camera0.openCamera()
+        camera0.open()
 
         # list camera features
-        cameraFeatureNames = camera0.getFeatureNames()
+        cameraFeatureNames = camera0.get_feature_names()
         for name in cameraFeatureNames:
             print('Camera feature:', name)
 
@@ -35,37 +35,37 @@ def test_cameras():
         camera0.AcquisitionMode = 'SingleFrame'
 
         # create new frames for the camera
-        frame0 = camera0.getFrame()  # creates a frame
-        frame1 = camera0.getFrame()  # creates a second frame
+        frame0 = camera0.create_frame()  # creates a frame
+        frame1 = camera0.create_frame()  # creates a second frame
 
         # announce frame
-        frame0.announceFrame()
+        frame0.announce()
 
         # capture a camera image
-        camera0.startCapture()
-        frame0.queueFrameCapture()
-        camera0.runFeatureCommand('AcquisitionStart')
-        camera0.runFeatureCommand('AcquisitionStop')
-        frame0.waitFrameCapture()
+        camera0.start_capture()
+        frame0.queue_capture()
+        camera0.run_feature_command('AcquisitionStart')
+        camera0.run_feature_command('AcquisitionStop')
+        frame0.wait_capture()
 
         # get image data...
-        imgData = frame0.getBufferByteData()
+        imgData = frame0.get_buffer()
 
         # ...or use NumPy for fast image display (for use with OpenCV, etc)
         import numpy as np
 
-        moreUsefulImgData = np.ndarray(buffer=frame0.getBufferByteData(),
+        moreUsefulImgData = np.ndarray(buffer=frame0.get_buffer(),
                                        dtype=np.uint8,
                                        shape=(frame0.height,
                                               frame0.width,
                                               1))
 
         # clean up after capture
-        camera0.endCapture()
-        camera0.revokeAllFrames()
+        camera0.end_capture()
+        camera0.revoke_all_frames()
 
         # close camera
-        camera0.closeCamera()
+        camera0.close()
 
 
 if __name__ == '__main__':
