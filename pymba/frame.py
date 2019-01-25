@@ -1,17 +1,16 @@
 from ctypes import byref, sizeof, addressof, create_string_buffer, cast, POINTER, c_ubyte, c_void_p
-from typing import Optional
+from typing import Optional, Callable
 import warnings
 try:
     import numpy as np
 except ImportError:
     warnings.warn('could not import numpy, some Frame methods may not work.')
 
-from .camera import Camera
 from .vimba_exception import VimbaException
 from . import vimba_c
 
 
-# Map pixel formats to bytes per pixel.
+# Map pixel formats to bytes per pixel
 PIXEL_FORMATS = {
     "Mono8": 1,
     "Mono12": 2,
@@ -62,7 +61,7 @@ class Frame:
     A Vimba frame.
     """
 
-    def __init__(self, camera: Camera):
+    def __init__(self, camera: 'Camera'):
         self._camera = camera
         self._handle = camera.handle
 
@@ -105,7 +104,7 @@ class Frame:
         if error:
             raise VimbaException(error)
 
-    def queue_capture(self, frame_callback: Optional[bool] = None) -> None:
+    def queue_capture(self, frame_callback: Optional[Callable] = None) -> None:
         """
         Queue frames that may be filled during frame capturing. Call after announceFrame and startCapture. Callback
         must accept argument of type frame. Remember to requeue the frame by calling frame.queue_capture() at the end
@@ -114,17 +113,16 @@ class Frame:
         self._frame_callback = frame_callback
 
         # define a callback wrapper here so it doesn't bind self
-        def frame_callback_wrapper(cam_handle, p_frame):
+        def frame_callback_wrapper(camera_handle, frame_ptr):
             # call the user's callback with the self bound outside the wrapper
-            # ignore the frame pointer since we already know the callback
-            # refers to this frame
+            # ignore the frame pointer since we already know the callback refers to this frame
             self._frame_callback(self)
 
         if self._frame_callback is None:
             self._frame_callback_wrapper_c = None
         else:
             # keep a reference to prevent gc issues
-            self._frame_callback_wrapper_c = vimba_c.vmb_frame_callback(frame_callback_wrapper)
+            self._frame_callback_wrapper_c = vimba_c.vmb_frame_callback_func(frame_callback_wrapper)
 
         error = vimba_c.vmb_capture_frame_queue(self._handle,
                                                 byref(self._frame),
@@ -148,10 +146,13 @@ class Frame:
 
         return error
 
-    def get_buffer_data(self) -> c_ubyte * int:
+    def get_buffer_data(self):
         """
         Retrieve buffer data in a useful format.
         """
+
+        # todo simplify?
+
         # cast frame buffer memory contents to a usable type
         data = cast(self._frame.buffer, POINTER(c_ubyte * self.payload_size))
 
@@ -159,7 +160,7 @@ class Frame:
         image_bytes = int(self.height * self.width * self.pixel_bytes)
         return (c_ubyte * image_bytes).from_address(addressof(data.contents))
 
-    def get_image(self) -> np.ndarray:
+    def get_image(self):
         """
         Returns the frame's image data as a NumPy array.
         """
