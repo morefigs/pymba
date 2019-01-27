@@ -1,4 +1,4 @@
-from pymba.vimba import Vimba
+from pymba import Vimba
 
 
 if __name__ == '__main__':
