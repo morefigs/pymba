@@ -1,5 +1,5 @@
-from ctypes import byref, sizeof
-from typing import Optional
+from ctypes import byref, sizeof, c_uint32
+from typing import Optional, List
 
 from .vimba_object import VimbaObject
 from .vimba_exception import VimbaException
@@ -7,38 +7,80 @@ from .frame import Frame
 from . import vimba_c
 
 
+def _camera_infos() -> List[vimba_c.VmbCameraInfo]:
+    """
+    Gets camera info of all attached cameras.
+    """
+    # call once just to get the number of cameras
+    vmb_camera_info = vimba_c.VmbCameraInfo()
+    num_found = c_uint32(-1)
+    error = vimba_c.vmb_cameras_list(byref(vmb_camera_info),
+                                     0,
+                                     byref(num_found),
+                                     sizeof(vmb_camera_info))
+    if error and error != VimbaException.ERR_DATA_TOO_LARGE:
+        raise VimbaException(error)
+
+    # call again to get the features
+    num_cameras = num_found.value
+    vmb_camera_infos = (vimba_c.VmbCameraInfo * num_cameras)()
+    error = vimba_c.vmb_cameras_list(vmb_camera_infos,
+                                     num_cameras,
+                                     byref(num_found),
+                                     sizeof(vmb_camera_info))
+    if error:
+        raise VimbaException(error)
+    return list(vmb_camera_info for vmb_camera_info in vmb_camera_infos)
+
+
+def _camera_info(id_string: str) -> vimba_c.VmbCameraInfo:
+    """
+    Gets camera info object of specified camera.
+    :param cameraId: the ID of the camera object to get. This can be an ID or e.g. a serial number. Check the Vimba
+                     documentation for other possible values.
+    """
+    vmb_camera_info = vimba_c.VmbCameraInfo()
+    error = vimba_c.vmb_camera_info_query(id_string.encode(),
+                                          vmb_camera_info,
+                                          sizeof(vmb_camera_info))
+    if error:
+        raise VimbaException(error)
+    return vmb_camera_info
+
+
+def camera_ids():
+    """
+    Gets IDs of all available cameras.
+    """
+    return list(vmb_camera_info.cameraIdString.decode()
+                for vmb_camera_info in _camera_infos())
+
+
 class Camera(VimbaObject):
     """
     A Vimba camera object.
     """
 
-    def __init__(self, id_string: str):
-        self._id_string = id_string.encode()
+    def __init__(self, camera_id: str):
+        self._camera_id = camera_id
         super().__init__()
-        self._info = self._get_info()
 
     @property
-    def id_string(self) -> str:
-        return self._id_string.decode()
+    def camera_id(self) -> str:
+        return self._camera_id
 
-    def _get_info(self) -> vimba_c.VmbCameraInfo:
+    @property
+    def info(self) -> vimba_c.VmbCameraInfo:
         """
         Get info of the camera. Does not require the camera to be opened.
         """
-        vmb_camera_info = vimba_c.VmbCameraInfo()
-        error = vimba_c.vmb_camera_info_query(self._id_string,
-                                              byref(vmb_camera_info),
-                                              sizeof(vmb_camera_info))
-        if error:
-            raise VimbaException(error)
-
-        return vmb_camera_info
+        return _camera_info(self.camera_id)
 
     def open(self, camera_access_mode: Optional[int] = VimbaObject.VMB_ACCESS_MODE_FULL):
         """
         Open the camera with requested access mode.
         """
-        error = vimba_c.vmb_camera_open(self._id_string,
+        error = vimba_c.vmb_camera_open(self.camera_id.encode(),
                                         camera_access_mode,
                                         byref(self._handle))
         if error:
