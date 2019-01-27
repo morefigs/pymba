@@ -73,14 +73,35 @@ else:
     CALLBACK_FUNCTYPE = CFUNCTYPE
 
 
-class VmbVersionInfo(Structure):
+class NiceStructure(Structure):
+    def __repr__(self):
+        field_names = (field[0] for field in self._fields_)
+        return f'{type(self).__name__}(' \
+               f'{", ".join("=".join((field, str(getattr(self, field)))) for field in field_names)})'
+
+
+class VmbVersionInfo(NiceStructure):
     _fields_ = [
         ('major', c_uint32),
         ('minor', c_uint32),
         ('patch', c_uint32)]
 
 
-class VmbCameraInfo(Structure):
+class VmbInterfaceInfo(NiceStructure):
+    _fields_ = [
+        # Unique identifier for each interface
+        ('interfaceIdString', c_char_p),
+        # Interface type, see VmbInterfaceType
+        ('interfaceType', c_uint32),
+        # Interface name, given by the transport layer
+        ('interfaceName', c_char_p),
+        # Serial number
+        ('serialString', c_char_p),
+        # Used access mode, see VmbAccessModeType
+        ('permittedAccess', c_uint32)]
+
+
+class VmbCameraInfo(NiceStructure):
     _fields_ = [
         # Unique identifier for each camera
         ('cameraIdString', c_char_p),
@@ -96,7 +117,7 @@ class VmbCameraInfo(Structure):
         ('interfaceIdString', c_char_p)]
 
 
-class VmbFeatureInfo(Structure):
+class VmbFeatureInfo(NiceStructure):
     _fields_ = [
         ('name', c_char_p),
         ('featureDataType', c_uint32),
@@ -155,28 +176,14 @@ class VmbFrame(Structure):
         ('timestamp', c_uint64)]
 
 
-class VmbInterfaceInfo(Structure):
-    _fields_ = [
-        # Unique identifier for each interface
-        ('interfaceIdString', c_char_p),
-        # Interface type, see VmbInterfaceType
-        ('interfaceType', c_uint32),
-        # Interface name, given by the transport layer
-        ('interfaceName', c_char_p),
-        # Serial number
-        ('serialString', c_char_p),
-        # Used access mode, see VmbAccessModeType
-        ('permittedAccess', c_uint32)]
-
-
 _vimba_lib = dll_loader.LoadLibrary(vimbaC_path)
 
 # ----- The below function signatures are defined in VimbaC.h -----
 
 # callback for frame queue
-vmb_frame_callback = CALLBACK_FUNCTYPE(c_void_p,
-                                       c_void_p,
-                                       POINTER(VmbFrame))
+vmb_frame_callback_func = CALLBACK_FUNCTYPE(c_void_p,
+                                            c_void_p,
+                                            POINTER(VmbFrame))
 
 vmb_version_query = _vimba_lib.VmbVersionQuery
 vmb_version_query.restype = c_int32
