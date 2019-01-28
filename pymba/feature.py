@@ -1,8 +1,21 @@
 from ctypes import byref, sizeof, c_uint32, c_double, c_char_p, c_bool, c_int64, create_string_buffer
-from typing import Tuple, List
+from typing import Tuple, List, Callable
 
 from .vimba_exception import VimbaException
 from . import vimba_c
+
+
+(
+    _FEATURE_DATA_UNKNOWN,
+    _FEATURE_DATA_INT,
+    _FEATURE_DATA_FLOAT,
+    _FEATURE_DATA_ENUM,
+    _FEATURE_DATA_STRING,
+    _FEATURE_DATA_BOOL,
+    _FEATURE_DATA_COMMAND,
+    _FEATURE_DATA_RAW,
+    _FEATURE_DATA_NONE,
+) = range(9)
 
 
 class Feature:
@@ -10,73 +23,69 @@ class Feature:
     A feature of a Vimba object.
     """
 
-    (
-        _FEATURE_DATA_UNKNOWN,
-        _FEATURE_DATA_INT,
-        _FEATURE_DATA_FLOAT,
-        _FEATURE_DATA_ENUM,
-        _FEATURE_DATA_STRING,
-        _FEATURE_DATA_BOOL,
-        _FEATURE_DATA_COMMAND,
-        _FEATURE_DATA_RAW,
-        _FEATURE_DATA_NONE,
-    ) = range(9)
-
     @property
     def name(self):
         return self._name.decode()
 
     @property
-    def handle(self):
-        return self._handle
+    def info(self) -> vimba_c.VmbFeatureInfo:
+        return self._feature_info()
 
-    # lookup relevant function for feature type and pass to that function
     @property
     def value(self):
-        return self._feature_data_value_funcs[self._info.featureDataType][0]()
+        return self._access_func('get', self.info.featureDataType)()
 
     @value.setter
     def value(self, val):
-        self._feature_data_value_funcs[self._info.featureDataType][1](val)
+        self._access_func('set', self.info.featureDataType)(val)
 
     @property
     def range(self):
-        return self._feature_data_range_funcs[self._info.featureDataType]()
+        return self._access_func('range', self.info.featureDataType)()
 
     def __init__(self, name, handle):
         self._name = name.encode()
         self._handle = handle
 
-        # type functions dict for looking up correct get/set function to use
-        self._feature_data_value_funcs = {
-            self._FEATURE_DATA_UNKNOWN: None,
-            self._FEATURE_DATA_INT: (self._get_int, self._set_int),
-            self._FEATURE_DATA_FLOAT: (self._get_float, self._set_float),
-            self._FEATURE_DATA_ENUM: (self._get_enum, self._set_enum),
-            self._FEATURE_DATA_STRING: (self._get_string, self._set_string),
-            self._FEATURE_DATA_BOOL: (self._get_bool, self._set_bool),
-            self._FEATURE_DATA_COMMAND: None,
-            self._FEATURE_DATA_RAW: None,
-            self._FEATURE_DATA_NONE: None,
+    def _access_func(self, func_type: str, data_type: int) -> Callable:
+        """
+        Get the correct function needed to access the feature attribute based on the feature's data type.
+        :param func_type: One of 'get', 'set', or 'range'.
+        :param data_type: Data type as defined in VmbFeatureDataType.
+        """
+        # (getter, setter, range) funcs
+        access_funcs = {
+            _FEATURE_DATA_UNKNOWN: (),
+            _FEATURE_DATA_INT: (self._get_int,
+                                self._set_int,
+                                self._range_query_int),
+            _FEATURE_DATA_FLOAT: (self._get_float,
+                                  self._set_float,
+                                  self._range_query_float),
+            _FEATURE_DATA_ENUM: (self._get_enum,
+                                 self._set_enum,
+                                 self._range_query_enum),
+            _FEATURE_DATA_STRING: (self._get_string,
+                                   self._set_string),
+            _FEATURE_DATA_BOOL: (self._get_bool,
+                                 self._set_bool),
+            _FEATURE_DATA_COMMAND: (),
+            _FEATURE_DATA_RAW: (),
+            _FEATURE_DATA_NONE: (),
         }
 
-        # type functions dict for looking up correct range function to use
-        self._feature_data_range_funcs = {
-            self._FEATURE_DATA_UNKNOWN: None,
-            self._FEATURE_DATA_INT: self._range_query_int,
-            self._FEATURE_DATA_FLOAT: self._range_query_float,
-            self._FEATURE_DATA_ENUM: self._range_query_enum,
-            self._FEATURE_DATA_STRING: None,
-            self._FEATURE_DATA_BOOL: None,
-            self._FEATURE_DATA_COMMAND: None,
-            self._FEATURE_DATA_RAW: None,
-            self._FEATURE_DATA_NONE: None,
+        access_indices = {
+            'get': 0,
+            'set': 1,
+            'range': 2,
         }
 
-        # get info once
-        self._info = self._get_info()
+        try:
+            return access_funcs[data_type][access_indices[func_type]]
+        except IndexError:
+            raise VimbaException(VimbaException.ERR_NOT_IMPLEMENTED_IN_PYMBA)
 
-    def _get_info(self) -> vimba_c.VmbFeatureInfo:
+    def _feature_info(self) -> vimba_c.VmbFeatureInfo:
         vmb_feature_info = vimba_c.VmbFeatureInfo()
         error = vimba_c.vmb_feature_info_query(self._handle,
                                                self._name,
@@ -140,7 +149,7 @@ class Feature:
 
     def _get_string(self) -> str:
         buffer_size = 256
-        value = create_string_buffer('\x00' * buffer_size)
+        value = create_string_buffer(buffer_size)
         size_filled = c_uint32()
 
         error = vimba_c.vmb_feature_string_get(self._handle,
