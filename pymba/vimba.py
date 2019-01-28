@@ -50,14 +50,17 @@ class Vimba:
                                          vmb_version_info.minor,
                                          vmb_version_info.patch))
 
-    @staticmethod
-    def startup():
+    def startup(self):
         """
         Initialize the Vimba C API.
         """
         error = vimba_c.vmb_startup()
         if error:
             raise VimbaException(error)
+
+        # automatically check for the presence of a GigE transport layer
+        if self.system().GeVTLIsPresent:
+            self.system().run_feature_command('GeVDiscoveryAllOnce')
 
     @staticmethod
     def shutdown():
