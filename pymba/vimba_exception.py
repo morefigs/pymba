@@ -1,4 +1,3 @@
-
 class VimbaException(Exception):
     ERROR_CODES = (
         # 0
@@ -26,14 +25,10 @@ class VimbaException(Exception):
         ERR_PARTIAL_REGISTER_ACCESS,
 
         # -50 to -56
-        ERR_CAMERA_NOT_FOUND,
         ERR_FRAME_BUFFER_MEMORY,
-        ERR_INVALID_INPUT,
-        ERR_FEATURE_NOT_FOUND,
-        ERR_INTERFACE_NOT_FOUND,
         ERR_NOT_IMPLEMENTED_IN_PYMBA,
         ERR_UNDEFINED_ERROR_CODE,
-    ) = tuple(range(0, -20, -1)) + tuple(range(-50, -57, -1))
+    ) = tuple(range(0, -20, -1)) + tuple(range(-50, -53, -1))
 
     ERRORS = {
         # Vimba C API specific errors
@@ -59,11 +54,7 @@ class VimbaException(Exception):
         ERR_PARTIAL_REGISTER_ACCESS: 'A multiple registers read or write was partially completed.',
 
         # Custom errors
-        ERR_CAMERA_NOT_FOUND: 'Could not find the specified camera.',
         ERR_FRAME_BUFFER_MEMORY: 'Not enough memory to assign frame buffer.',
-        ERR_INVALID_INPUT: 'Invalid input.',
-        ERR_FEATURE_NOT_FOUND: 'Could not find the specified feature.',
-        ERR_INTERFACE_NOT_FOUND: 'Could not find the specified interface.',
         ERR_NOT_IMPLEMENTED_IN_PYMBA: 'This function is not yet implemented in Pymba',
         ERR_UNDEFINED_ERROR_CODE: 'Undefined error code',
     }
