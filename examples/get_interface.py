@@ -3,7 +3,7 @@ from pymba import Vimba
 
 if __name__ == '__main__':
 
-    with Vimba() as vmb:
+    with Vimba() as vimba:
         # provide interface index or id
-        interface = vmb.interface(0)
+        interface = vimba.interface(0)
         print(interface)

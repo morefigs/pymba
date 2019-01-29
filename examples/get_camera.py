@@ -3,7 +3,7 @@ from pymba import Vimba
 
 if __name__ == '__main__':
 
-    with Vimba() as vmb:
+    with Vimba() as vimba:
         # provide camera index or id
-        camera = vmb.camera(0)
+        camera = vimba.camera(0)
         print(camera)

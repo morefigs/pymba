@@ -3,8 +3,8 @@ from pymba import Vimba
 
 if __name__ == '__main__':
 
-    with Vimba() as vmb:
-        interface = vmb.interface(0)
+    with Vimba() as vimba:
+        interface = vimba.interface(0)
         interface.open()
 
         # set a feature value by feature name
