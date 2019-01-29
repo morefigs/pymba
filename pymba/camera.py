@@ -36,8 +36,8 @@ def _camera_infos() -> List[vimba_c.VmbCameraInfo]:
 def _camera_info(id_string: str) -> vimba_c.VmbCameraInfo:
     """
     Gets camera info object of specified camera.
-    :param cameraId: the ID of the camera object to get. This can be an ID or e.g. a serial number. Check the Vimba
-                     documentation for other possible values.
+    :param id_string: the ID of the camera object to get. This can be an ID or e.g. a serial number. Check the Vimba
+                      documentation for other possible values.
     """
     vmb_camera_info = vimba_c.VmbCameraInfo()
     error = vimba_c.vmb_camera_info_query(id_string.encode(),
