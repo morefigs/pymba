@@ -66,6 +66,10 @@ class Camera(VimbaObject):
         super().__init__()
 
     @property
+    def handle(self):
+        return self._handle
+
+    @property
     def camera_id(self) -> str:
         return self._camera_id
 
