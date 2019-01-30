@@ -9,9 +9,12 @@ if __name__ == '__main__':
 
         # set a feature value by feature name
         feature = interface.feature('InterfacePingPace')
-        print(feature.value)
-        feature.value = 3
-        print(feature.value)
+        value = feature.value
+
+        # set the feature value
+        feature.value = value
+
+        print(feature.name, '=', feature.value)
 
         # alternatively the feature value can be set as an object attribute
         interface.InterfacePingPace = 3
