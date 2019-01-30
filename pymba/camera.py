@@ -7,6 +7,33 @@ from .frame import Frame
 from . import vimba_c
 
 
+# todo update this to be more like VmbPixelFormatType in VmbCommonTypes.h
+# Map pixel formats to bytes per pixel
+PIXEL_FORMAT_BYTES = {
+    "Mono8": 1,
+    "Mono12": 2,
+    # todo untested
+    "Mono12Packed": 1.5,
+    "Mono14": 2,
+    "Mono16": 2,
+    "RGB8": 3,
+    "RGB8Packed": 3,
+    "BGR8Packed": 3,
+    "RGBA8Packed": 4,
+    "BGRA8Packed": 4,
+    # todo untested
+    "YUV411Packed": 4 / 3.0,
+    "YUV422Packed": 2,
+    "YUV444Packed": 3,
+    "BayerRG8": 1,
+    "BayerRG12": 2,
+    "BayerGR8": 1,
+    "BayerGR12": 2,
+    # todo untested
+    "BayerGR12Packed": 1.5,
+}
+
+
 def _camera_infos() -> List[vimba_c.VmbCameraInfo]:
     """
     Gets camera info of all attached cameras.
