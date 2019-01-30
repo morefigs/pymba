@@ -13,7 +13,19 @@ class Vimba:
     Python wrapper for Allied Vision's Vimba C API.
     """
 
-    # todo - assign camera info and feature info as own object properties
+    @staticmethod
+    def version() -> str:
+        """
+        Retrieve the version number of the Vimba C API.
+        """
+        vmb_version_info = vimba_c.VmbVersionInfo()
+        error = vimba_c.vmb_version_query(vmb_version_info, sizeof(vmb_version_info))
+        if error:
+            raise VimbaException(error)
+
+        return '.'.join(str(x) for x in (vmb_version_info.major,
+                                         vmb_version_info.minor,
+                                         vmb_version_info.patch))
 
     def __init__(self):
         # create own system singleton object
@@ -35,20 +47,6 @@ class Vimba:
         on a kernel call after an exception.
         """
         self.shutdown()
-
-    @property
-    def version(self) -> str:
-        """
-        Retrieve the version number of the Vimba C API.
-        """
-        vmb_version_info = vimba_c.VmbVersionInfo()
-        error = vimba_c.vmb_version_query(vmb_version_info, sizeof(vmb_version_info))
-        if error:
-            raise VimbaException(error)
-
-        return '.'.join(str(x) for x in (vmb_version_info.major,
-                                         vmb_version_info.minor,
-                                         vmb_version_info.patch))
 
     def startup(self):
         """
