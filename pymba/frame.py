@@ -1,39 +1,10 @@
 from ctypes import byref, sizeof, addressof, create_string_buffer, cast, POINTER, c_ubyte, c_void_p
 from typing import Optional, Callable
-import warnings
-try:
-    import numpy as np
-except ImportError:
-    warnings.warn('could not import numpy, some Frame methods may not work.')
+import numpy as np
 
+from . import camera as _camera
 from .vimba_exception import VimbaException
 from . import vimba_c
-
-
-# Map pixel formats to bytes per pixel
-PIXEL_FORMATS = {
-    "Mono8": 1,
-    "Mono12": 2,
-    # untested
-    "Mono12Packed": 1.5,
-    "Mono14": 2,
-    "Mono16": 2,
-    "RGB8": 3,
-    "RGB8Packed": 3,
-    "BGR8Packed": 3,
-    "RGBA8Packed": 4,
-    "BGRA8Packed": 4,
-    # untested
-    "YUV411Packed": 4 / 3.0,
-    "YUV422Packed": 2,
-    "YUV444Packed": 3,
-    "BayerRG8": 1,
-    "BayerRG12": 2,
-    "BayerGR8": 1,
-    "BayerGR12": 2,
-    # untested
-    "BayerGR12Packed": 1.5,
-}
 
 
 class MemoryBlock:
@@ -52,59 +23,51 @@ class MemoryBlock:
         if self._block is None:
             raise VimbaException(VimbaException.ERR_FRAME_BUFFER_MEMORY)
 
-    def __del__(self):
-        del self._block
-
 
 class Frame:
     """
     A Vimba frame.
     """
 
-    def __init__(self, camera: 'Camera'):
+    def __init__(self, camera: '_camera.Camera'):
         self._camera = camera
-        self._handle = camera.handle
 
-        # get frame sizes
-        self.payload_size = self._camera.PayloadSize
-        self.width = self._camera.Width
-        self.height = self._camera.Height
-        self.pixel_bytes = PIXEL_FORMATS[self._camera.PixelFormat]
-
-        # frame structure
-        self._frame = vimba_c.VmbFrame()
+        self._vmb_frame = vimba_c.VmbFrame()
 
         self._c_mem = None
+        self._frame_callback = None
+        self._frame_callback_wrapper_c = None
 
-    def announce(self):
+    def announce(self) -> None:
         """
         Announce frames to the API that may be queued for frame capturing later. Should be called after the frame is
         created. Call startCapture after this method.
         """
         # keep this reference to keep block alive for life of frame
-        self._c_mem = MemoryBlock(self.payload_size)
+        self._c_mem = MemoryBlock(self._camera.PayloadSize)
+
         # set buffer to have length of expected payload size
-        self._frame.buffer = self._c_mem.block
+        self._vmb_frame.buffer = self._c_mem.block
 
         # set buffer size to expected payload size
-        self._frame.bufferSize = self.payload_size
+        self._vmb_frame.bufferSize = self._camera.PayloadSize
 
-        error = vimba_c.vmb_frame_announce(self._handle,
-                                           byref(self._frame),
-                                           sizeof(self._frame))
+        error = vimba_c.vmb_frame_announce(self._camera.handle,
+                                           byref(self._vmb_frame),
+                                           sizeof(self._vmb_frame))
         if error:
             raise VimbaException(error)
 
-    def revoke(self):
+    def revoke(self) -> None:
         """
         Revoke a frame from the API.
         """
-        error = vimba_c.vmb_frame_revoke(self._handle,
-                                         byref(self._frame))
+        error = vimba_c.vmb_frame_revoke(self._camera.handle,
+                                         byref(self._vmb_frame))
         if error:
             raise VimbaException(error)
 
-    def queue_capture(self, frame_callback: Optional[Callable] = None) -> None:
+    def queue_for_capture(self, frame_callback: Optional[Callable] = None) -> None:
         """
         Queue frames that may be filled during frame capturing. Call after announceFrame and startCapture. Callback
         must accept argument of type frame. Remember to requeue the frame by calling frame.queue_capture() at the end
@@ -124,53 +87,41 @@ class Frame:
             # keep a reference to prevent gc issues
             self._frame_callback_wrapper_c = vimba_c.vmb_frame_callback_func(frame_callback_wrapper)
 
-        error = vimba_c.vmb_capture_frame_queue(self._handle,
-                                                byref(self._frame),
+        error = vimba_c.vmb_capture_frame_queue(self._camera.handle,
+                                                byref(self._vmb_frame),
                                                 self._frame_callback_wrapper_c)
         if error:
             raise VimbaException(error)
 
-    def wait_capture(self, timeout_ms: Optional[int] = 2000) -> int:
+    def wait_for_capture(self, timeout_ms: Optional[int] = 2000) -> None:
         """
         Wait for a queued frame to be filled (or dequeued). Call after an acquisition command.
         :param timeout_ms: time out in milliseconds.
         """
-        error = vimba_c.vmb_capture_frame_wait(self._handle,
-                                               byref(self._frame),
+        error = vimba_c.vmb_capture_frame_wait(self._camera.handle,
+                                               byref(self._vmb_frame),
                                                timeout_ms)
+        if error:
+            raise VimbaException(error)
 
-        # error to be processed by the end user for this function.
-        # Prevents system for breaking for example on a hardware trigger timeout
-
-        # todo raise error instead?
-
-        return error
-
-    def get_buffer_data(self):
+    def image_pointer(self):
         """
-        Retrieve buffer data in a useful format.
+        Get a pointer to the frame's image data as a ctypes c_ubyte array pointer.
         """
+        return cast(self._vmb_frame.buffer, POINTER(c_ubyte * self._vmb_frame.bufferSize))
 
-        # todo simplify?
-
-        # cast frame buffer memory contents to a usable type
-        data = cast(self._frame.buffer, POINTER(c_ubyte * self.payload_size))
-
-        # make array of c_ubytes from buffer
-        image_bytes = int(self.height * self.width * self.pixel_bytes)
-        return (c_ubyte * image_bytes).from_address(addressof(data.contents))
-
-    def get_image(self):
+    def image_buffer(self):
         """
-        Returns the frame's image data as a NumPy array.
+        Get a copy of the frame's image data as a ctypes c_ubyte array.
         """
-        data = cast(self._frame.buffer, POINTER(c_ubyte * self._frame.imageSize))
-        return np.ndarray(buffer=data.contents, dtype=np.uint8, shape=(self._frame.height, self._frame.width))
+        return self.image_pointer().contents
 
-    @property
-    def timestamp(self) -> int:
-        return self._frame.timestamp
+    def image_numpy_array(self) -> np.ndarray:
+        """
+        Get the frame's image data as a NumPy array, which can be used with OpenCV.
+        """
+        # todo pixel formats larger than 8-bit
 
-    @property
-    def receive_status(self) -> int:
-        return self._frame.receiveStatus
+        return np.ndarray(buffer=self.image_buffer(),
+                          dtype=np.uint8,
+                          shape=(self._vmb_frame.height, self._vmb_frame.width))
