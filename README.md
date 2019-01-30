@@ -34,9 +34,10 @@ For Python 2 and for backwards compatibility with older versions of Pymba use th
 
 If Vimba and Pymba are installed correctly, then the following code should give the installed Vimba version. No camera is needed.
 
-    from pymba import Vimba
+    from pymba import Vimba, PYMBA_VERSION
     
-    print(Vimba.version())
+    print('Pymba version:', PYMBA_VERSION)
+    print('Vimba C API version:', Vimba.version())
     
 ## Usage examples
     
