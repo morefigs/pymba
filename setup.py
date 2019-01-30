@@ -3,7 +3,7 @@ from setuptools import setup
 from pymba import PYMBA_VERSION
 
 
-setup(name='Pymba',
+setup(name='pymba',
       version=PYMBA_VERSION,
       description="Pymba is a Python wrapper for Allied Vision's Vimba C API.",
       long_description="Pymba is a Python wrapper for Allied Vision's Vimba C API. It wraps the VimbaC library file "
