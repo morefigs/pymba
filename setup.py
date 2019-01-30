@@ -34,6 +34,7 @@ setup(name='Pymba',
       url='https://github.com/morefigs/pymba',
       license='GPL-3.0',
       packages=[
+          'examples',
           'pymba',
           'tests',
       ],
