@@ -6,9 +6,9 @@ from pymba import PYMBA_VERSION
 setup(name='Pymba',
       version=PYMBA_VERSION,
       description="Pymba is a Python wrapper for Allied Vision's Vimba C API.",
-      long_description="Pymba is a Python wrapper for Allied Vision's Vimba C API. It wraps the VimbaC.dll file "
-                       "included in the AVT Vimba installation to provide a simple Python interface for Allied Vision "
-                       "cameras.",
+      long_description="Pymba is a Python wrapper for Allied Vision's Vimba C API. It wraps the VimbaC library file "
+                       "included in the Vimba installation to provide a simple Python interface for Allied Vision "
+                       "cameras. It currently supports most of the functionality provided by Vimba.",
       # https://pypi.org/pypi?%3Aaction=list_classifiers
       classifiers=[
           'Development Status :: 5 - Production/Stable',
