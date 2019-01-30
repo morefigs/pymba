@@ -37,3 +37,6 @@ nosetests.xml
 # PyCharm
 .idea/
 .cache/
+
+venv*
+scrap/

@@ -1,58 +1,71 @@
 class VimbaException(Exception):
+    ERROR_CODES = (
+        # 0
+        ERR_NO_ERROR,
 
-    """
-    An exception for the AVT Vimba API. It contains a message
-    property which is a string indicating what went wrong.
+        # -1 to -19
+        ERR_UNEXPECTED_FAULT,
+        ERR_STARTUP_NOT_CALLED,
+        ERR_INSTANCE_NOT_FOUND,
+        ERR_HANDLE_INVALID,
+        ERR_DEVICE_NOT_OPENED,
+        ERR_OPERATION_INVALID_FOR_ACCESS_MODE,
+        ERR_PARAMETER_INVALID,
+        ERR_STRUCT_SIZE_INVALID,
+        ERR_DATA_TOO_LARGE,
+        ERR_FEATURE_TYPE_WRONG,
+        ERR_VALUE_INVALID,
+        ERR_TIMEOUT,
+        ERR_OTHER_ERROR,
+        ERR_RESOURCE_NOT_AVAILABLE,
+        ERR_CALL_INVALID,
+        ERR_TRANSPORT_LAYER_NOT_FOUND,
+        ERR_FEATURE_NOT_IMPLEMENTED,
+        ERR_FEATURE_NOT_SUPPORTED,
+        ERR_PARTIAL_REGISTER_ACCESS,
 
-    :param errorCode: Error code to be used to look up error message.
-    """
+        # -50 to -56
+        ERR_FRAME_BUFFER_MEMORY,
+        ERR_NOT_IMPLEMENTED_IN_PYMBA,
+        ERR_UNDEFINED_ERROR_CODE,
+    ) = tuple(range(0, -20, -1)) + tuple(range(-50, -53, -1))
+
+    ERRORS = {
+        # Vimba C API specific errors
+        ERR_NO_ERROR: 'No error.',
+        ERR_UNEXPECTED_FAULT: 'Unexpected fault in VimbaC or driver.',
+        ERR_STARTUP_NOT_CALLED: 'VmbStartup() was not called before the current command.',
+        ERR_INSTANCE_NOT_FOUND: 'The designated instance (camera, feature etc.) cannot be found.',
+        ERR_HANDLE_INVALID: 'The given handle is not valid, ensure device open.',
+        ERR_DEVICE_NOT_OPENED: 'Device was not opened for usage.',
+        ERR_OPERATION_INVALID_FOR_ACCESS_MODE: 'Operation is invalid with the current access mode.',
+        ERR_PARAMETER_INVALID: 'One of the parameters was invalid (usually an illegal pointer).',
+        ERR_STRUCT_SIZE_INVALID: 'The given struct size is not valid for this version of the API.',
+        ERR_DATA_TOO_LARGE: 'More data was returned in a string/list than space was provided.',
+        ERR_FEATURE_TYPE_WRONG: 'The feature type for this access function was wrong.',
+        ERR_VALUE_INVALID: 'The value was not valid; either out of bounds or not an increment of the minimum.',
+        ERR_TIMEOUT: 'Timeout during wait.',
+        ERR_OTHER_ERROR: 'Other error.',
+        ERR_RESOURCE_NOT_AVAILABLE: 'Resources not available (e.g. memory).',
+        ERR_CALL_INVALID: 'Call is invalid in the current context (e.g. callback).',
+        ERR_TRANSPORT_LAYER_NOT_FOUND: 'No transport layers were found.',
+        ERR_FEATURE_NOT_IMPLEMENTED: 'API feature is not implemented.',
+        ERR_FEATURE_NOT_SUPPORTED: 'API feature is not supported.',
+        ERR_PARTIAL_REGISTER_ACCESS: 'A multiple registers read or write was partially completed.',
+
+        # Custom errors
+        ERR_FRAME_BUFFER_MEMORY: 'Not enough memory to assign frame buffer.',
+        ERR_NOT_IMPLEMENTED_IN_PYMBA: 'This function is not yet implemented in Pymba',
+        ERR_UNDEFINED_ERROR_CODE: 'Undefined error code',
+    }
 
     @property
     def message(self):
-        return self._errorCodes[self.errorCode]
+        return self.ERRORS[self.error_code]
 
-    @property
-    def errorCode(self):
-        return self._errorCode
+    def __init__(self, error_code: int):
+        if error_code not in self.ERROR_CODES:
+            error_code = self.ERR_UNDEFINED_ERROR_CODE
+        self.error_code = error_code
 
-    _errorCodes = {  # Vimba C API specific errors
-        0: 	'No error.',
-        -1: 	'Unexpected fault in VimbaC or driver.',
-        -2: 	'VmbStartup() was not called before the current command.',
-        -3: 	'The designated instance (camera, feature etc.) cannot be found.',
-        -4: 	'The given handle is not valid, ensure device open.',
-        -5: 	'Device was not opened for usage.',
-        -6: 	'Operation is invalid with the current access mode.',
-        -7: 	'One of the parameters was invalid (usually an illegal pointer).',
-        -8: 	'The given struct size is not valid for this version of the API.',
-        -9: 	'More data was returned in a string/list than space was provided.',
-        -10:    'The feature type for this access function was wrong.',
-        -11:    'The value was not valid; either out of bounds or not an increment of the minimum.',
-        -12:    'Timeout during wait.',
-        -13:    'Other error.',
-        -14:    'Resources not available (e.g. memory).',
-        -15:    'Call is invalid in the current context (e.g. callback).',
-        -16:    'No transport layers were found.',
-        -17:    'API feature is not implemented.',
-        -18:   	'API feature is not supported.',
-        -19:    'A multiple registers read or write was partially completed.',
-
-        # Custom errors
-        -50:	'Could not find the specified camera.',
-        -51:	'Not enough memory to assign frame buffer.',
-        -52:	'Invalid input.',
-        -53:	'Could not find the specified feature.',
-        -54:	'Could not find the specified interface.',
-
-        # Miscellaneous errors
-        -1000:	'Oops, unknown internal error code!',
-        -1001:	'Oops, this VimbaFeature function is not yet implemented in pymba!'}
-
-    def __init__(self, errorCode):
-        # if error code does not match expected codes then assign invalid code
-        if errorCode in self._errorCodes:
-            self._errorCode = errorCode
-        else:
-            self._errorCode = -1000
-
-        super(VimbaException, self).__init__(self.message)
+        super().__init__(self.message)

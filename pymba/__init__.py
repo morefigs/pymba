@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from .vimba import Vimba
-from .vimba_exception import VimbaException
+from .vimba import Vimba, VimbaException
 
+
+PYMBA_VERSION = 0.2

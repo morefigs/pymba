@@ -1,30 +1,49 @@
 from setuptools import setup
 
+from pymba import PYMBA_VERSION
 
-setup(name='pymba',
-      version=0.1,
-      description="Pymba is a Python wrapper for Allied Vision's Vimba SDK.",
-      long_description="Pymba is a Python wrapper for Allied Vision's Vimba SDK. It uses the Vimba C API included in "
-                       "the Allied Vision Vimba installation to provide a simple Python interface for Allied Vimba "
-                       "cameras.",
+
+setup(name='Pymba',
+      version=PYMBA_VERSION,
+      description="Pymba is a Python wrapper for Allied Vision's Vimba C API.",
+      long_description="Pymba is a Python wrapper for Allied Vision's Vimba C API. It wraps the VimbaC library file "
+                       "included in the Vimba installation to provide a simple Python interface for Allied Vision "
+                       "cameras. It currently supports most of the functionality provided by Vimba.",
+      # https://pypi.org/pypi?%3Aaction=list_classifiers
       classifiers=[
           'Development Status :: 5 - Production/Stable',
           'Intended Audience :: Developers',
-          'Intended Audience :: Science/Research',
+          'Intended Audience :: End Users/Desktop',
+          'Intended Audience :: Healthcare Industry',
           'Intended Audience :: Manufacturing',
-          'License :: OSI Approved :: GPL-3.0 License',
+          'Intended Audience :: Science/Research',
+          'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+          'Natural Language :: English',
           'Operating System :: Microsoft :: Windows',
           'Operating System :: POSIX :: Linux',
           'Programming Language :: Python',
           'Topic :: Multimedia :: Graphics :: Capture :: Digital Camera',
-          'Topic :: Multimedia :: Graphics :: Graphics Conversion',
+          'Topic :: Multimedia :: Video :: Capture',
           'Topic :: Scientific/Engineering :: Image Recognition',
-          'Topic :: Software Development :: Libraries :: Python Modules'],
-      keywords='python, opencv, machine vision, computer vision, image recognition, vimba, vimba-sdk, allied vision',
+          'Topic :: Scientific/Engineering :: Visualization',
+          'Topic :: Software Development :: Libraries :: Python Modules'
+      ],
+      keywords='python, python3, opencv, cv, machine vision, computer vision, image recognition, vimba, allied vision',
       author='morefigs',
       author_email='morefigs@gmail.com',
       url='https://github.com/morefigs/pymba',
       license='GPL-3.0',
-      packages=['pymba'],
+      packages=[
+          'pymba',
+          'tests',
+      ],
       zip_safe=False,
-      requires=['numpy'])
+      install_requires=[
+          'numpy',
+      ],
+      extras_requires={
+          'dev': [
+              'pytest',
+          ]
+      }
+      )

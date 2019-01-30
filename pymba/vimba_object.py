@@ -1,228 +1,162 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from . import vimba_structure as structs
+from ctypes import byref, sizeof, c_void_p, c_uint32, c_uint64, c_bool
+from typing import List, Optional
+
 from .vimba_exception import VimbaException
-from .vimba_feature import VimbaFeature
-from .vimba_dll import VimbaDLL
-from ctypes import *
+from .feature import Feature
+from . import vimba_c
 
 
-class VimbaObject(object):
+class VimbaObject:
     """
-    A Vimba object has a handle and features associated with it.
-    Objects include System,	Camera, Interface and AncillaryData.
+    A Vimba object has a handle and features associated with it. Objects include System, Camera, Interface and
+    AncillaryData. Features are automatically readable as instance attributes.
     """
-    @property
-    def handle(self):
-        return self._handle
 
-    def __init__(self):
-        # create own handle
-        self._handle = c_void_p()
+    VMB_ACCESS_MODE_NONE = 0
+    VMB_ACCESS_MODE_FULL = 1
+    VMB_ACCESS_MODE_READ = 2
+    VMB_ACCESS_MODE_CONFIG = 4
+    VMB_ACCESS_MODE_LITE = 8
 
-        # list of VimbaFeatureInfo objects can't set yet as the object (e.g. a camera) won't be opened yet, therefore
-        # no event for object opening so will have it populate by user interaction and blame them if the object is not
-        # opened then
-        self._featureInfos = None
+    def __init__(self, handle: Optional[int] = None):
+        self._handle = c_void_p(handle)
+        self._features = {}
 
-    # override getattr for undefined attributes
-    def __getattr__(self, attr):
-        # if a feature value requested (requires object (camera) open)
-        if attr in self.getFeatureNames():
-            return VimbaFeature(attr, self._handle).value
+    def __getattr__(self, item: str):
+        # allow direct access to feature values as an attribute
+        if item in self.feature_names():
+            return self.feature(item).value
 
-        # otherwise don't know about it
-        raise AttributeError(''.join(["'VimbaObject' has no attribute '", attr, "'"]))
+        raise AttributeError(f'{self.__class__.__name__} object has no attribute {item}')
 
-    # override setattr for undefined attributes
-    def __setattr__(self, attr, val):
+    # allow direct access to feature values as an attribute
+    def __setattr__(self, item: str, value):
+        # set privates as normally to avoid recursion errors
+        if item.startswith('_'):
+            super().__setattr__(item, value)
 
-        # set privates as normal
-        # check this first to allow all privates to set normally
-        # and avoid recursion errors
-        if attr.startswith('_'):
-            super(VimbaObject, self).__setattr__(attr, val)
+        # allow direct access to feature values as an attribute
+        elif item in self.feature_names():
+            self.feature(item).value = value
 
-        # if it's an actual camera feature (requires camera open)
-        elif attr in self.getFeatureNames():
-            VimbaFeature(attr, self._handle).value = val
-
-        # otherwise just set the attribute value as normal
         else:
-            super(VimbaObject, self).__setattr__(attr, val)
+            super().__setattr__(item, value)
 
-    def _getFeatureInfos(self):
+    def _feature_infos(self) -> List[vimba_c.VmbFeatureInfo]:
         """
-        Gets feature info of all available features. Will
-        cause error if object/camera is not opened.
-
-        :returns: list -- feature info for available features.
+        Gets feature info of all available features. Will cause error if object/camera/etc is not opened.
         """
-        # check it's populated as can't populate it in __init__
-        if self._featureInfos is None:
-            # args
-            dummyFeatureInfo = structs.VimbaFeatureInfo()
-            numFound = c_uint32(-1)
+        # call once to get number of available features
+        vmb_feature_info = vimba_c.VmbFeatureInfo()
+        num_found = c_uint32(-1)
+        error = vimba_c.vmb_features_list(self._handle,
+                                          None,
+                                          0,
+                                          byref(num_found),
+                                          sizeof(vmb_feature_info))
+        if error:
+            raise VimbaException(error)
 
-            # call once to get number of available features
-            # Vimba DLL will return an error code
-            errorCode = VimbaDLL.featuresList(self._handle,
-                                              None,
-                                              0,
-                                              byref(numFound),
-                                              sizeof(dummyFeatureInfo))
-            if errorCode != 0:
-                raise VimbaException(errorCode)
+        # call again to get the features
+        num_features = num_found.value
+        vmb_feature_infos = (vimba_c.VmbFeatureInfo * num_features)()
+        error = vimba_c.vmb_features_list(self._handle,
+                                          vmb_feature_infos,
+                                          num_features,
+                                          byref(num_found),
+                                          sizeof(vmb_feature_info))
+        if error:
+            raise VimbaException(error)
 
-            # number of features specified by Vimba
-            numFeatures = numFound.value
+        return list(vmb_feature_info for vmb_feature_info in vmb_feature_infos)
 
-            # args
-            featureInfoArray = (structs.VimbaFeatureInfo * numFeatures)()
-
-            # call again to get the features
-            # Vimba DLL will return an error code
-            errorCode = VimbaDLL.featuresList(self._handle,
-                                              featureInfoArray,
-                                              numFeatures,
-                                              byref(numFound),
-                                              sizeof(dummyFeatureInfo))
-            if errorCode != 0:
-                raise VimbaException(errorCode)
-
-            self._featureInfos = list(
-                featInfo for featInfo in featureInfoArray)
-        return self._featureInfos
-
-    def getFeatureNames(self):
-        """
-        Get names of all available features.
-
-        :returns: list -- feature names for available features.
-        """
-        return list(featInfo.name.decode() for featInfo in self._getFeatureInfos())
-
-    def getFeatureInfo(self, featureName):
+    def _feature_info(self, feature_name: str) -> vimba_c.VmbFeatureInfo:
         """
         Gets feature info object of specified feature.
-
-        :param featureName: the name of the feature.
-
-        :returns: VimbaFeatureInfo object -- the feature info object specified.
+        :param feature_name: the name of the feature.
         """
-        # don't do this live as we already have this info
-        # return info object, if it exists
-        for featInfo in self._getFeatureInfos():
-            if featInfo.name.decode() == featureName:
-                return featInfo
-        # otherwise raise error
-        raise VimbaException(-53)
+        for vmb_feature_info in self._feature_infos():
+            if feature_name == vmb_feature_info.name.decode():
+                return vmb_feature_info
+        raise VimbaException(VimbaException.ERR_INSTANCE_NOT_FOUND)
 
-    # don't think we ever need to return a feature object...
-    # def getFeature(self, featureName):
-
-    def getFeatureRange(self, featureName):
+    def feature_names(self) -> List[str]:
         """
-        Get valid range of feature values.
-
-        :param featureName: name of the feature to query.
-
-        :returns: tuple -- range as (feature min value, feature max value, for int or float features only).
-                  list -- names of possible enum values (for enum features only).
+        Get names of all available features.
         """
-        # can't cache this, need to look it up live
-        return VimbaFeature(featureName, self._handle).range
+        return list(vmb_feature_info.name.decode()
+                    for vmb_feature_info in self._feature_infos())
 
-    def runFeatureCommand(self, featureName):
+    def feature(self, feature_name: str) -> Feature:
+        """
+        Gets feature object by name from the corresponding Vimba object.
+        :param feature_name: name of the feature to get.
+        """
+        if feature_name in self._features:
+            return self._features[feature_name]
+        feature = Feature(feature_name, self._handle)
+        self._features[feature_name] = feature
+        return feature
+
+    def run_feature_command(self, feature_name: str) -> None:
         """
         Run a feature command.
-
-        :param featureName: the name of the feature.
+        :param feature_name: the name of the feature.
         """
-        # run a command
-        errorCode = VimbaDLL.featureCommandRun(
-            self._handle,
-            featureName.encode()
-        )
-        if errorCode != 0:
-            raise VimbaException(errorCode)
+        error = vimba_c.vmb_feature_command_run(self._handle,
+                                                feature_name.encode())
+        if error:
+            raise VimbaException(error)
 
-    def featureCommandIsDone(self, featureName):
-        isDone = c_bool()
-        errorCode = VimbaDLL.featureCommandIsDone(
-            self._handle,
-            featureName.encode(),
-            byref(isDone)
-        )
+    def feature_command_is_done(self, feature_name: str) -> bool:
+        is_done = c_bool()
+        error = vimba_c.vmb_feature_command_is_done(self._handle,
+                                                    feature_name.encode(),
+                                                    byref(is_done))
+        if error:
+            raise VimbaException(error)
 
-        if errorCode != 0:
-            raise VimbaException(errorCode)
+        return is_done.value
 
-        return isDone.value
-
-    def readRegister(self, address):
-        # note that the underlying Vimba function allows reading of an array
-        # of registers, but only one address/value at a time is implemented
-        # here
+    # todo test
+    def read_register(self, address: int) -> int:
+        # note that the underlying Vimba function allows reading of an array of registers, but only one address/value
+        # at a time is implemented here
         """
-        Read from a register of the module (camera).
-
+        Read from a register of the module (camera) and return its value.
         :param address: the address of the register to read.
-
-        :returns: int -- value of register.
         """
-        readCount = 1
+        read_count = 1
+        reg_address = c_uint64(address)
+        reg_data = c_uint64()
+        num_complete_reads = c_uint32()
+        error = vimba_c.vmb_registers_read(self._handle,
+                                           read_count,
+                                           byref(reg_address),
+                                           byref(reg_data),
+                                           byref(num_complete_reads))
+        if error:
+            raise VimbaException(error)
 
-        # check address validity
-        try:
-            regAddress = c_uint64(int(address, 16))
-        except:
-            raise VimbaException(-52)
+        return reg_data.value
 
-        regData = c_uint64()
-        numCompleteReads = c_uint32()
-
-        errorCode = VimbaDLL.registersRead(self.handle,
-                                           readCount,
-                                           byref(regAddress),
-                                           byref(regData),
-                                           byref(numCompleteReads))
-
-        if errorCode != 0:
-            raise VimbaException(errorCode)
-
-        return regData.value
-
-    def writeRegister(self, address, value):
-        # note that the underlying Vimba function allows writing of an array
-        # of registers, but only one address/value at a time is implemented
-        # here
+    # todo test
+    def write_register(self, address: int, value: int) -> None:
+        # note that the underlying Vimba function allows writing of an array of registers, but only one address/value
+        # at a time is implemented here
         """
-        Read from a register of the module (camera).
-
+        Write to a register of the module (camera).
         :param address: the address of the register to read.
         :param value: the value to set in hex.
         """
-        writeCount = 1
-
-        # check address validity
-        try:
-            regAddress = c_uint64(int(address, 16))
-        except:
-            raise VimbaException(-52)
-
-        # check value validity
-        try:
-            regData = c_uint64(int(value, 16))
-        except:
-            raise VimbaException(-52)
-
-        numCompleteWrites = c_uint32()
-
-        errorCode = VimbaDLL.registersWrite(self.handle,
-                                            writeCount,
-                                            byref(regAddress),
-                                            byref(regData),
-                                            byref(numCompleteWrites))
-        if errorCode != 0:
-            raise VimbaException(errorCode)
+        write_count = 1
+        reg_address = c_uint64(address)
+        reg_data = c_uint64(value)
+        num_complete_writes = c_uint32()
+        error = vimba_c.vmb_registers_write(self._handle,
+                                            write_count,
+                                            byref(reg_address),
+                                            byref(reg_data),
+                                            byref(num_complete_writes))
+        if error:
+            raise VimbaException(error)
