@@ -12,7 +12,6 @@ from . import vimba_c
 PIXEL_FORMAT_BYTES = {
     "Mono8": 1,
     "Mono12": 2,
-    # todo untested
     "Mono12Packed": 1.5,
     "Mono14": 2,
     "Mono16": 2,
@@ -21,7 +20,6 @@ PIXEL_FORMAT_BYTES = {
     "BGR8Packed": 3,
     "RGBA8Packed": 4,
     "BGRA8Packed": 4,
-    # todo untested
     "YUV411Packed": 4 / 3.0,
     "YUV422Packed": 2,
     "YUV444Packed": 3,
@@ -29,7 +27,6 @@ PIXEL_FORMAT_BYTES = {
     "BayerRG12": 2,
     "BayerGR8": 1,
     "BayerGR12": 2,
-    # todo untested
     "BayerGR12Packed": 1.5,
 }
 
