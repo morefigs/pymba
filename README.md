@@ -24,7 +24,7 @@ Pymba is a Python wrapper for Allied Vision's Vimba C API. It wraps the VimbaC l
 
 ## Installation
 
-Install Pymba via PIP:
+Install Pymba via PIP.
 
     pip install pymba
 
@@ -38,7 +38,7 @@ If Vimba and pymba are installed correctly, then the following code examples sho
     
 ## Usage examples
     
-Usage examples can be found in the [examples/](examples/) directory.
+Usage examples can be found in [examples/](examples/).
 
 ## Known issues
 
