@@ -28,9 +28,6 @@ def test_startup_shutdown():
 @pytest.fixture
 def vimba() -> Vimba:
     with Vimba() as vimba:
-        # for ethernet camera discovery
-        if vimba.system().GeVTLIsPresent:
-            vimba.system().run_feature_command("GeVDiscoveryAllOnce")
         yield vimba
 
 
