@@ -41,7 +41,7 @@ else:
         vimbaC_found = False
         for tlPath in [p for p in os.environ.get(genicam_path).split(":") if p]:
             vimba_dir = "/".join(tlPath.split("/")[1:-3])
-            vimbaC_path = "/" + vimba_dir + "/VimbaC/DynamicLib/x86_64bit/libVimbaC.so"
+            vimbaC_path = "/" + vimba_dir + "/VimbaC/DynamicLib/" + platform + "/libVimbaC.so"
             if os.path.isfile(vimbaC_path):
                 vimbaC_found = True
                 break
