@@ -36,32 +36,36 @@ if sys_plat == "win32":
 
 else:
     dll_loader = cdll
+    
+    def find_so(platform, genicam_path):
+        vimbaC_found = False
+        for tlPath in [p for p in os.environ.get(genicam_path).split(":") if p]:
+            vimba_dir = "/".join(tlPath.split("/")[1:-3])
+            vimbaC_path = "/" + vimba_dir + "/VimbaC/DynamicLib/" + platform + "/libVimbaC.so"
+            if os.path.isfile(vimbaC_path):
+                vimbaC_found = True
+                break
+        if not vimbaC_found:
+            raise OSError('No libVimbaC.so found')
+        return vimbaC_path
 
     if 'x86_64' in os.uname()[4]:
         assert os.environ.get(
             "GENICAM_GENTL64_PATH"), "you need your GENICAM_GENTL64_PATH environment set.  Make sure you have Vimba installed, and you have loaded the /etc/profile.d/ scripts"
-        tlPath = [p for p in os.environ.get("GENICAM_GENTL64_PATH").split(":") if p][0]
-        vimba_dir = "/".join(tlPath.split("/")[1:-3])
-        vimbaC_path = "/" + vimba_dir + "/VimbaC/DynamicLib/x86_64bit/libVimbaC.so"
+        vimbaC_path = find_so('x86_64bit', "GENICAM_GENTL64_PATH")
     elif 'x86_32' in os.uname()[4]:
         print("Warning: x86_32 reached!")
         assert os.environ.get(
             "GENICAM_GENTL32_PATH"), "you need your GENICAM_GENTL32_PATH environment set.  Make sure you have Vimba installed, and you have loaded the /etc/profile.d/ scripts"
-        tlPath = [p for p in os.environ.get("GENICAM_GENTL32_PATH").split(":") if p][0]
-        vimba_dir = "/".join(tlPath.split("/")[1:-3])
-        vimbaC_path = "/" + vimba_dir + "/VimbaC/DynamicLib/x86_32bit/libVimbaC.so"
+        vimbaC_path = find_so('x86_32bit', 'GENICAM_GENTL32_PATH')
     elif 'arm' in os.uname()[4]:
         assert os.environ.get(
             "GENICAM_GENTL32_PATH"), "you need your GENICAM_GENTL32_PATH environment set.  Make sure you have Vimba installed, and you have loaded the /etc/profile.d/ scripts"
-        tlPath = [p for p in os.environ.get("GENICAM_GENTL32_PATH").split(":") if p][0]
-        vimba_dir = "/".join(tlPath.split("/")[1:-3])
-        vimbaC_path = "/" + vimba_dir + "/VimbaC/DynamicLib/arm_32bit/libVimbaC.so"    
+        vimbaC_path = find_so('arm_32bit', 'GENICAM_GENTL32_PATH')
     elif 'aarch64' in os.uname()[4]:
         assert os.environ.get(
             "GENICAM_GENTL64_PATH"), "you need your GENICAM_GENTL64_PATH environment set.  Make sure you have Vimba installed, and you have loaded the /etc/profile.d/ scripts"
-        tlPath = [p for p in os.environ.get("GENICAM_GENTL64_PATH").split(":") if p][0]
-        vimba_dir = "/".join(tlPath.split("/")[1:-3])
-        vimbaC_path = "/" + vimba_dir + "/VimbaC/DynamicLib/arm_64bit/libVimbaC.so"
+        vimbaC_path = find_so('arm_64bit', "GENICAM_GENTL64_PATH")
     else:
         raise ValueError("Pymba currently doesn't support %s" % os.uname()[4])
 
