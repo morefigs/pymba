@@ -41,7 +41,10 @@ class Feature:
 
     @property
     def range(self):
-        return self._access_func('range', self.info.featureDataType)()
+        # only some types have a range
+        if self.info.featureDataType in (_FEATURE_DATA_INT, _FEATURE_DATA_FLOAT, _FEATURE_DATA_ENUM):
+            return self._access_func('range', self.info.featureDataType)()
+        return None
 
     def __init__(self, name, handle):
         self._name = name.encode()
