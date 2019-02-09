@@ -24,11 +24,13 @@ class VimbaException(Exception):
         ERR_FEATURE_NOT_SUPPORTED,
         ERR_PARTIAL_REGISTER_ACCESS,
 
-        # -50 to -56
+        # -50 to -53
+        ERR_UNDEFINED_ERROR_CODE,
         ERR_FRAME_BUFFER_MEMORY,
         ERR_NOT_IMPLEMENTED_IN_PYMBA,
-        ERR_UNDEFINED_ERROR_CODE,
-    ) = tuple(range(0, -20, -1)) + tuple(range(-50, -53, -1))
+        ERR_COMMAND_MUST_BE_CALLED,
+    ) = tuple(range(0, -20, -1)) + \
+        tuple(range(-50, -54, -1))
 
     ERRORS = {
         # Vimba C API specific errors
@@ -54,9 +56,10 @@ class VimbaException(Exception):
         ERR_PARTIAL_REGISTER_ACCESS: 'A multiple registers read or write was partially completed.',
 
         # Custom errors
+        ERR_UNDEFINED_ERROR_CODE: 'Undefined error code',
         ERR_FRAME_BUFFER_MEMORY: 'Not enough memory to assign frame buffer.',
         ERR_NOT_IMPLEMENTED_IN_PYMBA: 'This function is not yet implemented in Pymba',
-        ERR_UNDEFINED_ERROR_CODE: 'Undefined error code',
+        ERR_COMMAND_MUST_BE_CALLED: 'Cannot get or set the value of a command feature type, call the command instead.'
     }
 
     @property

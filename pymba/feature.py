@@ -80,6 +80,11 @@ class Feature:
             'range': 2,
         }
 
+        # doesn't make sense to get / set a command data type
+        if data_type == _FEATURE_DATA_COMMAND:
+            raise VimbaException(VimbaException.ERR_COMMAND_MUST_BE_CALLED)
+
+        # some data types aren't implemented
         try:
             return access_funcs[data_type][access_indices[func_type]]
         except IndexError:
