@@ -7,23 +7,6 @@ from .vimba_exception import VimbaException
 from . import vimba_c
 
 
-class MemoryBlock:
-    """
-    A memory block object for dealing neatly with C memory allocations.
-    """
-
-    @property
-    def block(self):
-        return c_void_p(addressof(self._block))
-
-    def __init__(self, block_size):
-        self._block = create_string_buffer(block_size)
-
-        # this seems to be None if too much memory is requested
-        if self._block is None:
-            raise VimbaException(VimbaException.ERR_FRAME_BUFFER_MEMORY)
-
-
 class Frame:
     """
     A Vimba frame.
@@ -34,7 +17,7 @@ class Frame:
 
         self._vmb_frame = vimba_c.VmbFrame()
 
-        self._c_mem = None
+        self._c_memory = None
         self._frame_callback = None
         self._frame_callback_wrapper_c = None
 
@@ -47,18 +30,20 @@ class Frame:
         Announce frames to the API that may be queued for frame capturing later. Should be called after the frame is
         created. Call startCapture after this method.
         """
-        # keep this reference to keep block alive for life of frame
-        self._c_mem = MemoryBlock(self._camera.PayloadSize)
+        # allocate memory for the frame and keep a reference to keep alive
+        self._c_memory = create_string_buffer(self._camera.PayloadSize)
+        address = c_void_p(addressof(self._c_memory))
+        if address is None:
+            # this seems to be None if too much memory is requested
+            raise VimbaException(VimbaException.ERR_FRAME_BUFFER_MEMORY)
 
-        # set buffer to have length of expected payload size
-        self._vmb_frame.buffer = self._c_mem.block
-
-        # set buffer size to expected payload size
-        self._vmb_frame.bufferSize = self._camera.PayloadSize
+        # tell the frame about the memory
+        self.data.buffer = address
+        self.data.bufferSize = self._camera.PayloadSize
 
         error = vimba_c.vmb_frame_announce(self._camera.handle,
-                                           byref(self._vmb_frame),
-                                           sizeof(self._vmb_frame))
+                                           byref(self.data),
+                                           sizeof(self.data))
         if error:
             raise VimbaException(error)
 
@@ -67,7 +52,7 @@ class Frame:
         Revoke a frame from the API.
         """
         error = vimba_c.vmb_frame_revoke(self._camera.handle,
-                                         byref(self._vmb_frame))
+                                         byref(self.data))
         if error:
             raise VimbaException(error)
 
@@ -92,7 +77,7 @@ class Frame:
             self._frame_callback_wrapper_c = vimba_c.vmb_frame_callback_func(frame_callback_wrapper)
 
         error = vimba_c.vmb_capture_frame_queue(self._camera.handle,
-                                                byref(self._vmb_frame),
+                                                byref(self.data),
                                                 self._frame_callback_wrapper_c)
         if error:
             raise VimbaException(error)
@@ -103,7 +88,7 @@ class Frame:
         :param timeout_ms: time out in milliseconds.
         """
         error = vimba_c.vmb_capture_frame_wait(self._camera.handle,
-                                               byref(self._vmb_frame),
+                                               byref(self.data),
                                                timeout_ms)
         if error:
             raise VimbaException(error)
