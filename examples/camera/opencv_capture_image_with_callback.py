@@ -8,7 +8,7 @@ def on_callback(completed_frame: Frame):
     print('Callback called!')
 
     # get the image data as a numpy array
-    image = completed_frame.image_numpy_array()
+    image = completed_frame.buffer_data_numpy()
 
     # display image
     cv2.imshow(camera.camera_id, image)

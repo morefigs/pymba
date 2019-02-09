@@ -108,24 +108,22 @@ class Frame:
         if error:
             raise VimbaException(error)
 
-    def image_pointer(self):
+    def buffer_data(self):
         """
-        Get a pointer to the frame's image data as a ctypes c_ubyte array pointer.
+        Get a copy of the frame's buffer data as a ctypes c_ubyte array.
         """
-        return cast(self._vmb_frame.buffer, POINTER(c_ubyte * self._vmb_frame.bufferSize))
+        # create a ctypes pointer to the buffer
+        buffer_ptr = cast(self.data.buffer, POINTER(c_ubyte * self.data.bufferSize))
 
-    def image_buffer(self):
-        """
-        Get a copy of the frame's image data as a ctypes c_ubyte array.
-        """
-        return self.image_pointer().contents
+        # contents always returns a copy
+        return buffer_ptr.contents
 
-    def image_numpy_array(self) -> np.ndarray:
+    def buffer_data_numpy(self) -> np.ndarray:
         """
-        Get the frame's image data as a NumPy array, which can be used with OpenCV.
+        Get a copy of the frame's buffer data as a NumPy array. This can easily be used with OpenCV.
         """
         # todo pixel formats larger than 8-bit
 
-        return np.ndarray(buffer=self.image_buffer(),
+        return np.ndarray(buffer=self.buffer_data(),
                           dtype=np.uint8,
-                          shape=(self._vmb_frame.height, self._vmb_frame.width))
+                          shape=(self.data.height, self.data.width))

@@ -19,7 +19,7 @@ if __name__ == '__main__':
         camera.run_feature_command('AcquisitionStop')
 
         # get the image data as a numpy array
-        image = frame.image_numpy_array()
+        image = frame.buffer_data_numpy()
 
         # display image
         cv2.imshow(camera.camera_id, image)
