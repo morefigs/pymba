@@ -1,5 +1,5 @@
 from ctypes import byref, sizeof, c_uint32, c_double, c_char_p, c_bool, c_int64, create_string_buffer
-from typing import Tuple, List, Callable
+from typing import Union, Tuple, List, Callable
 
 from .vimba_exception import VimbaException
 from . import vimba_c
@@ -24,7 +24,7 @@ class Feature:
     """
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self._name.decode()
 
     @property
@@ -32,16 +32,16 @@ class Feature:
         return self._feature_info()
 
     @property
-    def value(self):
+    def value(self) -> Union[str, int, float, bool]:
         return self._access_func('get', self.info.featureDataType)()
 
     @value.setter
-    def value(self, val):
-        self._access_func('set', self.info.featureDataType)(val)
+    def value(self, value: Union[str, int, float, bool]) -> None:
+        self._access_func('set', self.info.featureDataType)(value)
 
     @property
-    def range(self):
-        # only some types have a range
+    def range(self) -> Union[None, Tuple[int, int], Tuple[float, float], Tuple[str, str]]:
+        # only some types actually have a range
         if self.info.featureDataType in (_FEATURE_DATA_INT, _FEATURE_DATA_FLOAT, _FEATURE_DATA_ENUM):
             return self._access_func('range', self.info.featureDataType)()
         return None
