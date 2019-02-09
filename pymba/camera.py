@@ -154,7 +154,7 @@ class Camera(VimbaObject):
         if error:
             raise VimbaException(error)
 
-    def create_frame(self) -> Frame:
+    def new_frame(self) -> Frame:
         """
         Creates and returns a new frame object. Multiple frames per camera can therefore be returned.
         """

@@ -24,7 +24,7 @@ if __name__ == '__main__':
 
         # setup camera and frame and capture a single image
         camera.AcquisitionMode = 'SingleFrame'
-        frame = camera.create_frame()
+        frame = camera.new_frame()
         frame.announce()
         camera.start_capture()
         frame.queue_for_capture(on_callback)

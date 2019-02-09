@@ -10,13 +10,13 @@ if __name__ == '__main__':
 
         # setup camera and frame and capture a single image
         camera.AcquisitionMode = 'SingleFrame'
-        frame = camera.create_frame()
+        frame = camera.new_frame()
         frame.announce()
         camera.start_capture()
         frame.queue_for_capture()
         camera.run_feature_command('AcquisitionStart')
-        camera.run_feature_command('AcquisitionStop')
         frame.wait_for_capture()
+        camera.run_feature_command('AcquisitionStop')
 
         # get the image data as a numpy array
         image = frame.image_numpy_array()

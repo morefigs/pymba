@@ -58,6 +58,7 @@ class Vimba:
 
         # automatically check for the presence of a GigE transport layer
         if self.system().GeVTLIsPresent:
+            self.system().GeVDiscoveryAllDuration = 250
             self.system().run_feature_command('GeVDiscoveryAllOnce')
 
     @staticmethod
