@@ -15,8 +15,8 @@ if __name__ == '__main__':
         camera.start_capture()
         frame.queue_for_capture()
         camera.run_feature_command('AcquisitionStart')
-        camera.run_feature_command('AcquisitionStop')
         frame.wait_for_capture()
+        camera.run_feature_command('AcquisitionStop')
 
         # get the image data as a numpy array
         image = frame.image_numpy_array()
