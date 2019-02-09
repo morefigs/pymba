@@ -38,6 +38,10 @@ class Frame:
         self._frame_callback = None
         self._frame_callback_wrapper_c = None
 
+    @property
+    def data(self) -> vimba_c.VmbFrame:
+        return self._vmb_frame
+
     def announce(self) -> None:
         """
         Announce frames to the API that may be queued for frame capturing later. Should be called after the frame is
