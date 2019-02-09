@@ -34,12 +34,7 @@ setup(name='pymba',
       url='https://github.com/morefigs/pymba',
       license='GPL-3.0',
       packages=[
-          'examples',
-          'examples/camera',
-          'examples/interface',
-          'examples/system',
           'pymba',
-          'tests',
       ],
       zip_safe=False,
       install_requires=[
