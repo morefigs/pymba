@@ -1,5 +1,6 @@
 from ctypes import byref, sizeof, c_uint32
-from typing import Optional, List
+from typing import Optional, List, Callable
+import gc
 
 from .vimba_object import VimbaObject
 from .vimba_exception import VimbaException
@@ -29,6 +30,9 @@ PIXEL_FORMAT_BYTES = {
     "BayerGR12": 2,
     "BayerGR12Packed": 1.5,
 }
+
+SINGLE_FRAME = 'SingleFrame'
+CONTINUOUS = 'Continuous'
 
 
 def _camera_infos() -> List[vimba_c.VmbCameraInfo]:
@@ -88,6 +92,17 @@ class Camera(VimbaObject):
     def __init__(self, camera_id: str):
         self._camera_id = camera_id
         super().__init__()
+
+        # remember state
+        self._is_armed = False
+        self._is_acquiring = False
+        self._acquisition_mode = None
+
+        # frame to reuse when in single frame mode
+        self._single_frame = None
+
+        # user registered callback function
+        self._user_callback = None
 
     @property
     def handle(self):
@@ -159,3 +174,124 @@ class Camera(VimbaObject):
         Creates and returns a new frame object. Multiple frames per camera can therefore be returned.
         """
         return Frame(self)
+
+    def arm(self, mode: str, callback: Optional[Callable] = None, frame_buffer_size: Optional[int] = 3) -> None:
+        """
+        Arm the camera by starting the capture engine and creating frames.
+        :param mode: Either 'SingleFrame' to acquire a single frame or 'Continuous' for streaming frames.
+        :param callback: A function reference to call when each frame is ready. Applies to 'Continuous' acquisition
+        mode only. The callback function should execute relatively quickly to avoid dropping frames (if the camera
+        captures a frame but no frame is currently queued for capture then the frame will be dropped. Therefore the
+        callback function should execute (on average) at least as fast as the camera frame rate. It may be desirable
+        for the callback to copy frame data and pass the data to a separate thread/process for processing.
+        :param frame_buffer_size: number of frames to create and use for the acquisition buffer. Increasing this may
+        help if frames are being dropped.
+        """
+        if self._is_armed:
+            raise VimbaException(VimbaException.ERR_INVALID_CAMERA_MODE)
+
+        if mode not in (SINGLE_FRAME, CONTINUOUS):
+            raise ValueError('unknown mode')
+
+        # set and cache mode
+        self.AcquisitionMode = mode
+        self._acquisition_mode = mode
+
+        if mode == SINGLE_FRAME:
+            self._arm_single_frame()
+        elif mode == CONTINUOUS:
+            if callback is None:
+                raise ValueError('a callback function must be provided in continuous mode')
+            self._arm_continuous(callback, frame_buffer_size)
+
+        self._is_armed = True
+
+    def _arm_single_frame(self) -> None:
+        self._single_frame = self.new_frame()
+        self._single_frame.announce()
+
+        self.start_capture()
+
+    def acquire_frame(self) -> Frame:
+        """
+        Acquire and return a single frame when the camera is armed in 'SingleFrame' acquisition mode. Can be called
+        multiple times in a row, but don't call again until the frame has been copied or processed the internal frame
+        object is reused.
+        """
+        if not self._is_armed or self._acquisition_mode != SINGLE_FRAME:
+            raise VimbaException(VimbaException.ERR_INVALID_CAMERA_MODE)
+
+        # capture a single frame
+        self._single_frame.queue_for_capture()
+        self.run_feature_command('AcquisitionStart')
+        self._single_frame.wait_for_capture()
+        self.run_feature_command('AcquisitionStop')
+
+        return self._single_frame
+
+    def _arm_continuous(self, callback: Callable, frame_buffer_size: int) -> None:
+        self._user_callback = callback
+
+        # create frame buffer and announce frames to camera
+        _frame_buffer = tuple(self.new_frame() for _ in range(frame_buffer_size))
+        for frame in _frame_buffer:
+            frame.announce()
+
+        self.start_capture()
+
+        # queue
+        for frame in _frame_buffer:
+            frame.queue_for_capture(self._streaming_callback)
+
+    def start_frame_acquisition(self) -> None:
+        """
+        Acquire and stream frames (to the specified callback function) indefinitely when the camera is armed in
+        'Continuous' acquisition mode.
+        """
+        # no need to check self._is_acquiring
+        if not self._is_armed or self._acquisition_mode != CONTINUOUS:
+            raise VimbaException(VimbaException.ERR_INVALID_CAMERA_MODE)
+
+        # safe to call multiple times
+        self.run_feature_command('AcquisitionStart')
+        self._is_acquiring = True
+
+    def _streaming_callback(self, frame: Frame) -> None:
+        """
+        Called upon the frame ready event. Wraps the user's callback and requeues the frame.
+        """
+        self._user_callback(frame)
+
+        # streaming may have stopped by now, especially if callback is long running
+        if self._is_armed and self._acquisition_mode == CONTINUOUS:
+            frame.queue_for_capture(self._streaming_callback)
+
+    def stop_frame_acquisition(self) -> None:
+        """
+        Stop acquiring and streaming frames.
+        """
+        # implies both is armed and in continuous mode
+        if self._is_acquiring:
+            self._is_acquiring = False
+            self.run_feature_command('AcquisitionStop')
+
+    def disarm(self) -> None:
+        """
+        Disarm the camera by stopping the capture engine and cleaning up frames.
+        """
+        # among other things this prevents callback from requeuing frames
+        self._is_armed = False
+
+        # automatically stop acquisition if required
+        if self._is_acquiring:
+            self.stop_frame_acquisition()
+
+        # clean up
+        self.end_capture()
+        self.flush_capture_queue()
+        self.revoke_all_frames()
+
+        self._single_frame = None
+
+        # encourage garbage collection of frame buffer memory
+        gc.collect()

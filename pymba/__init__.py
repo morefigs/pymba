@@ -1,4 +1,5 @@
 from .vimba import Vimba, VimbaException
+from .frame import Frame
 
 
-PYMBA_VERSION = 0.2
+PYMBA_VERSION = '0.3'

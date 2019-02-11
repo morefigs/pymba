@@ -3,7 +3,7 @@ class VimbaException(Exception):
         # 0
         ERR_NO_ERROR,
 
-        # -1 to -19
+        # -1, -2, ...
         ERR_UNEXPECTED_FAULT,
         ERR_STARTUP_NOT_CALLED,
         ERR_INSTANCE_NOT_FOUND,
@@ -24,13 +24,14 @@ class VimbaException(Exception):
         ERR_FEATURE_NOT_SUPPORTED,
         ERR_PARTIAL_REGISTER_ACCESS,
 
-        # -50 to -53
+        # -50, -51, ...
         ERR_UNDEFINED_ERROR_CODE,
         ERR_FRAME_BUFFER_MEMORY,
         ERR_NOT_IMPLEMENTED_IN_PYMBA,
         ERR_COMMAND_MUST_BE_CALLED,
+        ERR_INVALID_CAMERA_MODE,
     ) = tuple(range(0, -20, -1)) + \
-        tuple(range(-50, -54, -1))
+        tuple(range(-50, -55, -1))
 
     ERRORS = {
         # Vimba C API specific errors
@@ -58,8 +59,9 @@ class VimbaException(Exception):
         # Custom errors
         ERR_UNDEFINED_ERROR_CODE: 'Undefined error code',
         ERR_FRAME_BUFFER_MEMORY: 'Not enough memory to assign frame buffer.',
-        ERR_NOT_IMPLEMENTED_IN_PYMBA: 'This function is not yet implemented in Pymba',
-        ERR_COMMAND_MUST_BE_CALLED: 'Cannot get or set the value of a command feature type, call the command instead.'
+        ERR_NOT_IMPLEMENTED_IN_PYMBA: 'This function is not yet implemented in Pymba.',
+        ERR_COMMAND_MUST_BE_CALLED: 'Cannot get or set the value of a command feature type, call the command instead.',
+        ERR_INVALID_CAMERA_MODE: 'Invalid camera mode for the requested operation.',
     }
 
     @property
