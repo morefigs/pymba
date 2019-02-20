@@ -119,15 +119,21 @@ class Camera(VimbaObject):
         """
         return _camera_info(self.camera_id)
 
-    def open(self, camera_access_mode: Optional[int] = VimbaObject.VMB_ACCESS_MODE_FULL):
+    def open(self,
+             camera_access_mode: Optional[int] = VimbaObject.VMB_ACCESS_MODE_FULL,
+             adjust_packet_size: Optional[bool] = True):
         """
-        Open the camera with requested access mode.
+        Open the camera with requested access mode. Adjusts packet size by default.
         """
         error = vimba_c.vmb_camera_open(self.camera_id.encode(),
                                         camera_access_mode,
                                         byref(self._handle))
         if error:
             raise VimbaException(error)
+
+        # may experience issues with camera comms if not called
+        if adjust_packet_size:
+            self.run_feature_command('GVSPAdjustPacketSize')
 
     def close(self):
         """
