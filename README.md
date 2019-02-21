@@ -8,7 +8,7 @@ The Vimba C API dynamic library file is required to run Pymba. This can be gaine
 * [Installing Vimba SDK](#installing-vimba-sdk)
 * Or ensuring that your application's working directory contains the `VimbaC.dll` file and any relevant transport layer driver files, e.g. `VimbaGigETL.cti`.
 
-###Installing-Vimba-SDK
+### Installing-Vimba-SDK
 
 For windows:
 * [Download](https://www.alliedvision.com/en/products/software.html) and launch the Vimba SDK installer:
