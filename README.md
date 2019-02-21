@@ -12,7 +12,7 @@ The Vimba C API dynamic library file is required to run Pymba. This can be gaine
 
 ### Installing Vimba SDK
 
-For windows:
+For Windows:
 * [Download](https://www.alliedvision.com/en/products/software.html) and launch the Vimba SDK installer:
   * Select "Custom Selection".
   * Select (at least) the following options:
