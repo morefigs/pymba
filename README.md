@@ -8,6 +8,8 @@ The Vimba C API dynamic library file is required to run Pymba. This can be gaine
 * [Installing Vimba SDK](#installing-vimba-sdk)
 * Or ensuring that your application's working directory contains the `VimbaC.dll` file and any relevant transport layer driver files, e.g. `VimbaGigETL.cti`.
 
+## Installation
+
 ### Installing Vimba SDK
 
 For windows:
@@ -29,7 +31,7 @@ For windows:
 
 For other OS's see [Vimba's download page](https://www.alliedvision.com/en/products/software.html).
 
-## Installation
+### Installing Pymba
 
 For Python 3 install Pymba via PIP.
 
@@ -37,7 +39,7 @@ For Python 3 install Pymba via PIP.
     
 For Python 2 and for backwards compatibility with older versions of Pymba use the [`python2`](https://github.com/morefigs/pymba/tree/python2) branch.
 
-## Testing installation 
+### Testing installation 
 
 If Vimba and Pymba are installed correctly, then the following code should give the installed Vimba version. No camera is needed.
 
