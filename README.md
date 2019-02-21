@@ -2,12 +2,6 @@
 
 Pymba is a Python wrapper for Allied Vision's Vimba C API. It wraps the Vimba C library file included in the Vimba installation to provide a simple Python interface for Allied Vision cameras. It currently supports most of the functionality provided by Vimba.
 
-## Requirements
-
-The Vimba C API dynamic library file is required to run Pymba. This can be gained by either:
-* [Installing Vimba SDK](#installing-vimba-sdk),
-* Or ensuring that your application's working directory contains the `VimbaC.dll` file and any relevant transport layer driver files, e.g. `VimbaGigETL.cti`.
-
 ## Installation
 
 ### Installing Vimba SDK
