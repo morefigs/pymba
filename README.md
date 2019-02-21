@@ -1,11 +1,11 @@
 # Pymba
 
-Pymba is a Python wrapper for Allied Vision's Vimba C API. It wraps the VimbaC library file included in the Vimba installation to provide a simple Python interface for Allied Vision cameras. It currently supports most of the functionality provided by Vimba.
+Pymba is a Python wrapper for Allied Vision's Vimba C API. It wraps the Vimba C library file included in the Vimba installation to provide a simple Python interface for Allied Vision cameras. It currently supports most of the functionality provided by Vimba.
 
 ## Requirements
 
 The Vimba C API dynamic library file is required to run Pymba. This can be gained by either:
-* [Installing Vimba SDK](#installing-vimba-sdk)
+* [Installing Vimba SDK](#installing-vimba-sdk),
 * Or ensuring that your application's working directory contains the `VimbaC.dll` file and any relevant transport layer driver files, e.g. `VimbaGigETL.cti`.
 
 ## Installation
@@ -16,16 +16,16 @@ For Windows:
 * [Download](https://www.alliedvision.com/en/products/software.html) and launch the Vimba SDK installer:
   * Select "Custom Selection".
   * Select (at least) the following options:
-    * A transport layer that matches your hardware (e.g. "Vimba USB Transport Layer" for USB cameras)
-      * Core components
-      * Register GenICam Path variable
-    * Vimba SDK
-      * Core components
-      * Register environment variables
-      * C API runtime components
-      * C API development components
-      * Driver Installer
-      * Vimba Viewer
+    * A transport layer that matches your hardware (e.g. "Vimba USB Transport Layer" for USB cameras):
+      * Core components.
+      * Register GenICam Path variable.
+    * Vimba SDK:
+      * Core components.
+      * Register environment variables.
+      * C API runtime components.
+      * C API development components.
+      * Driver Installer.
+      * Vimba Viewer.
 * Run `VimbaDriverInstaller.exe` and install the relevant driver.
 * Test the driver installation by running `VimbaViewer.exe`.
 
@@ -56,4 +56,3 @@ Usage examples can be found in the [`examples`](examples/) directory.
 
 * Not all API functions are supported, but missing functions can be added on request.
 * Not all camera pixel formats are currently supported.
-
