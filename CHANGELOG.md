@@ -3,6 +3,9 @@
 ## [0.3.1] - 2019/02/21
 ### Added
 - Auto adjust packet size upon opening camera.
+- Command type features can now be called directly as an object attribute.
+### Changed
+- Increased default frame buffer size from 3 to 10.
 
 ## [0.3] - 2019/02/11
 ### Added

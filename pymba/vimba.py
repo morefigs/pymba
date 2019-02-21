@@ -59,7 +59,7 @@ class Vimba:
         # automatically check for the presence of a GigE transport layer
         if self.system().GeVTLIsPresent:
             self.system().GeVDiscoveryAllDuration = 250
-            self.system().run_feature_command('GeVDiscoveryAllOnce')
+            self.system().GeVDiscoveryAllOnce()
 
     @staticmethod
     def shutdown():
@@ -89,8 +89,11 @@ class Vimba:
 
         if interface_id in self._interfaces:
             return self._interfaces[interface_id]
+
+        # cache interface instances
         interface = Interface(interface_id)
         self._interfaces[interface_id] = interface
+
         return interface
 
     @staticmethod
@@ -109,6 +112,9 @@ class Vimba:
 
         if camera_id in self._cameras:
             return self._cameras[camera_id]
+
+        # cache camera instance
         camera = Camera(camera_id)
         self._cameras[camera_id] = camera
+
         return camera

@@ -133,7 +133,7 @@ class Camera(VimbaObject):
 
         # may experience issues with camera comms if not called
         if adjust_packet_size:
-            self.run_feature_command('GVSPAdjustPacketSize')
+            self.GVSPAdjustPacketSize()
 
     def close(self):
         """
@@ -181,7 +181,7 @@ class Camera(VimbaObject):
         """
         return Frame(self)
 
-    def arm(self, mode: str, callback: Optional[Callable] = None, frame_buffer_size: Optional[int] = 3) -> None:
+    def arm(self, mode: str, callback: Optional[Callable] = None, frame_buffer_size: Optional[int] = 10) -> None:
         """
         Arm the camera by starting the capture engine and creating frames.
         :param mode: Either 'SingleFrame' to acquire a single frame or 'Continuous' for streaming frames.
@@ -229,9 +229,9 @@ class Camera(VimbaObject):
 
         # capture a single frame
         self._single_frame.queue_for_capture()
-        self.run_feature_command('AcquisitionStart')
+        self.AcquisitionStart()
         self._single_frame.wait_for_capture()
-        self.run_feature_command('AcquisitionStop')
+        self.AcquisitionStop()
 
         return self._single_frame
 
@@ -259,7 +259,7 @@ class Camera(VimbaObject):
             raise VimbaException(VimbaException.ERR_INVALID_CAMERA_MODE)
 
         # safe to call multiple times
-        self.run_feature_command('AcquisitionStart')
+        self.AcquisitionStart()
         self._is_acquiring = True
 
     def _streaming_callback(self, frame: Frame) -> None:
@@ -279,7 +279,7 @@ class Camera(VimbaObject):
         # implies both is armed and in continuous mode
         if self._is_acquiring:
             self._is_acquiring = False
-            self.run_feature_command('AcquisitionStop')
+            self.AcquisitionStop()
 
     def disarm(self) -> None:
         """

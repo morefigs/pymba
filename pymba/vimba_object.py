@@ -2,7 +2,7 @@ from ctypes import byref, sizeof, c_void_p, c_uint32, c_uint64, c_bool
 from typing import List, Optional
 
 from .vimba_exception import VimbaException
-from .feature import Feature
+from .feature import Feature, _FEATURE_DATA_COMMAND
 from . import vimba_c
 
 
@@ -25,7 +25,14 @@ class VimbaObject:
     def __getattr__(self, item: str):
         # allow direct access to feature values as an attribute
         if item in self.feature_names():
-            return self.feature(item).value
+            feature = self.feature(item)
+
+            # command feature types are a special case, return a callable
+            if feature.info.featureDataType == _FEATURE_DATA_COMMAND:
+                return lambda: self.run_feature_command(item)
+
+            # otherwise attempt to get their value
+            return feature.value
 
         raise AttributeError(f'{self.__class__.__name__} object has no attribute {item}')
 
@@ -94,8 +101,11 @@ class VimbaObject:
         """
         if feature_name in self._features:
             return self._features[feature_name]
+
+        # cache feature
         feature = Feature(feature_name, self._handle)
         self._features[feature_name] = feature
+
         return feature
 
     def run_feature_command(self, feature_name: str) -> None:
