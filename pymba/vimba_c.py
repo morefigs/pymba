@@ -8,30 +8,42 @@ if sys_plat == "win32":
 
     def find_win_dll(arch):
         """ Finds the highest versioned windows dll for the specified architecture. """
-        bases = [
-            r'C:\Program Files\Allied Vision Technologies\AVTVimba_%i.%i\VimbaC\Bin\Win%i\VimbaC.dll',
-            r'C:\Program Files\Allied Vision\Vimba_%i.%i\VimbaC\Bin\Win%i\VimbaC.dll'
-        ]
         dlls = []
-        for base in bases:
-            for major in range(3):
-                for minor in range(10):
-                    candidate = base % (major, minor, arch)
-                    if os.path.isfile(candidate):
-                        dlls.append(candidate)
+
+        filename = 'VimbaC.dll'
+
+        # look in local working directory first
+        if os.path.isfile(filename):
+            dlls.append(filename)
+
         if not dlls:
             if 'VIMBA_HOME' in os.environ:
-                candidate = os.environ ['VIMBA_HOME'] + '\VimbaC\Bin\Win%i\VimbaC.dll' % (arch)
+                candidate = os.environ['VIMBA_HOME'] + r'\VimbaC\Bin\Win%i\VimbaC.dll' % (arch)
                 if os.path.isfile(candidate):
                     dlls.append(candidate)
+
+        if not dlls:
+            bases = [
+                r'C:\Program Files\Allied Vision Technologies\AVTVimba_%i.%i\VimbaC\Bin\Win%i\VimbaC.dll',
+                r'C:\Program Files\Allied Vision\Vimba_%i.%i\VimbaC\Bin\Win%i\VimbaC.dll'
+            ]
+            for base in bases:
+                for major in range(3):
+                    for minor in range(10):
+                        candidate = base % (major, minor, arch)
+                        if os.path.isfile(candidate):
+                            dlls.append(candidate)
+
         if not dlls:
             raise IOError("VimbaC.dll not found.")
+
         return dlls[-1]
 
     if '64' in platform.architecture()[0]:
         vimbaC_path = find_win_dll(64)
     else:
         vimbaC_path = find_win_dll(32)
+
     dll_loader = windll
 
 else:

@@ -6,6 +6,7 @@
 - Command type features can now be called directly as an object attribute.
 ### Changed
 - Increased default frame buffer size from 3 to 10.
+- Also looks in working directory for VimbaC.dll to make distribution easier.
 
 ## [0.3] - 2019/02/11
 ### Added
