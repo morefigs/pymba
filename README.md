@@ -4,8 +4,13 @@ Pymba is a Python wrapper for Allied Vision's Vimba C API. It wraps the VimbaC l
 
 ## Requirements
 
-### Vimba SDK
+The Vimba C API dynamic library file is required to run Pymba. This can be gained by either:
+* [Installing Vimba SDK](###Installing-Vimba-SDK)
+* Or ensuring that your application's working directory contains the `VimbaC.dll` file and any relevant transport layer driver files, e.g. `VimbaGigETL.cti`.
 
+(###Installing-Vimba-SDK)
+
+For windows:
 * [Download](https://www.alliedvision.com/en/products/software.html) and launch the Vimba SDK installer:
   * Select "Custom Selection".
   * Select (at least) the following options:
@@ -22,6 +27,8 @@ Pymba is a Python wrapper for Allied Vision's Vimba C API. It wraps the VimbaC l
 * Run `VimbaDriverInstaller.exe` and install the relevant driver.
 * Test the driver installation by running `VimbaViewer.exe`.
 
+For other OS's see [Vimba's download page](https://www.alliedvision.com/en/products/software.html).
+
 ## Installation
 
 For Python 3 install Pymba via PIP.
@@ -36,8 +43,8 @@ If Vimba and Pymba are installed correctly, then the following code should give 
 
     from pymba import Vimba, PYMBA_VERSION
     
-    print('Pymba version:', PYMBA_VERSION)
-    print('Vimba C API version:', Vimba.version())
+    print(PYMBA_VERSION)
+    print(Vimba.version())
     
 ## Usage examples
     
