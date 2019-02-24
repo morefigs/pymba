@@ -14,6 +14,7 @@ def process_frame(frame: Frame):
     image = frame.buffer_data_numpy()
 
     # display image
+    # note that this function is called in a thread, and therefore cv2 windows must be destroyed by the same thread
     cv2.imshow('Image', image)
     cv2.waitKey(1)
 
