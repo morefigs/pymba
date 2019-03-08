@@ -14,6 +14,7 @@ class Frame:
 
     def __init__(self, camera: '_camera.Camera'):
         self._camera = camera
+        self.pixel_format = self._camera.PixelFormat
 
         self._vmb_frame = vimba_c.VmbFrame()
 

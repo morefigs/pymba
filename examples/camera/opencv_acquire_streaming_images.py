@@ -1,22 +1,6 @@
 from time import sleep
-import cv2
-from pymba import Vimba, Frame
-
-
-def process_frame(frame: Frame):
-    """
-    Process the streaming frames. Consider sending the frame data to another thread/process if this is long running to
-    avoid dropping frames.
-    """
-    print(f'frame {frame.data.frameID} callback')
-
-    # get a copy of the frame data
-    image = frame.buffer_data_numpy()
-
-    # display image
-    # note that this function is called in a thread, and therefore cv2 windows must be destroyed by the same thread
-    cv2.imshow('Image', image)
-    cv2.waitKey(1)
+from pymba import Vimba
+from examples.camera.display_frame import display_frame
 
 
 if __name__ == '__main__':
@@ -26,7 +10,7 @@ if __name__ == '__main__':
         camera.open()
 
         # arm the camera and provide a function to be called upon frame ready
-        camera.arm('Continuous', process_frame)
+        camera.arm('Continuous', display_frame)
         camera.start_frame_acquisition()
 
         # stream images for a while...

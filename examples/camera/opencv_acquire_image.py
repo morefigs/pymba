@@ -1,21 +1,5 @@
-import cv2
-from pymba import Vimba, Frame
-
-
-def process_frame(frame: Frame):
-    """
-    Processes the acquired frame.
-    """
-    print(f'frame {frame.data.frameID} callback')
-
-    # get a copy of the frame data
-    image = frame.buffer_data_numpy()
-
-    # display image
-    cv2.imshow('Image', image)
-
-    # wait for user to close window
-    cv2.waitKey(0)
+from pymba import Vimba
+from examples.camera.display_frame import display_frame
 
 
 if __name__ == '__main__':
@@ -28,8 +12,8 @@ if __name__ == '__main__':
 
         # capture a single frame, more than once if desired
         for i in range(1):
-            frame_ = camera.acquire_frame()
-            process_frame(frame_)
+            frame = camera.acquire_frame()
+            display_frame(frame, 0)
 
         camera.disarm()
 
