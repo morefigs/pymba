@@ -27,7 +27,7 @@ if __name__ == '__main__':
         camera.arm('SingleFrame')
 
         # capture a single frame, more than once if desired
-        for i in range(3):
+        for i in range(1):
             frame_ = camera.acquire_frame()
             process_frame(frame_)
 
