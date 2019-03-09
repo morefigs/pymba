@@ -1,5 +1,10 @@
 # Pymba change log
 
+## [0.3.2] - 2019/03/09
+### Added
+- Colour camera example.
+- Bug fix when attempting to open a USB camera.
+
 ## [0.3.1] - 2019/02/21
 ### Added
 - Auto adjust packet size upon opening camera.
