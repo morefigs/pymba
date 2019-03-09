@@ -18,8 +18,10 @@ class VimbaObject:
     VMB_ACCESS_MODE_CONFIG = 4
     VMB_ACCESS_MODE_LITE = 8
 
-    def __init__(self, handle: Optional[int] = None):
+    def __init__(self, vimba, handle: Optional[int] = None):
+        self._vimba = vimba
         self._handle = c_void_p(handle)
+
         self._features = {}
 
     def __getattr__(self, item: str):

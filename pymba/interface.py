@@ -57,11 +57,11 @@ class Interface(VimbaObject):
     to Vimba functions required to control the interface.
     """
 
-    def __init__(self, interface_id: str):
+    def __init__(self, vimba, interface_id: str):
         if interface_id not in interface_ids():
             raise VimbaException(VimbaException.ERR_INSTANCE_NOT_FOUND)
         self._interface_id = interface_id
-        super().__init__()
+        super().__init__(vimba)
 
     @property
     def interface_id(self):

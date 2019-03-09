@@ -88,10 +88,9 @@ class Camera(VimbaObject):
     """
     A Vimba camera object.
     """
-
-    def __init__(self, camera_id: str):
+    def __init__(self, vimba, camera_id: str):
         self._camera_id = camera_id
-        super().__init__()
+        super().__init__(vimba)
 
         # remember state
         self._is_armed = False
@@ -131,8 +130,8 @@ class Camera(VimbaObject):
         if error:
             raise VimbaException(error)
 
-        # may experience issues with camera comms if not called
-        if adjust_packet_size:
+        # may experience issues with ethernet commands if not called
+        if adjust_packet_size and self._vimba.system().GeVTLIsPresent:
             self.GVSPAdjustPacketSize()
 
     def close(self):

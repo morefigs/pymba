@@ -29,7 +29,7 @@ class Vimba:
 
     def __init__(self):
         # create own system singleton object
-        self._system = System()
+        self._system = System(self)
         self._interfaces = {}
         self._cameras = {}
 
@@ -40,7 +40,7 @@ class Vimba:
         self.startup()
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, type_, value, traceback):
         """
         Shutdown Vimba when the with context is left. This allows cleanup
         when an error occurs in the main program. The system will not hang
@@ -91,7 +91,7 @@ class Vimba:
             return self._interfaces[interface_id]
 
         # cache interface instances
-        interface = Interface(interface_id)
+        interface = Interface(self, interface_id)
         self._interfaces[interface_id] = interface
 
         return interface
@@ -114,7 +114,7 @@ class Vimba:
             return self._cameras[camera_id]
 
         # cache camera instance
-        camera = Camera(camera_id)
+        camera = Camera(self, camera_id)
         self._cameras[camera_id] = camera
 
         return camera
