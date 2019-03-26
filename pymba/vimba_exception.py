@@ -46,7 +46,8 @@ class VimbaException(Exception):
         ERR_STRUCT_SIZE_INVALID: 'The given struct size is not valid for this version of the API.',
         ERR_DATA_TOO_LARGE: 'More data was returned in a string/list than space was provided.',
         ERR_FEATURE_TYPE_WRONG: 'The feature type for this access function was wrong.',
-        ERR_VALUE_INVALID: 'The value was not valid; either out of bounds or not an increment of the minimum.',
+        ERR_VALUE_INVALID: 'The value was not valid; either out of bounds or not an increment of '
+                           'the minimum.',
         ERR_TIMEOUT: 'Timeout during wait.',
         ERR_OTHER_ERROR: 'Other error.',
         ERR_RESOURCE_NOT_AVAILABLE: 'Resources not available (e.g. memory).',
@@ -60,7 +61,8 @@ class VimbaException(Exception):
         ERR_UNDEFINED_ERROR_CODE: 'Undefined error code',
         ERR_FRAME_BUFFER_MEMORY: 'Not enough memory to assign frame buffer.',
         ERR_NOT_IMPLEMENTED_IN_PYMBA: 'This function is not yet implemented in Pymba.',
-        ERR_COMMAND_MUST_BE_CALLED: 'Cannot get or set the value of a command feature type, call the command instead.',
+        ERR_COMMAND_MUST_BE_CALLED: 'Cannot get or set the value of a command feature type, call '
+                                    'the command instead.',
         ERR_INVALID_CAMERA_MODE: 'Invalid camera mode for the requested operation.',
     }
 

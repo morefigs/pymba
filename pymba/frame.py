@@ -28,8 +28,8 @@ class Frame:
 
     def announce(self) -> None:
         """
-        Announce frames to the API that may be queued for frame capturing later. Should be called after the frame is
-        created. Call startCapture after this method.
+        Announce frames to the API that may be queued for frame capturing later. Should be called
+        after the frame is created. Call startCapture after this method.
         """
         # allocate memory for the frame and keep a reference to keep alive
         self._c_memory = create_string_buffer(self._camera.PayloadSize)
@@ -59,9 +59,9 @@ class Frame:
 
     def queue_for_capture(self, frame_callback: Optional[Callable] = None) -> None:
         """
-        Queue frames that may be filled during frame capturing. Call after announceFrame and startCapture. Callback
-        must accept argument of type frame. Remember to requeue the frame by calling frame.queue_capture() at the end
-        of your callback function.
+        Queue frames that may be filled during frame capturing. Call after announceFrame and
+        startCapture. Callback must accept argument of type frame. Remember to requeue the frame by
+        calling frame.queue_capture() at the end of your callback function.
         """
         self._frame_callback = frame_callback
 

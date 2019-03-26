@@ -80,7 +80,8 @@ class Vimba:
 
     def interface(self, interface_id: Union[str, int]) -> Interface:
         """
-        Gets interface object based on interface ID string or index. Will not recreate interface object if it already exists.
+        Gets interface object based on interface ID string or index. Will not recreate interface
+        object if it already exists.
         :param interface_id: the ID or the index of the interface.
         """
         # if index is provided, look up the camera id using the index
@@ -102,9 +103,10 @@ class Vimba:
 
     def camera(self, camera_id: Union[str, int]) -> Camera:
         """
-        Gets camera object based on camera ID string or index. Will not recreate camera object if it already exists.
-        :param camera_id: the ID or the index of the camera object to get. This can be an ID or e.g. a serial number.
-                          Check the Vimba documentation for other possible values.
+        Gets camera object based on camera ID string or index. Will not recreate camera object if
+        it already exists.
+        :param camera_id: the ID or the index of the camera object to get. This can be an ID or
+        e.g. a serial number. Check the Vimba documentation for other possible values.
         """
         # if index is provided, look up the camera id using the index
         if isinstance(camera_id, int):

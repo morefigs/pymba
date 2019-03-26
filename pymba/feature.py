@@ -42,7 +42,9 @@ class Feature:
     @property
     def range(self) -> Union[None, Tuple[int, int], Tuple[float, float], Tuple[str, str]]:
         # only some types actually have a range
-        if self.info.featureDataType in (_FEATURE_DATA_INT, _FEATURE_DATA_FLOAT, _FEATURE_DATA_ENUM):
+        if self.info.featureDataType in (_FEATURE_DATA_INT,
+                                         _FEATURE_DATA_FLOAT,
+                                         _FEATURE_DATA_ENUM):
             return self._access_func('range', self.info.featureDataType)()
         return None
 
@@ -52,7 +54,8 @@ class Feature:
 
     def _access_func(self, func_type: str, data_type: int) -> Callable:
         """
-        Get the correct function needed to access the feature attribute based on the feature's data type.
+        Get the correct function needed to access the feature attribute based on the feature's data
+        type.
         :param func_type: One of 'get', 'set', or 'range'.
         :param data_type: Data type as defined in VmbFeatureDataType.
         """

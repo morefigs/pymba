@@ -64,8 +64,8 @@ def _camera_infos() -> List[vimba_c.VmbCameraInfo]:
 def _camera_info(id_string: str) -> vimba_c.VmbCameraInfo:
     """
     Gets camera info object of specified camera.
-    :param id_string: the ID of the camera object to get. This can be an ID or e.g. a serial number. Check the Vimba
-                      documentation for other possible values.
+    :param id_string: the ID of the camera object to get. This can be an ID or e.g. a serial number.
+    Check the Vimba documentation for other possible values.
     """
     vmb_camera_info = vimba_c.VmbCameraInfo()
     error = vimba_c.vmb_camera_info_query(id_string.encode(),
@@ -176,21 +176,25 @@ class Camera(VimbaObject):
 
     def new_frame(self) -> Frame:
         """
-        Creates and returns a new frame object. Multiple frames per camera can therefore be returned.
+        Creates and returns a new frame object. Multiple frames per camera can therefore be
+        returned.
         """
         return Frame(self)
 
-    def arm(self, mode: str, callback: Optional[Callable] = None, frame_buffer_size: Optional[int] = 10) -> None:
+    def arm(self, mode: str, callback: Optional[Callable] = None,
+            frame_buffer_size: Optional[int] = 10) -> None:
         """
         Arm the camera by starting the capture engine and creating frames.
-        :param mode: Either 'SingleFrame' to acquire a single frame or 'Continuous' for streaming frames.
-        :param callback: A function reference to call when each frame is ready. Applies to 'Continuous' acquisition
-        mode only. The callback function should execute relatively quickly to avoid dropping frames (if the camera
-        captures a frame but no frame is currently queued for capture then the frame will be dropped. Therefore the
-        callback function should execute (on average) at least as fast as the camera frame rate. It may be desirable
-        for the callback to copy frame data and pass the data to a separate thread/process for processing.
-        :param frame_buffer_size: number of frames to create and use for the acquisition buffer. Increasing this may
-        help if frames are being dropped.
+        :param mode: Either 'SingleFrame' to acquire a single frame or 'Continuous' for streaming
+        frames.
+        :param callback: A function reference to call when each frame is ready. Applies to
+        'Continuous' acquisition mode only. The callback function should execute relatively quickly
+        to avoid dropping frames (if the camera captures a frame but no frame is currently queued
+        for capture then the frame will be dropped. Therefore the callback function should execute
+        (on average) at least as fast as the camera frame rate. It may be desirable for the
+        callback to copy frame data and pass the data to a separate thread/process for processing.
+        :param frame_buffer_size: number of frames to create and use for the acquisition buffer.
+        Increasing this may help if frames are being dropped.
         """
         if self._is_armed:
             raise VimbaException(VimbaException.ERR_INVALID_CAMERA_MODE)
@@ -219,9 +223,9 @@ class Camera(VimbaObject):
 
     def acquire_frame(self) -> Frame:
         """
-        Acquire and return a single frame when the camera is armed in 'SingleFrame' acquisition mode. Can be called
-        multiple times in a row, but don't call again until the frame has been copied or processed the internal frame
-        object is reused.
+        Acquire and return a single frame when the camera is armed in 'SingleFrame' acquisition
+        mode. Can be called multiple times in a row, but don't call again until the frame has been
+        copied or processed the internal frame object is reused.
         """
         if not self._is_armed or self._acquisition_mode != SINGLE_FRAME:
             raise VimbaException(VimbaException.ERR_INVALID_CAMERA_MODE)
@@ -250,8 +254,8 @@ class Camera(VimbaObject):
 
     def start_frame_acquisition(self) -> None:
         """
-        Acquire and stream frames (to the specified callback function) indefinitely when the camera is armed in
-        'Continuous' acquisition mode.
+        Acquire and stream frames (to the specified callback function) indefinitely when the camera
+        is armed in 'Continuous' acquisition mode.
         """
         # no need to check self._is_acquiring
         if not self._is_armed or self._acquisition_mode != CONTINUOUS:

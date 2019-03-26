@@ -8,8 +8,8 @@ from . import vimba_c
 
 class VimbaObject:
     """
-    A Vimba object has a handle and features associated with it. Objects include System, Camera, Interface and
-    AncillaryData. Features are automatically readable as instance attributes.
+    A Vimba object has a handle and features associated with it. Objects include System, Camera,
+    Interface and AncillaryData. Features are automatically readable as instance attributes.
     """
 
     VMB_ACCESS_MODE_NONE = 0
@@ -53,7 +53,8 @@ class VimbaObject:
 
     def _feature_infos(self) -> List[vimba_c.VmbFeatureInfo]:
         """
-        Gets feature info of all available features. Will cause error if object/camera/etc is not opened.
+        Gets feature info of all available features. Will cause error if object/camera/etc is not
+        opened.
         """
         # call once to get number of available features
         vmb_feature_info = vimba_c.VmbFeatureInfo()
@@ -132,8 +133,8 @@ class VimbaObject:
 
     # todo test
     def read_register(self, address: int) -> int:
-        # note that the underlying Vimba function allows reading of an array of registers, but only one address/value
-        # at a time is implemented here
+        # note that the underlying Vimba function allows reading of an array of registers, but only
+        # one address/value at a time is implemented here
         """
         Read from a register of the module (camera) and return its value.
         :param address: the address of the register to read.
@@ -154,8 +155,8 @@ class VimbaObject:
 
     # todo test
     def write_register(self, address: int, value: int) -> None:
-        # note that the underlying Vimba function allows writing of an array of registers, but only one address/value
-        # at a time is implemented here
+        # note that the underlying Vimba function allows writing of an array of registers, but only
+        # one address/value at a time is implemented here
         """
         Write to a register of the module (camera).
         :param address: the address of the register to read.
