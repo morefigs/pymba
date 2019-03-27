@@ -221,7 +221,7 @@ class Camera(VimbaObject):
 
         self.start_capture()
 
-    def acquire_frame(self) -> Frame:
+    def acquire_frame(self, timeout_ms: Optional[int] = 2000) -> Frame:
         """
         Acquire and return a single frame when the camera is armed in 'SingleFrame' acquisition
         mode. Can be called multiple times in a row, but don't call again until the frame has been
@@ -233,7 +233,7 @@ class Camera(VimbaObject):
         # capture a single frame
         self._single_frame.queue_for_capture()
         self.AcquisitionStart()
-        self._single_frame.wait_for_capture()
+        self._single_frame.wait_for_capture(timeout_ms=timeout_ms)
         self.AcquisitionStop()
 
         return self._single_frame
