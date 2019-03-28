@@ -123,6 +123,8 @@ class Camera(VimbaObject):
              adjust_packet_size: Optional[bool] = True):
         """
         Open the camera with requested access mode. Adjusts packet size by default.
+        :param camera_access_mode: Access mode to open the camera in.
+        :param adjust_packet_size: Adjust packet size for GigE cameras.
         """
         error = vimba_c.vmb_camera_open(self.camera_id.encode(),
                                         camera_access_mode,
@@ -131,8 +133,12 @@ class Camera(VimbaObject):
             raise VimbaException(error)
 
         # may experience issues with ethernet commands if not called
-        if adjust_packet_size and self._vimba.system().GeVTLIsPresent:
-            self.GVSPAdjustPacketSize()
+        if adjust_packet_size:
+            try:
+                self.GVSPAdjustPacketSize()
+            # ignore error on non-GigE cameras
+            except AttributeError:
+                pass
 
     def close(self):
         """
