@@ -233,7 +233,7 @@ class Camera(VimbaObject):
         # capture a single frame
         self._single_frame.queue_for_capture()
         self.AcquisitionStart()
-        self._single_frame.wait_for_capture(timeout_ms=timeout_ms)
+        self._single_frame.wait_for_capture(timeout_ms)
         self.AcquisitionStop()
 
         return self._single_frame
