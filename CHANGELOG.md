@@ -1,5 +1,13 @@
 # Pymba change log
 
+## [0.3.3] - 2019/03/28
+### Added
+- Timeout parameter to acquire frame function.
+### Changed
+- MIT license.
+### Fixed
+- Bug fix for USB cameras trying to adjust packet size.
+
 ## [0.3.2] - 2019/03/09
 ### Added
 - Colour camera example.
