@@ -292,8 +292,7 @@ class Camera(VimbaObject):
         self._is_armed = False
 
         # automatically stop acquisition if required
-        if self._is_acquiring:
-            self.stop_frame_acquisition()
+        self.stop_frame_acquisition()
 
         # clean up
         self.end_capture()
