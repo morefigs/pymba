@@ -95,10 +95,10 @@ class Camera(VimbaObject):
         # remember state
         self._is_armed = False
         self._is_acquiring = False
-        self._acquisition_mode = None
+        self._acquisition_mode = ''
 
-        # frame to reuse when in single frame mode
-        self._single_frame = None
+        self._frame_buffer = ()
+        self._frame_buffer_index = -1
 
         # user registered callback function
         self._user_callback = None
@@ -212,6 +212,7 @@ class Camera(VimbaObject):
         self.AcquisitionMode = mode
         self._acquisition_mode = mode
 
+        # todo refactor
         if mode == SINGLE_FRAME:
             self._arm_single_frame()
         elif mode == CONTINUOUS:
@@ -221,11 +222,29 @@ class Camera(VimbaObject):
 
         self._is_armed = True
 
-    def _arm_single_frame(self) -> None:
-        self._single_frame = self.new_frame()
-        self._single_frame.announce()
+    def _arm_single_frame(self, frame_buffer_size: int) -> None:
+        # create frame buffer and announce frames to camera
+        self._frame_buffer_index = -1
+        self._frame_buffer = tuple(self.new_frame()
+                                   for _ in range(frame_buffer_size))
+        for frame in self._frame_buffer:
+            frame.announce()
 
         self.start_capture()
+
+    def _arm_continuous(self, callback: Callable, frame_buffer_size: int) -> None:
+        self._user_callback = callback
+
+        # create frame buffer and announce frames to camera
+        self._frame_buffer = tuple(self.new_frame()
+                                   for _ in range(frame_buffer_size))
+        for frame in self._frame_buffer:
+            frame.announce()
+
+        self.start_capture()
+
+        for frame in self._frame_buffer:
+            frame.queue_for_capture(self._streaming_callback)
 
     def acquire_frame(self, timeout_ms: Optional[int] = 2000) -> Frame:
         """
@@ -236,27 +255,17 @@ class Camera(VimbaObject):
         if not self._is_armed or self._acquisition_mode != SINGLE_FRAME:
             raise VimbaException(VimbaException.ERR_INVALID_CAMERA_MODE)
 
+        self._frame_buffer_index += 1
+        if self._frame_buffer_index <= len(self._frame_buffer):
+            self._frame_buffer_index = 0
+
         # capture a single frame
-        self._single_frame.queue_for_capture()
+        self._frame_buffer[self._frame_buffer_index].queue_for_capture()
         self.AcquisitionStart()
-        self._single_frame.wait_for_capture(timeout_ms)
+        self._frame_buffer[self._frame_buffer_index].wait_for_capture(timeout_ms)
         self.AcquisitionStop()
 
-        return self._single_frame
-
-    def _arm_continuous(self, callback: Callable, frame_buffer_size: int) -> None:
-        self._user_callback = callback
-
-        # create frame buffer and announce frames to camera
-        _frame_buffer = tuple(self.new_frame() for _ in range(frame_buffer_size))
-        for frame in _frame_buffer:
-            frame.announce()
-
-        self.start_capture()
-
-        # queue
-        for frame in _frame_buffer:
-            frame.queue_for_capture(self._streaming_callback)
+        return self._frame_buffer[self._frame_buffer_index]
 
     def start_frame_acquisition(self) -> None:
         """
@@ -305,7 +314,7 @@ class Camera(VimbaObject):
         self.flush_capture_queue()
         self.revoke_all_frames()
 
-        self._single_frame = None
+        self._frame_buffer = ()
 
         # encourage garbage collection of frame buffer memory
         gc.collect()
