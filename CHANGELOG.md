@@ -1,5 +1,11 @@
 # Pymba change log
 
+## [0.3.4] - 2019/04/13
+### Added
+- Timeout error checking to single frame acquisition example. 
+### Changed
+- Removed f-strings for backwards compatibility.
+
 ## [0.3.3] - 2019/03/28
 ### Added
 - Timeout parameter to acquire frame function.
