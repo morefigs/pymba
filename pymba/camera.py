@@ -226,7 +226,7 @@ class Camera(VimbaObject):
         # setup frame ready callbacks
         if mode == CONTINUOUS:
             if callback is None:
-                def callback(frame):
+                def callback(frame: Frame) -> None:
                     pass
 
             self._user_callback = callback
