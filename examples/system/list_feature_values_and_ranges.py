@@ -25,6 +25,6 @@ if __name__ == '__main__':
             print('\n\t'.join(
                 str(x) for x in (
                     feature_name,
-                    f'value: {value}',
-                    f'range: {range_}')
+                    'value: {}'.format(value),
+                    'range: {}'.format(range_))
                 if x is not None))
