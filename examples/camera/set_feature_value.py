@@ -1,6 +1,9 @@
 from pymba import Vimba
 
 
+FEATURE_NAME = 'PixelFormat'
+
+
 if __name__ == '__main__':
 
     with Vimba() as vimba:
@@ -8,13 +11,13 @@ if __name__ == '__main__':
         camera.open()
 
         # read a feature value
-        feature = camera.feature('ExposureAuto')
+        feature = camera.feature(FEATURE_NAME)
         value = feature.value
 
-        # set the feature value
+        # set the feature value (with the same value)
         feature.value = value
 
-        print(feature.name, '=', feature.value)
+        print('"{}" was set to "{}"'.format(feature.name, feature.value))
 
         # alternatively the feature value can be set as an object attribute
         camera.ExposureAuto = feature.value

@@ -1,6 +1,9 @@
 from pymba import Vimba
 
 
+FEATURE_NAME = 'InterfacePingPace'
+
+
 if __name__ == '__main__':
 
     with Vimba() as vimba:
@@ -8,13 +11,13 @@ if __name__ == '__main__':
         interface.open()
 
         # set a feature value by feature name
-        feature = interface.feature('InterfacePingPace')
+        feature = interface.feature(FEATURE_NAME)
         value = feature.value
 
-        # set the feature value
+        # set the feature value (with the same value)
         feature.value = value
 
-        print(feature.name, '=', feature.value)
+        print('"{}" was set to "{}"'.format(feature.name, feature.value))
 
         # alternatively the feature value can be set as an object attribute
         interface.InterfacePingPace = 3
