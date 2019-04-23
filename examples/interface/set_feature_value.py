@@ -10,7 +10,7 @@ if __name__ == '__main__':
         interface = vimba.interface(0)
         interface.open()
 
-        # set a feature value by feature name
+        # read a feature value
         feature = interface.feature(FEATURE_NAME)
         value = feature.value
 
