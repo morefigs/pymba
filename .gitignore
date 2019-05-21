@@ -39,6 +39,4 @@ nosetests.xml
 .cache/
 
 venv*
-scrap/
-
-notes.txt
+Pipfile.lock
