@@ -1,6 +1,6 @@
-from pymba import Vimba, PYMBA_VERSION
+from pymba import Vimba, __version__
 
 
 if __name__ == '__main__':
-    print('Pymba version: {}'.format(PYMBA_VERSION))
+    print('Pymba version: {}'.format(__version__))
     print('Vimba C API version: {}'.format(Vimba.version()))
