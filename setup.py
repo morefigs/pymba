@@ -1,10 +1,8 @@
 from setuptools import setup
 
-from pymba import __version__
-
 
 setup(name='pymba',
-      version=__version__,
+      version='0.3.4',
       description="Pymba is a Python wrapper for Allied Vision's Vimba C API.",
       long_description=(
           "Pymba is a Python wrapper for Allied Vision's Vimba C API. It wraps the Vimba C library "
