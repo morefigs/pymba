@@ -2,6 +2,13 @@ import pytest
 from pymba import Vimba, VimbaException
 
 
+def test_version():
+    version = [int(v) for v in Vimba.version().split('.')]
+    assert version[0] >= 1
+    assert version[1] >= 7
+    assert version[2] >= 0
+
+
 def test_startup_shutdown():
     with pytest.raises(VimbaException) as e:
         Vimba().system().feature_names()
@@ -23,6 +30,7 @@ def vimba() -> Vimba:
         yield vimba
 
 
+# requires a camera connected
 def test_interface_camera_ids(vimba: Vimba):
     # test id funcs return a list of strings (not bytes)
     for func in (vimba.interface_ids, vimba.camera_ids):
@@ -37,5 +45,6 @@ def test_interface(vimba: Vimba):
     interface = vimba.interface(vimba.interface_ids()[0])
 
 
+# requires a camera connected
 def test_camera(vimba: Vimba):
     camera = vimba.camera(vimba.camera_ids()[0])
