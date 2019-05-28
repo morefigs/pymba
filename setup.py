@@ -1,23 +1,23 @@
 from setuptools import setup
 
-from pymba import PYMBA_VERSION
-
 
 setup(name='pymba',
-      version=PYMBA_VERSION,
+      version='0.3.4',
       description="Pymba is a Python wrapper for Allied Vision's Vimba C API.",
-      long_description="Pymba is a Python wrapper for Allied Vision's Vimba C API. It wraps the Vimba C library file "
-                       "included in the Vimba installation to provide a simple Python interface for Allied Vision "
-                       "cameras. It currently supports most of the functionality provided by Vimba.",
+      long_description=(
+          "Pymba is a Python wrapper for Allied Vision's Vimba C API. It wraps the Vimba C library "
+          "file included in the Vimba installation to provide a simple Python interface for Allied "
+          "Vision cameras. It currently supports most of the functionality provided by Vimba."
+      ),
       # https://pypi.org/pypi?%3Aaction=list_classifiers
       classifiers=[
-          'Development Status :: 5 - Production/Stable',
+          'Development Status :: 4 - Beta',
           'Intended Audience :: Developers',
           'Intended Audience :: End Users/Desktop',
           'Intended Audience :: Healthcare Industry',
           'Intended Audience :: Manufacturing',
           'Intended Audience :: Science/Research',
-          'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+          'License :: OSI Approved :: MIT License',
           'Natural Language :: English',
           'Operating System :: Microsoft :: Windows',
           'Operating System :: POSIX :: Linux',
@@ -26,13 +26,12 @@ setup(name='pymba',
           'Topic :: Multimedia :: Video :: Capture',
           'Topic :: Scientific/Engineering :: Image Recognition',
           'Topic :: Scientific/Engineering :: Visualization',
-          'Topic :: Software Development :: Libraries :: Python Modules'
       ],
       keywords='python, python3, opencv, cv, machine vision, computer vision, image recognition, vimba, allied vision',
       author='morefigs',
       author_email='morefigs@gmail.com',
       url='https://github.com/morefigs/pymba',
-      license='GPL-3.0',
+      license='MIT',
       packages=[
           'pymba',
       ],

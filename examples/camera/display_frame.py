@@ -15,7 +15,7 @@ def display_frame(frame: Frame, delay: Optional[int] = 1) -> None:
     :param frame: The frame object to display.
     :param delay: Display delay in milliseconds, use 0 for indefinite.
     """
-    print(f'frame {frame.data.frameID}')
+    print('frame {}'.format(frame.data.frameID))
 
     # get a copy of the frame data
     image = frame.buffer_data_numpy()

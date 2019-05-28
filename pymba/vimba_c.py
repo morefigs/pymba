@@ -92,8 +92,11 @@ else:
 class NiceStructure(Structure):
     def __repr__(self):
         field_names = (field[0] for field in self._fields_)
-        return f'{type(self).__name__}(' \
-               f'{", ".join("=".join((field, str(getattr(self, field)))) for field in field_names)})'
+        return '{}({})'.format(
+            type(self).__name__,
+            ", ".join("=".join((field, str(getattr(self, field))))
+                      for field in field_names)
+        )
 
 
 class VmbVersionInfo(NiceStructure):

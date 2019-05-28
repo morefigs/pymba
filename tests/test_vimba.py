@@ -1,13 +1,5 @@
 import pytest
-
 from pymba import Vimba, VimbaException
-
-
-def test_version():
-    version = Vimba.version().split('.')
-    assert int(version[0]) >= 1
-    assert int(version[1]) >= 7
-    assert int(version[2]) >= 0
 
 
 def test_startup_shutdown():

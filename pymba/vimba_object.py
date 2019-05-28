@@ -36,7 +36,7 @@ class VimbaObject:
             # otherwise attempt to get their value
             return feature.value
 
-        raise AttributeError(f'{self.__class__.__name__} object has no attribute {item}')
+        raise AttributeError('{} object has no attribute {}'.format(self.__class__.__name__, item))
 
     # allow direct access to feature values as an attribute
     def __setattr__(self, item: str, value):

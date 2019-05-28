@@ -1,22 +1,26 @@
 from pymba import Vimba
 
 
+FEATURE_NAME = 'InterfacePingPace'
+
+
 if __name__ == '__main__':
 
     with Vimba() as vimba:
         interface = vimba.interface(0)
         interface.open()
 
-        # set a feature value by feature name
-        feature = interface.feature('InterfacePingPace')
+        # read a feature value
+        feature = interface.feature(FEATURE_NAME)
         value = feature.value
 
-        # set the feature value
+        # set the feature value (with the same value)
         feature.value = value
 
-        print(feature.name, '=', feature.value)
+        print('"{}" was set to "{}"'.format(feature.name, feature.value))
 
         # alternatively the feature value can be set as an object attribute
+        # note that this doesn't raise an error if the feature name doesn't exist
         interface.InterfacePingPace = 3
 
         interface.close()
