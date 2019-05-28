@@ -42,6 +42,7 @@ setup(name='pymba',
       ],
       extras_requires={
           'dev': [
+              'opencv-python',
               'pytest',
           ]
       }
