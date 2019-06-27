@@ -25,7 +25,7 @@ if sys_plat == "win32":
         if not dlls:
             bases = [
                 r'C:\Program Files\Allied Vision Technologies\AVTVimba_%i.%i\VimbaC\Bin\Win%i\VimbaC.dll',
-                r'C:\Program Files\Allied Vision\Vimba_%i.%i\VimbaC\Bin\Win%i\VimbaC.dll'
+                r'C:\Program Files\Allied Vision\Vimba_%i.%i\Tools\Viewer\Win%i\VimbaC.dll'
             ]
             for base in bases:
                 for major in range(3):
