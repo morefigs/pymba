@@ -1,5 +1,9 @@
 # Pymba change log
 
+## [0.3.5] - 2019/06/07
+### Added
+- Support for Vimba v3.0+.
+
 ## [0.3.4] - 2019/04/13
 ### Added
 - Timeout error checking to single frame acquisition example. 
