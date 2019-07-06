@@ -28,7 +28,7 @@ if sys_plat == "win32":
                 r'C:\Program Files\Allied Vision\Vimba_%i.%i\VimbaC\Bin\Win%i\VimbaC.dll'
             ]
             for base in bases:
-                for major in range(3):
+                for major in range(4):
                     for minor in range(10):
                         candidate = base % (major, minor, arch)
                         if os.path.isfile(candidate):
