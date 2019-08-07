@@ -19,8 +19,4 @@ if __name__ == '__main__':
 
         print('"{}" was set to "{}"'.format(feature.name, feature.value))
 
-        # alternatively the feature value can be set as an object attribute
-        # note that this doesn't raise an error if the feature name doesn't exist
-        interface.InterfacePingPace = 3
-
         interface.close()
