@@ -1,10 +1,15 @@
 from enum import IntFlag
 
+#
+# Translation of the enum data types from the original VmbCommonTypes.h header file
+#
 
 class VmbPixel(IntFlag):
+    # Indicate if pixel is monochrome or RGB.
     Mono  = 0x01000000  # Monochrome pixel
     Color = 0x02000000  # Pixel bearing color information
 
+    # Indicate number of bits for a pixel. Needed for building values of VmbPixelFormatType
     Occupy8Bit  = 0x00080000  # Pixel effectively occupies 8 bits
     Occupy10Bit = 0x000A0000  # Pixel effectively occupies 10 bits
     Occupy12Bit = 0x000C0000  # Pixel effectively occupies 12 bits
@@ -17,13 +22,17 @@ class VmbPixel(IntFlag):
 
 
 class VmbPixelFormat(IntFlag):
+    # Pixel format types.
+    # As far as possible, the Pixel Format Naming Convention (PFNC) has been followed, allowing a few deviations.
+    # If data spans more than one byte, it is always LSB aligned, except if stated differently.
+
     # mono formats
-    Mono8        = VmbPixel.Mono | VmbPixel.Occupy8Bit  | 0x0001   # Monochrome, 8 bits(PFNC: Mono8)
+    Mono8        = VmbPixel.Mono | VmbPixel.Occupy8Bit  | 0x0001  # Monochrome, 8 bits(PFNC: Mono8)
     Mono10       = VmbPixel.Mono | VmbPixel.Occupy16Bit | 0x0003  # Monochrome, 10 bits in 16 bits(PFNC: Mono10)
     Mono10p      = VmbPixel.Mono | VmbPixel.Occupy10Bit | 0x0046  # Monochrome, 10 bits in 16 bits(PFNC: Mono10p)
     Mono12       = VmbPixel.Mono | VmbPixel.Occupy16Bit | 0x0005  # Monochrome, 12 bits in 16 bits(PFNC: Mono12)
-    Mono12Packed = VmbPixel.Mono | VmbPixel.Occupy12Bit | 0x0006  # Monochrome, 2 x12 bits in 24 bits(GEV: Mono12Packed)
-    Mono12p      = VmbPixel.Mono | VmbPixel.Occupy12Bit | 0x0047  # Monochrome, 2 x12 bits in 24 bits(PFNC: MonoPacked)
+    Mono12Packed = VmbPixel.Mono | VmbPixel.Occupy12Bit | 0x0006  # Monochrome, 2x12 bits in 24 bits(GEV: Mono12Packed)
+    Mono12p      = VmbPixel.Mono | VmbPixel.Occupy12Bit | 0x0047  # Monochrome, 2x12 bits in 24 bits(PFNC: MonoPacked)
     Mono14       = VmbPixel.Mono | VmbPixel.Occupy16Bit | 0x0025  # Monochrome, 14 bits in 16 bits(PFNC: Mono14)
     Mono16       = VmbPixel.Mono | VmbPixel.Occupy16Bit | 0x0007  # Monochrome, 16 bits(PFNC: Mono16)
     # bayer formats
@@ -85,4 +94,3 @@ class VmbPixelFormat(IntFlag):
     YCbCr411_8_CbYYCrYY = VmbPixel.Color | VmbPixel.Occupy12Bit | 0x003C  # Y'CbCr 411 with 8 bits (PFNC:YCbCr411_8_CbYYCrYY) - identical to Yuv411
     YCbCr422_8_CbYCrY   = VmbPixel.Color | VmbPixel.Occupy16Bit | 0x0043  # Y'CbCr 422 with 8 bits (PFNC:YCbCr422_8_CbYCrY) - identical to Yuv422
     YCbCr8_CbYCr        = VmbPixel.Color | VmbPixel.Occupy24Bit | 0x003A  # Y'CbCr 444 with 8 bits (PFNC:YCbCr8_CbYCr) - identical to Yuv444
-    Last   = None
