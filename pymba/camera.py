@@ -26,6 +26,7 @@ PIXEL_FORMAT_BYTES = {
     "YUV444Packed": 3,
     "BayerRG8": 1,
     "BayerRG12": 2,
+    "BayerRG12Packed": 1.5,
     "BayerGR8": 1,
     "BayerGR12": 2,
     "BayerGR12Packed": 1.5,
