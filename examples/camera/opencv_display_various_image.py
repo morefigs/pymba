@@ -32,7 +32,7 @@ for i in range(1):
     if (frame_pixel_format == "Mono8" or frame_pixel_format == "BayerRG8" or frame_pixel_format == "BayerGR8"):
         frame_8bits = np.ndarray(buffer=data_bytes, dtype=np.uint8, shape=(Height, Width))
 
-    elif (frame_pixel_format == "BayerRG12" or frame_pixel_format == "Mono12" or frame_pixel_format == "Mono14"):
+    elif (frame_pixel_format == "BayerRG12" or frame_pixel_format == "Mono10" or frame_pixel_format == "Mono12" or frame_pixel_format == "Mono14"):
         data_bytes = np.frombuffer(data_bytes, dtype=np.uint8)
         pixel_even = data_bytes[0::2]
         pixel_odd = data_bytes[1::2]
@@ -41,6 +41,9 @@ for i in range(1):
         if (frame_pixel_format == "Mono14"):
             pixel_even = np.right_shift(pixel_even, 6)
             pixel_odd = np.left_shift(pixel_odd, 2)
+        elif (frame_pixel_format == "Mono10"):
+            pixel_even = np.right_shift(pixel_even, 2)
+            pixel_odd = np.left_shift(pixel_odd, 6)
         else:
             pixel_even = np.right_shift(pixel_even, 4)
             pixel_odd = np.left_shift(pixel_odd, 4)

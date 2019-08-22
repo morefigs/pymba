@@ -4,7 +4,19 @@ import numpy as np
 
 from . import camera as _camera
 from .vimba_exception import VimbaException
+from .vimba_pixelformat import VmbPixel, VmbPixelFormat
 from . import vimba_c
+
+# Translates Vimba pixel formats to the corresponding dtype and number of channels for a numpy array.
+# This covers most formats; except the "packed" and the exotic Yuv/YCbCr formats.
+PIXELFORMAT_TO_DTYPE_CHANNELS = {
+    VmbPixel.Mono | VmbPixel.Occupy8Bit: (np.uint8, 1),
+    VmbPixel.Mono | VmbPixel.Occupy16Bit: (np.uint16, 1),
+    VmbPixel.Color | VmbPixel.Occupy24Bit: (np.uint8, 3),
+    VmbPixel.Color | VmbPixel.Occupy48Bit: (np.uint16, 3),
+    VmbPixel.Color | VmbPixel.Occupy32Bit: (np.uint8, 4),
+    VmbPixel.Color | VmbPixel.Occupy64Bit: (np.uint16, 4),
+}
 
 
 class Frame:
@@ -108,8 +120,16 @@ class Frame:
         """
         Get a copy of the frame's buffer data as a NumPy array. This can easily be used with OpenCV.
         """
-        # todo pixel formats larger than 8-bit
+        # mask the last 4 bytes to reduce pixel format to mono/color mode and bit width info
+        pixel_format = self.data.pixelFormat & 0xFFFF0000
+        try:
+            arr_dtype, arr_channels = PIXELFORMAT_TO_DTYPE_CHANNELS[pixel_format]
+        except KeyError as ex:
+            raise NotImplementedError('Pixel format not supported!') from ex
+
+        arr_shape = (self.data.height, self.data.width, arr_channels) if arr_channels > 1 \
+                    else (self.data.height, self.data.width)
 
         return np.ndarray(buffer=self.buffer_data(),
-                          dtype=np.uint8,
-                          shape=(self.data.height, self.data.width))
+                          dtype=arr_dtype,
+                          shape=arr_shape)
