@@ -40,7 +40,7 @@ def init_cameras():
             elif e.error_code == VimbaException.ERR_DEVICE_NOT_OPENED:
                 print(e)
                 cam.open()
-                cam.arm('Continuous', display_frame_count)
+                cam.arm(mode='Continuous', callback=FrameCallback)
     return cams
 
 def main():
