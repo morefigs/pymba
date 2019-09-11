@@ -8,29 +8,6 @@ from .frame import Frame
 from . import vimba_c
 
 
-# todo update this to be more like VmbPixelFormatType in VmbCommonTypes.h
-# Map pixel formats to bytes per pixel
-PIXEL_FORMAT_BYTES = {
-    "Mono8": 1,
-    "Mono12": 2,
-    "Mono12Packed": 1.5,
-    "Mono14": 2,
-    "Mono16": 2,
-    "RGB8": 3,
-    "RGB8Packed": 3,
-    "BGR8Packed": 3,
-    "RGBA8Packed": 4,
-    "BGRA8Packed": 4,
-    "YUV411Packed": 4 / 3.0,
-    "YUV422Packed": 2,
-    "YUV444Packed": 3,
-    "BayerRG8": 1,
-    "BayerRG12": 2,
-    "BayerGR8": 1,
-    "BayerGR12": 2,
-    "BayerGR12Packed": 1.5,
-}
-
 SINGLE_FRAME = 'SingleFrame'
 CONTINUOUS = 'Continuous'
 
