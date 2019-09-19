@@ -43,19 +43,18 @@ class Frame:
     def data(self) -> vimba_c.VmbFrame:
         return self._vmb_frame
 
-    def announce(self, payload_size: int = None) -> None:
+    def announce(self, payload_size: Optional[int] = None) -> None:
         """
         Announce frames to the API that may be queued for frame capturing later. Should be called
         after the frame is created. Call startCapture after this method.
         """
-        # allocate memory for the frame and keep a reference to keep alive
-
         if payload_size is None:
             payload_size = self._camera.PayloadSize
         else:
             if payload_size < self._camera.PayloadSize:
-                raise RuntimeError("Specified frame buffer is not large enough!")
+                raise ValueError("Specified frame buffer is not large enough!")
 
+        # allocate memory for the frame and keep a reference to keep alive
         self._c_memory = create_string_buffer(payload_size)
         address = c_void_p(addressof(self._c_memory))
         if address is None:
