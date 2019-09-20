@@ -208,8 +208,7 @@ vmb_frame_callback_func = CALLBACK_FUNCTYPE(None,
 vmb_feature_invalidation_callback_fun = CALLBACK_FUNCTYPE(None,
                                                           c_void_p,  # const VmbHandle_t    handle
                                                           c_char_p,  # const char*          name
-                                                          c_void_p   # void*                pUserContext
-                                                          )
+                                                          c_void_p)  # void*                pUserContext
 
 
 vmb_version_query = _vimba_lib.VmbVersionQuery
@@ -384,8 +383,8 @@ vmb_feature_invalidation_register.argtypes = (c_void_p,
 vmb_feature_invalidation_unregister = _vimba_lib.VmbFeatureInvalidationUnregister
 vmb_feature_invalidation_unregister.restype = c_int32
 vmb_feature_invalidation_unregister.argtypes = (c_void_p,
-                                              c_char_p,
-                                              vmb_feature_invalidation_callback_fun)
+                                                c_char_p,
+                                                vmb_feature_invalidation_callback_fun)
 
 
 vmb_frame_announce = _vimba_lib.VmbFrameAnnounce
@@ -451,7 +450,6 @@ vmb_ancillary_data_close = _vimba_lib.VmbAncillaryDataClose
 vmb_interface_close.restype = c_int32
 vmb_interface_close.argtypes = (c_void_p, )
 
-# todo VmbAncillaryDataClose
 # todo VmbMemoryRead
 # todo VmbMemoryWrite
 
