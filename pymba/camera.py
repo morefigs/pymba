@@ -126,6 +126,11 @@ class Camera(VimbaObject):
         if error:
             raise VimbaException(error)
 
+    def load_config(self, xml_conf_path: str):
+        error = vimba_c.vmb_camera_load_settings(self._handle, xml_conf_path, None, 0)
+        if error:
+            raise VimbaException(error)
+    
     def revoke_all_frames(self):
         """
         Revoke all frames assigned to the camera.
