@@ -4,6 +4,7 @@ from time import sleep
 from pymba import Vimba
 from pymba import Frame
 
+vimba = None
 def FrameCallback(frame: Frame, delay: Optional[int] = 10) -> None:
     bShowFrameInfos = True
     if bShowFrameInfos == True:
@@ -15,6 +16,7 @@ def FrameCallback(frame: Frame, delay: Optional[int] = 10) -> None:
 
 
 def init_cameras():
+    global vimba
     # vimba object
     vimba = Vimba()
     # Start vimba system
@@ -44,12 +46,14 @@ def init_cameras():
     return cams
 
 def main():
+    global vimba
     cams = init_cameras()
     sleep(2)
     for cam in cams:
         cam.disarm()
         cam.close()
-    Vimba().shutdown()
+    vimba.shutdown()
+    print("Exit Program...")
 
 if __name__ == '__main__':
     main()

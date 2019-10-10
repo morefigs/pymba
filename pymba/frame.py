@@ -4,23 +4,8 @@ import numpy as np
 
 from . import camera as _camera
 from .vimba_exception import VimbaException
-<<<<<<< HEAD
-from .vimba_pixelformat import VmbPixel, VmbPixelFormat
-=======
 from .vimba_pixelformat import VmbPixel
->>>>>>> upstream/master
 from . import vimba_c
-
-# Translates Vimba pixel formats to the corresponding dtype and number of channels for a numpy array.
-# This covers most formats; except the "packed" and the exotic Yuv/YCbCr formats.
-PIXELFORMAT_TO_DTYPE_CHANNELS = {
-    VmbPixel.Mono | VmbPixel.Occupy8Bit: (np.uint8, 1),
-    VmbPixel.Mono | VmbPixel.Occupy16Bit: (np.uint16, 1),
-    VmbPixel.Color | VmbPixel.Occupy24Bit: (np.uint8, 3),
-    VmbPixel.Color | VmbPixel.Occupy48Bit: (np.uint16, 3),
-    VmbPixel.Color | VmbPixel.Occupy32Bit: (np.uint8, 4),
-    VmbPixel.Color | VmbPixel.Occupy64Bit: (np.uint16, 4),
-}
 
 
 # Translates Vimba pixel formats to the corresponding dtype and number of channels for a numpy
