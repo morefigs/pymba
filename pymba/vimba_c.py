@@ -200,9 +200,16 @@ _vimba_lib = dll_loader.LoadLibrary(vimbaC_path)
 # ----- The below function signatures are defined in VimbaC.h -----
 
 # callback for frame queue
-vmb_frame_callback_func = CALLBACK_FUNCTYPE(c_void_p,
+vmb_frame_callback_func = CALLBACK_FUNCTYPE(None,
                                             c_void_p,
                                             POINTER(VmbFrame))
+
+# Callback for Invalidation events
+vmb_feature_invalidation_callback_fun = CALLBACK_FUNCTYPE(None,
+                                                          c_void_p,  # const VmbHandle_t    handle
+                                                          c_char_p,  # const char*          name
+                                                          c_void_p)  # void*                pUserContext
+
 
 vmb_version_query = _vimba_lib.VmbVersionQuery
 vmb_version_query.restype = c_int32
@@ -365,8 +372,20 @@ vmb_feature_command_is_done.argtypes = (c_void_p,
 # todo VmbFeatureRawGet
 # todo VmbFeatureRawSet
 # todo VmbFeatureRawLengthQuery
-# todo VmbFeatureInvalidationRegister
-# todo VmbFeatureInvalidationUnregister
+
+vmb_feature_invalidation_register = _vimba_lib.VmbFeatureInvalidationRegister
+vmb_feature_invalidation_register.restype = c_int32
+vmb_feature_invalidation_register.argtypes = (c_void_p,
+                                              c_char_p,
+                                              vmb_feature_invalidation_callback_fun,
+                                              c_void_p)
+
+vmb_feature_invalidation_unregister = _vimba_lib.VmbFeatureInvalidationUnregister
+vmb_feature_invalidation_unregister.restype = c_int32
+vmb_feature_invalidation_unregister.argtypes = (c_void_p,
+                                                c_char_p,
+                                                vmb_feature_invalidation_callback_fun)
+
 
 vmb_frame_announce = _vimba_lib.VmbFrameAnnounce
 vmb_frame_announce.restype = c_int32
@@ -423,11 +442,16 @@ vmb_interface_close = _vimba_lib.VmbInterfaceClose
 vmb_interface_close.restype = c_int32
 vmb_interface_close.argtypes = (c_void_p,)
 
-# todo VmbAncillaryDataOpen
-# todo VmbAncillaryDataClose
+vmb_ancillary_data_open = _vimba_lib.VmbAncillaryDataOpen
+vmb_interface_close.restype = c_int32
+vmb_interface_close.argtypes = (POINTER(VmbFrame), POINTER(c_void_p))
+
+vmb_ancillary_data_close = _vimba_lib.VmbAncillaryDataClose
+vmb_interface_close.restype = c_int32
+vmb_interface_close.argtypes = (c_void_p, )
+
 # todo VmbMemoryRead
 # todo VmbMemoryWrite
-# todo VmbAncillaryDataOpen
 
 vmb_registers_read = _vimba_lib.VmbRegistersRead
 vmb_registers_read.restype = c_int32

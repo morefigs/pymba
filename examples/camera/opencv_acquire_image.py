@@ -1,5 +1,5 @@
 from pymba import Vimba, VimbaException
-from examples.camera.display_frame import display_frame
+from examples.camera._display_frame import display_frame
 
 
 if __name__ == '__main__':
