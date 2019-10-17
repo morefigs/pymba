@@ -4,6 +4,7 @@ from enum import IntFlag
 # Translation of the enum data types from the original VmbCommonTypes.h header file
 #
 
+
 class VmbPixel(IntFlag):
     # Indicate if pixel is monochrome or RGB.
     Mono  = 0x01000000  # Monochrome pixel
@@ -23,7 +24,8 @@ class VmbPixel(IntFlag):
 
 class VmbPixelFormat(IntFlag):
     # Pixel format types.
-    # As far as possible, the Pixel Format Naming Convention (PFNC) has been followed, allowing a few deviations.
+    # As far as possible, the Pixel Format Naming Convention (PFNC) has been followed, allowing a
+    # few deviations.
     # If data spans more than one byte, it is always LSB aligned, except if stated differently.
 
     # mono formats
@@ -35,6 +37,7 @@ class VmbPixelFormat(IntFlag):
     Mono12p      = VmbPixel.Mono | VmbPixel.Occupy12Bit | 0x0047  # Monochrome, 2x12 bits in 24 bits(PFNC: MonoPacked)
     Mono14       = VmbPixel.Mono | VmbPixel.Occupy16Bit | 0x0025  # Monochrome, 14 bits in 16 bits(PFNC: Mono14)
     Mono16       = VmbPixel.Mono | VmbPixel.Occupy16Bit | 0x0007  # Monochrome, 16 bits(PFNC: Mono16)
+
     # bayer formats
     BayerGR8        = VmbPixel.Mono | VmbPixel.Occupy8Bit  | 0x0008  # Bayer - color, 8 bits, starting with GR line (PFNC:BayerGR8)
     BayerRG8        = VmbPixel.Mono | VmbPixel.Occupy8Bit  | 0x0009  # Bayer - color, 8 bits, starting with RG line (PFNC:BayerRG8)
@@ -64,6 +67,7 @@ class VmbPixelFormat(IntFlag):
     BayerRG16       = VmbPixel.Mono | VmbPixel.Occupy16Bit | 0x002F  # Bayer - color, 16 bits, starting with RG line (PFNC:BayerRG16)
     BayerGB16       = VmbPixel.Mono | VmbPixel.Occupy16Bit | 0x0030  # Bayer - color, 16 bits, starting with GB line (PFNC:BayerGB16)
     BayerBG16       = VmbPixel.Mono | VmbPixel.Occupy16Bit | 0x0031  # Bayer - color, 16 bits, starting with BG line (PFNC:BayerBG16)
+
     # rgb formats
     Rgb8   = VmbPixel.Color | VmbPixel.Occupy24Bit | 0x0014  # RGB, 8 bits x 3(PFNC: RGB8)
     Bgr8   = VmbPixel.Color | VmbPixel.Occupy24Bit | 0x0015  # BGR, 8 bits x 3(PFNC: BGR8)
@@ -75,6 +79,7 @@ class VmbPixelFormat(IntFlag):
     Bgr14  = VmbPixel.Color | VmbPixel.Occupy48Bit | 0x004A  # RGB, 14 bits in 16 bits x 3(PFNC: RGB12)
     Rgb16  = VmbPixel.Color | VmbPixel.Occupy48Bit | 0x0033  # RGB, 16 bits x 3(PFNC: RGB16)
     Bgr16  = VmbPixel.Color | VmbPixel.Occupy48Bit | 0x004B  # RGB, 16 bits x 3(PFNC: RGB16)
+
     # rgba formats
     Argb8  = VmbPixel.Color | VmbPixel.Occupy32Bit | 0x0016  # ARGB, 8 bits x 4(PFNC: RGBa8)
     Rgba8  = VmbPixel.Color | VmbPixel.Occupy32Bit | 0x0016  # RGBA, 8 bits x 4, legacy name, same as Argb8
@@ -87,6 +92,7 @@ class VmbPixelFormat(IntFlag):
     Bgra14 = VmbPixel.Color | VmbPixel.Occupy64Bit | 0x0050  # RGBA, 8 bits x 4, legacy name
     Rgba16 = VmbPixel.Color | VmbPixel.Occupy64Bit | 0x0064  # RGBA, 8 bits x 4, legacy name
     Bgra16 = VmbPixel.Color | VmbPixel.Occupy64Bit | 0x0051  # RGBA, 8 bits x 4, legacy name
+
     # yuv / ycbcr formats
     Yuv411              = VmbPixel.Color | VmbPixel.Occupy12Bit | 0x001E  # YUV 411 with 8 bits (GEV:YUV411Packed)
     Yuv422              = VmbPixel.Color | VmbPixel.Occupy16Bit | 0x001F  # YUV 422 with 8 bits (GEV:YUV422Packed)

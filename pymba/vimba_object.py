@@ -1,5 +1,5 @@
 from ctypes import byref, sizeof, c_void_p, c_uint32, c_uint64, c_bool
-from typing import List, Optional
+from typing import List, Optional, Callable, Dict, Tuple
 
 from .vimba_exception import VimbaException
 from .feature import Feature, _FEATURE_DATA_COMMAND
@@ -23,6 +23,7 @@ class VimbaObject:
         self._handle = c_void_p(handle)
 
         self._features = {}
+        self._feature_invalidation_callbacks: Dict[str, Tuple[Callable, Callable]] = dict()
 
     def __getattr__(self, item: str):
         # allow direct access to feature values as an attribute
@@ -173,3 +174,39 @@ class VimbaObject:
                                             byref(num_complete_writes))
         if error:
             raise VimbaException(error)
+
+    def register_feature_invalidation_callback(self, name, frame_callback: Callable[['VimbaObject',
+                                                                                     str], None]):
+        def frame_callback_wrapper(handle, feature_name: bytes, user_data_ptr):
+            feature_name = feature_name.decode()
+            self._feature_invalidation_callbacks[feature_name][0](self, feature_name)
+
+        if name in self._feature_invalidation_callbacks:
+            raise RuntimeError("Can only register one callback per feature and handle.")
+
+        c_callback = vimba_c.vmb_feature_invalidation_callback_fun(frame_callback_wrapper)
+
+        self._feature_invalidation_callbacks[name] = frame_callback, c_callback
+
+        try:
+            error = vimba_c.vmb_feature_invalidation_register(self._handle, name.encode(),
+                                                              c_callback, c_void_p(0))
+            if error:
+                raise VimbaException(error)
+        except:
+            del self._feature_invalidation_callbacks[name]
+            raise
+
+    def unregister_feature_invalidation_callback(self, name):
+        if name not in self._feature_invalidation_callbacks:
+            raise KeyError('No callback registered on name')
+
+        frame_callback, c_callback = self._feature_invalidation_callbacks[name]
+
+        error = vimba_c.vmb_feature_invalidation_unregister(self._handle, name.encode(), c_callback)
+        if error:
+            raise VimbaException(error)
+
+    def unregister_all_feature_invalidation_callbacks(self):
+        for name in self._feature_invalidation_callbacks:
+            self.unregister_feature_invalidation_callback(name)

@@ -7,6 +7,7 @@ import cv2
 import sys
 import collections
 
+vimba = None
 # todo add more colours
 PIXEL_FORMATS_CONVERSIONS = {
     'BayerRG8': cv2.COLOR_BAYER_RG2RGB,
@@ -39,6 +40,7 @@ class FrameObserver:
 
 def init_cameras():
     # vimba object
+    global vimba
     vimba = Vimba()
     # Start vimba system
     vimba.startup()
@@ -74,6 +76,7 @@ def init_cameras():
 
 flag = True  # global variable
 def main():
+    global vimba
     cams = init_cameras()
     global flag
     flag = True
@@ -90,7 +93,7 @@ def main():
         cam.disarm()
         cam.close()
     cv2.destroyAllWindows()
-    Vimba().shutdown()
+    vimba.shutdown()
 
 if __name__ == '__main__':
     main()

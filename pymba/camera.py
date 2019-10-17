@@ -120,6 +120,8 @@ class Camera(VimbaObject):
         """
         Close the camera.
         """
+        self.unregister_all_feature_invalidation_callbacks()
+
         error = vimba_c.vmb_camera_close(self._handle)
         if error:
             raise VimbaException(error)
