@@ -11,7 +11,7 @@ camera.open()
 print("Camera List ID is %s", Vimba.camera_ids())
 
 pixel_format = camera.feature("PixelFormat")
-pixel_format.value = "BayerRG12"
+pixel_format.value = "BayerRG8"
 # Note: Tested with at "Mono8" "BayerRG8" "BayerRG12" "BayerRG12Packed" "RGB8Packed" pixel format
 
 camera.arm('SingleFrame')
@@ -69,7 +69,6 @@ for i in range(1):
 
     cv2.imshow("Frame_8bits", frame_8bits)
     k = cv2.waitKey(100)
-
 
     if (frame_pixel_format == "BayerRG8" or frame_pixel_format == "BayerRG12" or frame_pixel_format == "BayerRG12Packed"):
         colorImg = cv2.cvtColor(frame_8bits, cv2.COLOR_BAYER_RG2RGB )

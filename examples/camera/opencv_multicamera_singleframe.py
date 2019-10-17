@@ -9,6 +9,7 @@ def cam_set_ROI(camera, width: int, height: int) -> None:
     feature_h.value = height
     feature_w = camera.feature("Width")
     feature_w.value = width
+    print("ROI setting finished")
 
 def init_cameras():
         # vimba object
@@ -26,6 +27,7 @@ def init_cameras():
         for idx, cam in enumerate(cams):
             try:
                 cam.open()
+                cam_set_ROI(cam, 400, 300)
                 cam.arm('SingleFrame')
             except VimbaException as e:
                 if e.error_code == VimbaException.ERR_TIMEOUT:
