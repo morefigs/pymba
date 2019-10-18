@@ -29,17 +29,11 @@ class AVTCamera:
             self.cam=cams[capture_device]
 
     def read(self):
+        self.open()
         self.singleframe = 0
-        if self.cam == None:
-            self.image=None
-            return self.image
-        if self.cam_open == False :
-            self.cam.open()
-            self.cam_open = True
-            self.cam.arm('Continuous', self.convert_frame)
         self.cam.start_frame_acquisition()
         while self.singleframe == 0 :
-            sleep(0.3)
+            sleep(0.05)
         self.cam.stop_frame_acquisition()
         return self.image
 
@@ -57,9 +51,27 @@ class AVTCamera:
         self.cam.close()
         self.cam_open = False
 
+    def preview(self):
+        while True:
+            img=self.read()
+            cv2.imshow('xc', img)
+            c=cv2.waitKey(10)
+            if c==ord ('q') :
+                cv2.destroyWindow('xc')
+                return img;
+
+    def open(self):
+        if self.cam == None:
+            self.image=None
+            return self.image
+        if self.cam_open == False :
+            self.cam.open()
+            self.cam_open = True
+            self.cam.arm('Continuous', self.convert_frame)
+
 
 def cam_test():
-    camera=AVTCamera(1)
+    camera=AVTCamera(0)
     while True:
         image=camera.read()
         cv2.imshow('Image', image)
@@ -68,5 +80,10 @@ def cam_test():
             camera.release()
             break;
 
+def cam_test_preview():
+    camera=AVTCamera(0)
+    camera.preview()
+    camera.release()
+
 if __name__=='__main__':
-    cam_test()
+    cam_test_preview()
