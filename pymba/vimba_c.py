@@ -259,9 +259,31 @@ vmb_feature_info_query.argtypes = (c_void_p,
                                    POINTER(VmbFeatureInfo),
                                    c_uint32)
 
-# todo VmbFeatureListAffected
-# todo VmbFeatureListSelected
-# todo VmbFeatureAccessQuery
+
+vmb_features_list_affected = _vimba_lib.VmbFeatureListAffected
+vmb_features_list_affected.restype = c_int32
+vmb_features_list_affected.argtypes = (c_void_p,
+                                       c_char_p,
+                                       POINTER(VmbFeatureInfo),
+                                       c_uint32,
+                                       POINTER(c_uint32),
+                                       c_uint32)
+
+vmb_features_list_selected = _vimba_lib.VmbFeatureListSelected
+vmb_features_list_selected.restype = c_int32
+vmb_features_list_selected.argtypes = (c_void_p,
+                                       c_char_p,
+                                       POINTER(VmbFeatureInfo),
+                                       c_uint32,
+                                       POINTER(c_uint32),
+                                       c_uint32)
+
+vmb_features_access_query = _vimba_lib.VmbFeatureAccessQuery
+vmb_features_access_query.restype = c_int32
+vmb_features_access_query.argtypes = (c_void_p,
+                                      c_char_p,
+                                      POINTER(c_bool),
+                                      POINTER(c_bool))
 
 vmb_feature_int_get = _vimba_lib.VmbFeatureIntGet
 vmb_feature_int_get.restype = c_int32
@@ -282,7 +304,11 @@ vmb_feature_int_range_query.argtypes = (c_void_p,
                                         POINTER(c_int64),
                                         POINTER(c_int64))
 
-# todo VmbFeatureIntIncrementQuery
+vmb_feature_int_increment_query = _vimba_lib.VmbFeatureIntIncrementQuery
+vmb_feature_int_increment_query.restype = c_int32
+vmb_feature_int_increment_query.argtypes = (c_void_p,
+                                            c_char_p,
+                                            POINTER(c_int64))
 
 vmb_feature_float_get = _vimba_lib.VmbFeatureFloatGet
 vmb_feature_float_get.restype = c_int32
@@ -303,7 +329,11 @@ vmb_feature_float_range_query.argtypes = (c_void_p,
                                           POINTER(c_double),
                                           POINTER(c_double))
 
-# todo VmbFeatureFloatIncrementQuery
+vmb_feature_float_increment_query = _vimba_lib.VmbFeatureFloatIncrementQuery
+vmb_feature_float_increment_query.restype = c_int32
+vmb_feature_float_increment_query.argtypes = (c_void_p,
+                                              c_char_p,
+                                              POINTER(c_double))
 
 vmb_feature_enum_get = _vimba_lib.VmbFeatureEnumGet
 vmb_feature_enum_get.restype = c_int32
