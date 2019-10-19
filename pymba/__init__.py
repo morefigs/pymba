@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
-from vimba import Vimba
-from vimbaexception import VimbaException
+from .vimba import Vimba, VimbaException
+from .frame import Frame
 
+__version__ = '0.3.6'
