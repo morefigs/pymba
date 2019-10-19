@@ -241,5 +241,18 @@ class Feature:
                                                      byref(num_found))
         if error:
             raise VimbaException(error)
+        
+        # check which enum names are actually allowed for the given camera
+        rv = []
+        found  = c_bool(False)
+        for enum_name in enum_names:
+            error = vimba_c.vmb_feature_enum_is_available(self._handle,
+                                                          self._name,
+                                                          enum_name,
+                                                          byref(found))
+            if error:
+                raise VimbaException(error)
+            elif found:
+                rv.append(enum_name.decode())
 
-        return list(enum_name.decode() for enum_name in enum_names)
+        return rv

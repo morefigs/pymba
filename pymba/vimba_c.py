@@ -325,7 +325,13 @@ vmb_feature_enum_range_query.argtypes = (c_void_p,
                                          c_uint32,
                                          POINTER(c_uint32))
 
-# todo VmbFeatureEnumIsAvailable
+vmb_feature_enum_is_available = _vimba_lib.VmbFeatureEnumIsAvailable
+vmb_feature_enum_is_available.restype = c_int32
+vmb_feature_enum_is_available.argtypes = (c_void_p,
+                                          c_char_p,
+                                          c_char_p,
+                                          POINTER(c_bool))
+
 # todo VmbFeatureEnumAsInt
 # todo VmbFeatureEnumAsString
 # todo VmbFeatureEnumEntryGet
