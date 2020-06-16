@@ -1,5 +1,10 @@
 # Pymba change log
 
+## [0.3.7] - 2020-06-16
+### Added
+- Ancillary data and feature invalidation functions.
+- Manual setting of frame payload size.
+
 ## [0.3.6] - 2019-09-11
 ### Added
 - NumPy support for (most) pixel formats.
