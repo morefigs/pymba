@@ -282,3 +282,33 @@ class Camera(VimbaObject):
 
         # encourage garbage collection of frame buffer memory
         gc.collect()
+
+    def load_settings(self, filepath, iterations) -> None:
+        """
+        Load settings from XML
+        """
+        vmb_persist_settings = vimba_c.VimbaFeaturePersistSettings()
+        vmb_persist_settings.persistType = 2 # all apart from LUT, default option
+        vmb_persist_settings.maxIterations = iterations
+        error = vimba_c.vmb_camera_settings_load(self._handle,
+                                                filepath.encode(),
+                                                byref(vmb_persist_settings),
+                                                sizeof(vmb_persist_settings))
+
+        if error:
+            raise VimbaException(error)
+
+    def save_settings(self, filepath, iterations) -> None:
+        """
+        Save settings to XML
+        """
+        vmb_persist_settings = vimba_c.VimbaFeaturePersistSettings()
+        vmb_persist_settings.persistType = 2 # all apart from LUT, default option
+        vmb_persist_settings.maxIterations = iterations
+        error = vimba_c.vmb_camera_settings_save(self._handle,
+                                                filepath.encode(),
+                                                byref(vmb_persist_settings),
+                                                sizeof(vmb_persist_settings))
+
+        if error:
+            raise VimbaException(error)

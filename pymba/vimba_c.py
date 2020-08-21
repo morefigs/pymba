@@ -195,6 +195,13 @@ class VmbFrame(Structure):
         ('timestamp', c_uint64)]
 
 
+class VimbaFeaturePersistSettings(NiceStructure):
+    _fields_ = [
+        ('persistType', c_uint32),
+        ('maxIterations', c_uint32),
+        ('loggingLevel', c_uint32)]
+
+
 _vimba_lib = dll_loader.LoadLibrary(vimbaC_path)
 
 # ----- The below function signatures are defined in VimbaC.h -----
@@ -469,5 +476,16 @@ vmb_registers_write.argtypes = (c_void_p,
                                 POINTER(c_uint64),
                                 POINTER(c_uint32))
 
-# todo VmbCameraSettingsSave
-# todo VmbCameraSettingsLoad
+vmb_camera_settings_load = _vimba_lib.VmbCameraSettingsLoad
+vmb_camera_settings_load.restype = c_int32
+vmb_camera_settings_load.argtypes = (c_void_p,
+                                c_char_p,
+                                POINTER(VimbaFeaturePersistSettings),
+                                c_uint32)
+
+vmb_camera_settings_save = _vimba_lib.VmbCameraSettingsSave
+vmb_camera_settings_save.restype = c_int32
+vmb_camera_settings_save.argtypes = (c_void_p,
+                                c_char_p,
+                                POINTER(VimbaFeaturePersistSettings),
+                                c_uint32)
