@@ -1,3 +1,6 @@
+| :raising_hand: Allied Vision now officially supports Python, you should probably use their code instead: [VimbaPython](https://github.com/alliedvision/VimbaPython) |
+| --- |
+
 # Pymba
 
 Pymba is a Python wrapper for Allied Vision's Vimba C API. It wraps the Vimba C library file included in the Vimba installation to provide a simple Python interface for Allied Vision cameras. It currently supports most of the functionality provided by Vimba.
