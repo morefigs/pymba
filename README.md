@@ -1,4 +1,4 @@
-| :warning: [Allied Vision now officially provide Python support](https://github.com/alliedvision/VimbaPython) - consider using their API instead of Pymba. :warning: |
+| :warning: [Allied Vision now officially provide Python support](https://github.com/alliedvision/VimbaPython) - consider using the official API instead of Pymba. :warning: |
 | --- |
 
 # Pymba
