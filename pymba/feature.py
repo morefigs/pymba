@@ -47,7 +47,27 @@ class Feature:
                                          _FEATURE_DATA_ENUM):
             return self._access_func('range', self.info.featureDataType)()
         return None
-
+    
+    @property
+    def increment(self) -> Union[None, int, float]:
+        # only some types actually have an increment
+        if self.info.featureDataType in (_FEATURE_DATA_INT,
+                                         _FEATURE_DATA_FLOAT):
+            return self._access_func('increment', self.info.featureDataType)()
+        return None
+    
+    @property
+    def affected(self) -> List[str]:
+        return self._affected_query()
+    
+    @property
+    def selected(self) -> List[str]:
+        return self._selected_query()
+    
+    @property
+    def access(self) -> Tuple[bool,bool]:
+        return self._access_query()
+    
     def __init__(self, name, handle):
         self._name = name.encode()
         self._handle = handle
@@ -64,10 +84,12 @@ class Feature:
             _FEATURE_DATA_UNKNOWN: (),
             _FEATURE_DATA_INT: (self._get_int,
                                 self._set_int,
-                                self._range_query_int),
+                                self._range_query_int,
+                                self._increment_query_int),
             _FEATURE_DATA_FLOAT: (self._get_float,
                                   self._set_float,
-                                  self._range_query_float),
+                                  self._range_query_float,
+                                  self._increment_query_float),
             _FEATURE_DATA_ENUM: (self._get_enum,
                                  self._set_enum,
                                  self._range_query_enum),
@@ -84,6 +106,7 @@ class Feature:
             'get': 0,
             'set': 1,
             'range': 2,
+            'increment' : 3
         }
 
         # doesn't make sense to get / set a command data type
@@ -241,5 +264,107 @@ class Feature:
                                                      byref(num_found))
         if error:
             raise VimbaException(error)
+        
+        # check which enum names are actually allowed for the given camera
+        rv = []
+        found  = c_bool(False)
+        for enum_name in enum_names:
+            error = vimba_c.vmb_feature_enum_is_available(self._handle,
+                                                          self._name,
+                                                          enum_name,
+                                                          byref(found))
+            if error:
+                raise VimbaException(error)
+            elif found:
+                rv.append(enum_name.decode())
 
-        return list(enum_name.decode() for enum_name in enum_names)
+        return rv
+    
+    def _increment_query_int(self) -> int:
+        increment = c_int64()
+        error = vimba_c.vmb_feature_int_increment_query(self._handle,
+                                                       self._name,
+                                                       byref(increment))
+        if error:
+            raise VimbaException(error)
+
+        return int(increment.value)
+    
+    def _increment_query_float(self) -> Tuple[bool,float]:
+        increment = c_double(-1)
+        has_increment = c_bool(True)
+        error = vimba_c.vmb_feature_float_increment_query(self._handle,
+                                                          self._name,
+                                                          byref(has_increment),
+                                                          byref(increment))
+        if error:
+            raise VimbaException(error)
+
+        return has_increment.value,float(increment.value)
+    
+    def _affected_query(self) -> List[str]:
+         # call once to get number of available features
+        vmb_feature_info = vimba_c.VmbFeatureInfo()
+        num_found = c_uint32(-1)
+        error = vimba_c.vmb_feature_list_affected(self._handle,
+                                                  self._name,
+                                                  None,
+                                                  0,
+                                                  byref(num_found),
+                                                  sizeof(vmb_feature_info))
+        if error:
+            raise VimbaException(error)
+
+        # call again to get the features
+        num_features = num_found.value
+        vmb_feature_infos = (vimba_c.VmbFeatureInfo * num_features)()
+        error = vimba_c.vmb_feature_list_affected(self._handle,
+                                                  self._name,
+                                                  vmb_feature_infos,
+                                                  num_features,
+                                                  byref(num_found),
+                                                  sizeof(vmb_feature_info))
+        if error:
+            raise VimbaException(error)
+
+        return list(vmb_feature_info.name.decode() for vmb_feature_info in vmb_feature_infos)
+    
+    def _selected_query(self) -> List[str]:
+         # call once to get number of available features
+        vmb_feature_info = vimba_c.VmbFeatureInfo()
+        num_found = c_uint32(-1)
+        error = vimba_c.vmb_feature_list_selected(self._handle,
+                                                  self._name,
+                                                  None,
+                                                  0,
+                                                  byref(num_found),
+                                                  sizeof(vmb_feature_info))
+        if error:
+            raise VimbaException(error)
+
+        # call again to get the features
+        num_features = num_found.value
+        vmb_feature_infos = (vimba_c.VmbFeatureInfo * num_features)()
+        error = vimba_c.vmb_feature_list_selected(self._handle,
+                                                  self._name,
+                                                  vmb_feature_infos,
+                                                  num_features,
+                                                  byref(num_found),
+                                                  sizeof(vmb_feature_info))
+        if error:
+            raise VimbaException(error)
+
+        return list(vmb_feature_info.name.decode() for vmb_feature_info in vmb_feature_infos)
+   
+    
+    def _access_query(self) -> Tuple[bool,bool]:
+        readable = c_bool()
+        writable = c_bool()
+        error = vimba_c.vmb_feature_access_query(self._handle,
+                                                 self._name,
+                                                 byref(readable),
+                                                 byref(writable))
+        if error:
+            raise VimbaException(error)
+
+        return readable.value,writable.value
