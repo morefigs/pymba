@@ -48,6 +48,14 @@ class Feature:
             return self._access_func('range', self.info.featureDataType)()
         return None
 
+    @property
+    def increment(self) -> Union[None, int, float]:
+        # only some types actually have an increment
+        if self.info.featureDataType in (_FEATURE_DATA_INT,
+                                         _FEATURE_DATA_FLOAT):
+            return self._access_func('increment', self.info.featureDataType)()
+        return None
+
     def __init__(self, name, handle):
         self._name = name.encode()
         self._handle = handle
@@ -56,7 +64,7 @@ class Feature:
         """
         Get the correct function needed to access the feature attribute based on the feature's data
         type.
-        :param func_type: One of 'get', 'set', or 'range'.
+        :param func_type: One of 'get', 'set', 'range', 'increment'.
         :param data_type: Data type as defined in VmbFeatureDataType.
         """
         # (getter, setter, range) funcs
@@ -64,10 +72,12 @@ class Feature:
             _FEATURE_DATA_UNKNOWN: (),
             _FEATURE_DATA_INT: (self._get_int,
                                 self._set_int,
-                                self._range_query_int),
+                                self._range_query_int,
+                                self._increment_query_int),
             _FEATURE_DATA_FLOAT: (self._get_float,
                                   self._set_float,
-                                  self._range_query_float),
+                                  self._range_query_float,
+                                  self._increment_query_float),
             _FEATURE_DATA_ENUM: (self._get_enum,
                                  self._set_enum,
                                  self._range_query_enum),
@@ -84,6 +94,7 @@ class Feature:
             'get': 0,
             'set': 1,
             'range': 2,
+            'increment': 3,
         }
 
         # doesn't make sense to get / set a command data type
@@ -243,3 +254,23 @@ class Feature:
             raise VimbaException(error)
 
         return list(enum_name.decode() for enum_name in enum_names)
+
+    def _increment_query_int(self) -> int:
+        increment = c_int64()
+        error = vimba_c.vmb_feature_int_increment_query(self._handle,
+                                                        self._name,
+                                                        byref(increment))
+        if error:
+            raise VimbaException(error)
+
+        return int(increment.value)
+
+    def _increment_query_float(self) -> float:
+        increment = c_double()
+        error = vimba_c.vmb_feature_float_increment_query(self._handle,
+                                                          self._name,
+                                                          byref(increment))
+        if error:
+            raise VimbaException(error)
+
+        return float(increment.value)
