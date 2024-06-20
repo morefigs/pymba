@@ -251,6 +251,13 @@ vmb_camera_close = _vimba_lib.VmbCameraClose
 vmb_camera_close.restype = c_int32
 vmb_camera_close.argtypes = (c_void_p,)
 
+vmb_camera_load_settings = _vimba_lib.VmbCameraSettingsLoad
+vmb_camera_load_settings.restype = c_int32
+vmb_camera_load_settings.argtypes = (c_void_p,
+                            c_char_p,
+                            c_void_p,
+                            c_uint32)
+
 vmb_features_list = _vimba_lib.VmbFeaturesList
 vmb_features_list.restype = c_int32
 vmb_features_list.argtypes = (c_void_p,
