@@ -1,6 +1,8 @@
 from sys import platform as sys_plat
 import platform
 import os
+import itertools
+from pathlib import Path
 from ctypes import *
 
 
@@ -18,21 +20,22 @@ if sys_plat == "win32":
 
         if not dlls:
             if 'VIMBA_HOME' in os.environ:
-                candidate = os.environ['VIMBA_HOME'] + r'\VimbaC\Bin\Win%i\VimbaC.dll' % (arch)
-                if os.path.isfile(candidate):
+                candidate = Path(os.environ['VIMBA_HOME']) / 'VimbaC' / 'Bin' / f'Win{arch}' / 'VimbaC.dll'
+                if candidate.is_file():
                     dlls.append(candidate)
 
         if not dlls:
-            bases = [
-                r'C:\Program Files\Allied Vision Technologies\AVTVimba_%i.%i\VimbaC\Bin\Win%i\VimbaC.dll',
-                r'C:\Program Files\Allied Vision\Vimba_%i.%i\VimbaC\Bin\Win%i\VimbaC.dll'
-            ]
-            for base in bases:
-                for major in range(4):
-                    for minor in range(10):
-                        candidate = base % (major, minor, arch)
-                        if os.path.isfile(candidate):
-                            dlls.append(candidate)
+            # Find all vimba directories
+            bases = list(itertools.chain(
+                Path(os.environ['ProgramFiles'], 'Allied Vision Technologies').glob('AVTVimba_*'),
+                Path(os.environ['ProgramFiles'], 'Allied Vision').glob('Vimba_*'),
+            ))
+
+            # Sort it by version number
+            bases = sorted(bases, key=lambda base: base.name.split('_', maxsplit=2)[-1].split('.'), reverse=True)
+
+            dlls.extend(str(dll) for dll in (base / 'VimbaC' / 'Bin' / f'Win{arch}' / 'VimbaC.dll' for base in bases)
+                        if dll.exists())
 
         if not dlls:
             raise IOError("VimbaC.dll not found.")
